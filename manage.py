@@ -14,7 +14,6 @@ except ImportError:
     tmp_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             'vendor', 'src', 'funfactory')
     sys.path.append(tmp_path)
-
     from funfactory import manage
 
     # Let the path magic happen in setup_environ() !

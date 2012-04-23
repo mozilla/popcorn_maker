@@ -24,11 +24,18 @@ MINIFY_BUNDLES = {
 }
 
 # Defines the views served for root URLs.
-ROOT_URLCONF = 'project.urls'
+ROOT_URLCONF = 'popcorn_gallery.urls'
 
 INSTALLED_APPS = list(INSTALLED_APPS) + [
+    'django.contrib.staticfiles',
+    'django.contrib.admin',
+    'django_extensions',
+    'django_browserid',
+    'tastypie',
     # Application base, containing global templates.
     'popcorn_gallery.base',
+    'popcorn_gallery.common',
+    'popcorn_gallery.popcorn',
 ]
 
 
@@ -55,3 +62,27 @@ JINGO_EXCLUDE_APPS = [
 # ]
 
 LOGGING = dict(loggers=dict(playdoh = {'level': logging.DEBUG}))
+
+
+AUTHENTICATION_BACKENDS = (
+    'django_browserid.auth.BrowserIDBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS += (
+    'django_browserid.context_processors.browserid_form',
+    )
+
+TEMPLATE_DIRS = (
+    path('popcorn_gallery', 'templates'),
+)
+
+# funfactory locale middleware shouldn't change these urls.
+SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static']
+
+STATIC_URL = '/static/'
+
+# admin is using the django.contrib.staticfiles
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+
+STATIC_ROOT = path('static')

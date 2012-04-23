@@ -1,1 +1,3 @@
 -r ../vendor/src/funfactory/funfactory/requirements/prod.txt
+django-extensions==0.8
+django-tastypie==0.9.11

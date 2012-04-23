@@ -1,24 +1,23 @@
+from django.contrib import admin
 from django.conf import settings
-from django.conf.urls.defaults import patterns, include
-
-from .examples import urls
-
+from django.conf.urls.defaults import patterns, include, url
 from funfactory.monkeypatches import patch
+from tastypie.api import Api
+from .popcorn.api import ProjectResource
+
 patch()
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+admin.autodiscover()
 
-urlpatterns = patterns('',
-    # Example:
-    (r'', include(urls)),
+v1_api = Api(api_name='v1')
+v1_api.register(ProjectResource())
 
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # (r'^admin/', include(admin.site.urls)),
+urlpatterns = patterns(
+    '',
+    (r'^admin/', include(admin.site.urls)),
+    (r'^api/', include(v1_api.urls)),
+    (r'^browserid/', include('django_browserid.urls')),
+    url(r'^$', 'popcorn_gallery.popcorn.views.index', name='index'),
 )
 
 ## In DEBUG mode, serve media files through Django.
