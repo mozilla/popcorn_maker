@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from ...common.tests.fixtures import (create_user, create_template,
-                                      create_project)
+from .fixtures import create_user, create_template
 from ..models import Project, Template
 
 

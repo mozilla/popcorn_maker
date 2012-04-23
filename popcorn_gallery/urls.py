@@ -3,14 +3,17 @@ from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url
 from funfactory.monkeypatches import patch
 from tastypie.api import Api
-from .popcorn.api import ProjectResource
+from .popcorn.api import ProjectResource, TemplateResource
+
 
 patch()
 
 admin.autodiscover()
 
 v1_api = Api(api_name='v1')
+v1_api.register(TemplateResource())
 v1_api.register(ProjectResource())
+
 
 urlpatterns = patterns(
     '',

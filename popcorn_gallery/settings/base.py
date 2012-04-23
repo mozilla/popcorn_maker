@@ -34,7 +34,6 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'tastypie',
     # Application base, containing global templates.
     'popcorn_gallery.base',
-    'popcorn_gallery.common',
     'popcorn_gallery.popcorn',
 ]
 
@@ -43,6 +42,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
 # apps here:
 JINGO_EXCLUDE_APPS = [
     'admin',
+    'registration',
 ]
 
 # Tells the extract script what files to look for L10n in and what function
@@ -78,7 +78,7 @@ TEMPLATE_DIRS = (
 )
 
 # funfactory locale middleware shouldn't change these urls.
-SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static']
+SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid']
 
 STATIC_URL = '/static/'
 
@@ -86,3 +86,9 @@ STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATIC_ROOT = path('static')
+
+
+# Browser ID
+BROWSERID_CREATE_USER = True
+LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL_FAILURE = '/'

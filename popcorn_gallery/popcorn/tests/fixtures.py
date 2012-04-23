@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from ...popcorn.models import Template, Project
+from ..models import Template, Project
 
 
 def create_user(handle):
