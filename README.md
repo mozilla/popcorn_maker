@@ -17,7 +17,7 @@ Once you have installed vagrant grab a copy of this repository and copy the loca
 
 To provision the machine run, this may take a few minutes:
 
-  vagrant up
+vagrant up
 
 
 TODO: Automatize provisioning of the machine packages with puppet. Once this happens the following section will be redundant.
