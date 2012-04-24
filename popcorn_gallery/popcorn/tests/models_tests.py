@@ -24,5 +24,5 @@ class PopcornTest(TestCase):
             }
         project = Project.objects.create(**data)
         assert project.id, "Project couldn't be created"
-        assert project.slug, "Slug missing"
+        assert project.uuid, "Project UUID missing"
         self.assertEqual(project.status, Project.LIVE)

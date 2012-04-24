@@ -49,6 +49,8 @@ class ProjectResource(ModelResource):
 
     def get_object_list(self, request):
         """List only ``User`` owned templates"""
+        if not hasattr(request, 'user'):
+            return Project.objects.none()
         return (super(ProjectResource, self).get_object_list(request)
                 .filter(user=request.user))
 

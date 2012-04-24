@@ -25,3 +25,8 @@ PWD_ALGORITHM = 'bcrypt'
 HMAC_KEYS = {  # for bcrypt only
     '2011-01-01': 'cheesecake',
 }
+
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# NOSE_ARGS = ['--failed', '--stop']
+
+# NOSE_PLUGINS = []

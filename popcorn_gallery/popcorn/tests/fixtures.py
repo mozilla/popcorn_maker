@@ -18,9 +18,11 @@ def create_template(**kwargs):
 def create_project(**kwargs):
     defaults = {
         'name': 'Popcorn Project',
-        'user': create_user('bob'),
-        'template': create_template(),
         }
     if kwargs:
         defaults.update(kwargs)
+    if not 'user' in kwargs:
+        defaults['user'] = create_user('bob')
+    if not 'template' in kwargs:
+        defaults['template'] = create_template()
     return Project.objects.create(**defaults)

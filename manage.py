@@ -19,7 +19,6 @@ except ImportError:
     # Let the path magic happen in setup_environ() !
     sys.path.remove(tmp_path)
 
-
 manage.setup_environ(__file__, more_pythonic=True)
 
 if __name__ == "__main__":
