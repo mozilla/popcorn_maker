@@ -8,4 +8,4 @@ def test(*args):
     """Run the tests locally takes a list of apps to test as arguments"""
     os.environ['FORCE_DB'] =  '1'
     print yellow('Testing')
-    local('python manage.py test')
+    local('python manage.py test --noinput')

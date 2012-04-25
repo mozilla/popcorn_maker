@@ -37,7 +37,7 @@ class TemplateResource(ModelResource):
         queryset = Template.objects.all()
         resource_name = 'template'
         fields = ['name', ]
-        list_allowed_methods = ['get', ]
+        allowed_methods = ['get', ]
         authentication = MultiAuthentication(SuperuserAuthentication(),
                                              ApiKeyAuthentication())
         authorization = Authorization()
@@ -63,6 +63,8 @@ class ProjectResource(ModelResource):
         resource_name = 'project'
         fields = ['uuid', 'name', 'metadata', 'html', 'created', 'modified',
                   'user', 'template']
+        list_allowed_methods = ['get', 'post']
+        detail_allowed_methods = ['get', 'patch']
         authentication = MultiAuthentication(SuperuserAuthentication(),
                                              ApiKeyAuthentication())
         authorization = OwnerAuthorization()
