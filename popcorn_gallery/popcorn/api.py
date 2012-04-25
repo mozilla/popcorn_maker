@@ -1,26 +1,9 @@
 from django.contrib.auth.models import User
 from tastypie import fields
-from tastypie.authentication import (Authentication, ApiKeyAuthentication,
-                                     MultiAuthentication)
 from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
 from .models import Project, Template
-
-
-class SuperuserAuthentication(Authentication):
-    """Super users authenticated can access the API"""
-
-    def is_authenticated(self, request, **kwargs):
-        return request.user.is_superuser
-
-    def get_identifier(self, request):
-        return request.user.username
-
-
-class OwnerAuthorization(Authorization):
-
-    def apply_limits(self, request, object_list):
-        return object_list.filter(user=request.user)
+from .auth import OwnerAuthorization, InternalApiKeyAuthentication
 
 
 class UserResource(ModelResource):
@@ -28,7 +11,7 @@ class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
-        fields = ['username', 'first_name', 'last_name', 'last_login', 'email']
+        fields = ['username', 'first_name', 'last_name', 'last_login']
 
 
 class TemplateResource(ModelResource):
@@ -38,8 +21,7 @@ class TemplateResource(ModelResource):
         resource_name = 'template'
         fields = ['name', ]
         allowed_methods = ['get', ]
-        authentication = MultiAuthentication(SuperuserAuthentication(),
-                                             ApiKeyAuthentication())
+        authentication = InternalApiKeyAuthentication()
         authorization = Authorization()
 
 
@@ -65,6 +47,5 @@ class ProjectResource(ModelResource):
                   'user', 'template']
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'patch']
-        authentication = MultiAuthentication(SuperuserAuthentication(),
-                                             ApiKeyAuthentication())
+        authentication = InternalApiKeyAuthentication()
         authorization = OwnerAuthorization()

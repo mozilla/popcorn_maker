@@ -35,6 +35,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     # Application base, containing global templates.
     'popcorn_gallery.base',
     'popcorn_gallery.popcorn',
+    'popcorn_gallery.accounts',
 ]
 
 

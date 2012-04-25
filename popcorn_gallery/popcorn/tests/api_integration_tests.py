@@ -48,7 +48,7 @@ class HTTPTestCase(TestServerTestCase):
         response = self.do_request('GET', '/api/v1/')
         data = response.read()
         self.assertEqual(response.status, 200)
-        self.assertEqual(data,'{"project": {"list_endpoint": "/api/v1/project/", "schema": "/api/v1/project/schema/"}, "template": {"list_endpoint": "/api/v1/template/", "schema": "/api/v1/template/schema/"}}')
+        self.assertEqual(data,'{"account": {"list_endpoint": "/api/v1/account/", "schema": "/api/v1/account/schema/"}, "project": {"list_endpoint": "/api/v1/project/", "schema": "/api/v1/project/schema/"}, "template": {"list_endpoint": "/api/v1/template/", "schema": "/api/v1/template/schema/"}}')
 
 
 class TemplateHttpTestCase(HTTPTestCase):

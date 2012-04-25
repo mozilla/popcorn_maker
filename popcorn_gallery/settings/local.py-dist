@@ -71,3 +71,11 @@ SECRET_KEY = ''
 # Common Event Format logging parameters
 #CEF_PRODUCT = 'Playdoh'
 #CEF_VENDOR = 'Mozilla'
+
+
+# Used for the assertion with browserid
+SITE_URL = ''
+
+
+# Only internal IPs can access the API
+INTERNAL_IPS = ()

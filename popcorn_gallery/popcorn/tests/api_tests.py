@@ -16,7 +16,9 @@ class PopcornApiTest(TestCase):
             model.objects.all().delete()
 
     def test_registered_models(self):
-        self.assertEqual(v1_api._registry.keys(), ['project', 'template'])
+        keys = v1_api._registry.keys()
+        keys.sort()
+        self.assertEqual(keys, ['account', 'project', 'template'])
 
 
 class PopcornApiIntegrationTest(TestCase):
