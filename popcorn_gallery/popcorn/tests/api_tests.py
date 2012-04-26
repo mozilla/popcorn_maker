@@ -64,3 +64,18 @@ class InternalApiKeyAuthenticationTestCase(TestCase):
         request.META['HTTP_AUTHORIZATION'] = self.auth_header
         request.META['HTTP_X_REAL_IP'] = '127.0.0.1'
         self.assertTrue(auth.is_authenticated(request))
+
+    def test_invalid_ip_request_addr(self):
+        auth = InternalApiKeyAuthentication()
+        request = HttpRequest()
+        request.META['HTTP_AUTHORIZATION'] = self.auth_header
+        request.META['REMOTE_ADDR'] = '0.0.0.0'
+        result = auth.is_authenticated(request)
+        self.assertEqual(isinstance(result, HttpUnauthorized), True)
+
+    def test_valid_ip_request_addr(self):
+        auth = InternalApiKeyAuthentication()
+        request = HttpRequest()
+        request.META['HTTP_AUTHORIZATION'] = self.auth_header
+        request.META['REMOTE_ADDR'] = '127.0.0.1'
+        self.assertTrue(auth.is_authenticated(request))

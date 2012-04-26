@@ -118,7 +118,7 @@ class ProjectHttpTestCase(HTTPTestCase):
 
     valid_data = {
         'name': 'I love popcorn!',
-        'metadata': '{json: "true"}',
+        'metadata': '{"json": true}',
         'html': '<!DOCTYPE html>',
         'template': '/api/v1/template/1/',
         }
@@ -175,13 +175,14 @@ class ProjectHttpTestCase(HTTPTestCase):
         self.assertEqual(response.status, 401)
 
     def test_patch_project_detail(self):
-        data = {'name': 'This is awesome'}
-        response = self.do_request('PATCH', '/api/v1/project/1/', self.user, data)
+        initial_data = {'name': 'This is awesome'}
+        response = self.do_request('PATCH', '/api/v1/project/1/', self.user,
+                                   initial_data)
         response.read()
         self.assertEqual(response.status, 202)
         detail_response = self.do_request('GET', '/api/v1/project/1/', self.user)
         detail_data = json.load(detail_response)
-        self.assertEqual(detail_data['name'], data['name'])
+        self.assertEqual(detail_data['name'], initial_data['name'])
 
     def test_put_project_detail_anon(self):
         data = {'name': 'This is awesome'}
