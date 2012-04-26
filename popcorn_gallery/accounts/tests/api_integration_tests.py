@@ -43,3 +43,9 @@ class AccountHTTPTestCase(TestServerTestCase):
         self.assertTrue('apikey' in data)
         self.assertTrue('email' in data)
 
+    def test_invalid_email(self):
+        data = {'email': 'invalid@invalid'}
+        response = self.do_request('POST', '/api/v1/account/', data)
+        data = json.load(response)
+        self.assertEqual(response.status, 400)
+        self.assertTrue('email' in data['account'])

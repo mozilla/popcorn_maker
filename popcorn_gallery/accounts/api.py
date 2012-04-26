@@ -3,6 +3,7 @@ from tastypie.resources import Resource
 from tastypie import fields
 from tastypie.authorization import Authorization
 from django_browserid.auth import BrowserIDBackend
+from .forms import AccountAPIForm, NonORMFormValidation
 
 
 class AccountContainer(object):
@@ -35,10 +36,18 @@ class AccountResource(Resource):
         detail_allowed_methods = []
         always_return_data = True
         authorization = Authorization()
+        validation = NonORMFormValidation(form_class=AccountAPIForm)
 
     def obj_create(self, bundle, request=None, **kwargs):
         """Create or return the account details for this email"""
+        bundle.obj = self._meta.object_class()
+        for key, value in kwargs.items():
+            setattr(bundle.obj, key, value)
         bundle = self.full_hydrate(bundle)
+        # determine if the data sent is valid using tastypie's mechanics
+        self.is_valid(bundle, request)
+        if bundle.errors:
+            self.error_response(bundle.errors, request)
         browserid = BrowserIDBackend()
         try:
             user = User.objects.get(email=bundle.data['email'])
