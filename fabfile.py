@@ -1,6 +1,7 @@
 import os
+import manage
 
-from fabric.api import local
+from fabric.api import run, local, env, get, prompt, sudo
 from fabric.colors import yellow
 
 
@@ -10,3 +11,7 @@ def test(*args):
     print yellow('Testing')
     local('python manage.py test --noinput '
           '--settings=popcorn_gallery.settings.test')
+
+def collectstatic():
+    print yellow('Collecting static files')
+    local('python manage.py collectstatic -i Makefile')

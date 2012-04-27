@@ -1,3 +1,6 @@
 [submodule "vendor"]
 	path = vendor
 	url = git://github.com/mozilla/playdoh-lib.git
+[submodule "butter"]
+	path = butter
+	url = git://github.com/mozilla/butter.git

@@ -75,6 +75,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 TEMPLATE_DIRS = (
     path('popcorn_gallery', 'templates'),
+    path('butter', 'templates'),
 )
 
 # funfactory locale middleware shouldn't change these urls.
@@ -87,8 +88,12 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATIC_ROOT = path('static')
 
+STATICFILES_DIRS = (path('..', 'butter'),)
+
 
 # Browser ID
 BROWSERID_CREATE_USER = True
 LOGIN_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL_FAILURE = '/'
+
+# AUTH_PROFILE_MODULE = 'accounts.UserProfile'
