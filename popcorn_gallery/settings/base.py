@@ -31,7 +31,6 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'django.contrib.admin',
     'django_extensions',
     'django_browserid',
-    'tastypie',
     # Application base, containing global templates.
     'popcorn_gallery.base',
     'popcorn_gallery.popcorn',

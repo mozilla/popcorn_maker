@@ -1,8 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django_extensions.db.fields import (CreationDateTimeField,
                                          ModificationDateTimeField, UUIDField)
-from tastypie.models import create_api_key
 from tower import ugettext_lazy as _
 
 
@@ -34,7 +32,3 @@ class Project(models.Model):
 
     def __unicode__(self):
         return u'Project %s from %s' % (self.name, self.user)
-
-
-models.signals.post_save.connect(create_api_key, sender=User,
-                                 dispatch_uid='tastypie.create_api_key')
