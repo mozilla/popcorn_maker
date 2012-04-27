@@ -1,9 +1,6 @@
 from django.test.client import Client
 from django.utils import simplejson as json
 
-# from django.conf import settings
-# settings.DEBUG=True
-
 
 class CustomClient(Client):
     """Wrapper around the default Django ``Client`` adds the extra headers"""
@@ -14,18 +11,31 @@ class CustomClient(Client):
     def get(self, path, data={}, user=None, **extra):
         if user:
             extra.update({'HTTP_AUTHORIZATION': self.get_auth(user)})
-        return super(CustomClient, self).get(self, path, data=data, **extra)
+        return super(CustomClient, self).get(path, data=data, **extra)
 
     def patch(self, path, data={}, user=None, content_type='application/json',
               **extra):
-        default = {'REQUEST_METHOD': 'PATCH'}
+        defaults = {'REQUEST_METHOD': 'PATCH'}
         if user:
-            default.update({'HTTP_AUTHORIZATION': self.get_auth(user)})
+            defaults.update({'HTTP_AUTHORIZATION': self.get_auth(user)})
         if extra:
-            default.update(extra)
+            defaults.update(extra)
         data = json.dumps(data)
         return super(CustomClient, self).post(path, data=data,
-                                              content_type=content_type, **extra)
+                                              content_type=content_type,
+                                              **defaults)
+
+    def put(self, path, data={}, user=None, content_type='application/json',
+              **extra):
+        defaults = {'REQUEST_METHOD': 'PUT'}
+        if user:
+            defaults.update({'HTTP_AUTHORIZATION': self.get_auth(user)})
+        if extra:
+            defaults.update(extra)
+        data = json.dumps(data)
+        return super(CustomClient, self).post(path, data=data,
+                                              content_type=content_type,
+                                              **defaults)
 
     def post(self, path, data={}, user=None, content_type='application/json',
              **extra):

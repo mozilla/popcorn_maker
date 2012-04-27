@@ -8,4 +8,5 @@ def test(*args):
     """Run the tests locally takes a list of apps to test as arguments"""
     os.environ['FORCE_DB'] =  '1'
     print yellow('Testing')
-    local('python manage.py test --noinput')
+    local('python manage.py test --noinput '
+          '--settings=popcorn_gallery.settings.test')

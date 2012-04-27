@@ -1,6 +1,3 @@
-import httplib
-import urllib
-
 from django.contrib.auth.models import User
 from django.utils import simplejson as json
 from django.utils.unittest import TestCase
