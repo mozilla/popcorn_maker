@@ -14,14 +14,14 @@ end
 
 CONF = _config
 MOUNT_POINT = '/home/vagrant/popcorn_gallery'
-CORNFIELD_MOUNT_POINT = '/home/vagrant/butter'
+PROJECT_NAME = 'popcorn_gallery'
 
 Vagrant::Config.run do |config|
     config.vm.box = "lucid32"
     config.vm.box_url = "http://files.vagrantup.com/lucid32.box"
 
-    config.vm.forward_port 8000, 8000
-    config.vm.forward_port 8888, 8888
+    config.vm.forward_port 80, 8000
+
     # config.vm.boot_mode = :gui
     # Increase vagrant's patience during hang-y CentOS bootup
     # see: https://github.com/jedi4ever/veewee/issues/14
@@ -31,21 +31,22 @@ Vagrant::Config.run do |config|
     # nfs needs to be explicitly enabled to run.
     if CONF['nfs'] == false or RUBY_PLATFORM =~ /mswin(32|64)/
         config.vm.share_folder("v-root", MOUNT_POINT, ".")
-        if CONF['with_butter'] == true
-            config.vm.share_folder("butter", CORNFIELD_MOUNT_POINT, "../butter")
-        end
     else
         config.vm.share_folder("v-root", MOUNT_POINT, ".", :nfs => true)
-        if CONF['with_butter'] == true
-            config.vm.share_folder("butter", CORNFIELD_MOUNT_POINT, "../butter", :nfs => true)
-        end
     end
 
-    # Add to /etc/hosts: 33.33.33.24 dev.playdoh.org
+    # Add to /etc/hosts: 33.33.33.11 local.mozillapopcorn.org
     config.vm.network :hostonly, "33.33.33.11"
 
-    # config.vm.provision :puppet do |puppet|
-    #     puppet.manifests_path = "puppet/manifests"
-    #     puppet.manifest_file  = "vagrant.pp"
-    # end
+    config.vm.provision :puppet do |puppet|
+        puppet.manifests_path = "puppet/manifests"
+        puppet.manifest_file  = "vagrant.pp"
+        puppet.options = "--verbose --debug"
+        puppet.facter = [
+            ['username', CONF['username']],
+            ['password', CONF['password']],
+            ['project_path', MOUNT_POINT],
+            ['project_name', PROJECT_NAME],
+        ]
+    end
 end

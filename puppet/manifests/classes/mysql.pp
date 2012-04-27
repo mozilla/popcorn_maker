@@ -12,7 +12,7 @@ class mysql {
         }
 
         ubuntu: {
-            package { "libmysqld-dev":
+            package { ["libmysqld-dev", "libmysqlclient-dev"]:
                 ensure => installed;
             }
         }

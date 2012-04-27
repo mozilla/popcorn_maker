@@ -3,12 +3,13 @@
 #
 import "classes/*.pp"
 
-$PROJ_DIR = "/home/vagrant/project"
+$PROJ_DIR = $project_path
 
 # You can make these less generic if you like, but these are box-specific
 # so it's not required.
-$DB_NAME = "playdoh_app"
-$DB_USER = "root"
+$DB_NAME = $project_name
+$DB_USER = $username
+$DB_PASS = $password
 
 Exec {
     path => "/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin",

@@ -20,6 +20,9 @@ class init {
                     Exec['update_apt'],
                 ];
             }
+            package { ["build-essential"]:
+              ensure => installed;
+            }
         }
     }
 }
