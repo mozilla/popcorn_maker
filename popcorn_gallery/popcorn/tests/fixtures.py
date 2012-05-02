@@ -17,7 +17,10 @@ def create_template(**kwargs):
 
 def create_project(**kwargs):
     defaults = {
-        'name': 'Popcorn Project',
+        "name": 'Popcorn Project',
+        "metadata": "{\"data\": \"foo\"}",
+        "template": "base-template",
+        "html": "<!DOCTYPE html5>",
         }
     if kwargs:
         defaults.update(kwargs)

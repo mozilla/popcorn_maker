@@ -19,6 +19,13 @@ class JSONClient(Client):
 
 class ButterIntegrationTestCase(TestCase):
 
+    valid_data = {
+        "name": "Rad Project!",
+        "data": {"data": "foo"},
+        "template": "base-template",
+        "html": "<!DOCTYPE html5>",
+        }
+
     def setUp(self):
         self.user = create_user('bob')
         self.client = JSONClient()
@@ -31,23 +38,37 @@ class ButterIntegrationTestCase(TestCase):
 
     def test_add_project(self):
         url = reverse('project_add')
-        data = {
-            "name": "Rad Project!",
-            "data": {"data": "foo"},
-            "template": "base-template",
-            "html": "<!DOCTYPE html5>",
-            }
-        response = self.client.post(url, data)
+        response = self.client.post(url, self.valid_data)
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.content)
         self.assertEqual(response_data['error'], 'okay')
-        self.assertTrue('project' in response_data)
         self.assertTrue('_id' in response_data['project'])
         project = Project.objects.get()
-        assert False, project.metadata
+        json.loads(project.metadata)
 
-    def test_detail_project(self):
+    def test_get_detail_project(self):
         project = create_project(author=self.user)
         url = reverse('project_detail', args=[project.uuid])
         response = self.client.get(url)
-        assert False, response
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data['error'], 'okay')
+        self.assertTrue(isinstance(response_data['project'], basestring))
+        json.loads(response_data['project'])
+
+    def test_post_detail_project(self):
+        project = create_project(author=self.user)
+        url = reverse('project_detail', args=[project.uuid])
+        response = self.client.post(url, self.valid_data)
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data['error'], 'okay')
+        self.assertTrue('_id', response_data['project'])
+        self.assertTrue('data', response_data['project'])
+
+    def test_list_projects(self):
+        alex = create_user('alex')
+        project_a = create_project(author=alex)
+        project_b = create_project(author=self.user)
+        response = self.client.get(reverse('project_list'))
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data['error'], 'okay')
+        self.assertEqual(len(response_data['projects']), 1)

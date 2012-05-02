@@ -16,7 +16,7 @@ class PopcornTest(TestCase):
 
     def test_project_creation(self):
         data = {
-            'user': create_user('bob'),
+            'author': create_user('bob'),
             'name': 'Hello World!',
             'template': create_template(),
             'metadata': '{}',
