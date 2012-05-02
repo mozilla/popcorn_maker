@@ -22,10 +22,10 @@ class playdoh {
         require => Exec["create_mysql_database"];
     }
 
-    exec { "syncdb":
-        cwd => "$PROJ_DIR",
-        command => "python manage.py syncdb --noinput",
-        require => Exec["grant_mysql_database"];
-    }
+    # exec { "syncdb":
+    #     cwd => "$PROJ_DIR",
+    #     command => "python manage.py syncdb --noinput",
+    #     require => Exec["grant_mysql_database"];
+    # }
 
 }

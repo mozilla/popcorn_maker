@@ -21,6 +21,7 @@ Vagrant::Config.run do |config|
     config.vm.box_url = "http://files.vagrantup.com/lucid32.box"
 
     config.vm.forward_port 80, 8000
+    config.vm.forward_port 8888, 8888
 
     # config.vm.boot_mode = :gui
     # Increase vagrant's patience during hang-y CentOS bootup

@@ -21,8 +21,8 @@ def create_project(**kwargs):
         }
     if kwargs:
         defaults.update(kwargs)
-    if not 'user' in kwargs:
-        defaults['user'] = create_user('bob')
+    if not 'author' in kwargs:
+        defaults['author'] = create_user('bob')
     if not 'template' in kwargs:
         defaults['template'] = create_template()
     return Project.objects.create(**defaults)

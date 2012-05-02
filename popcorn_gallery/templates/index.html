@@ -1,20 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title></title>
-  </head>
-  <body>
-
-    <div class="login">
-      {% if not request.user.is_authenticated() %}
-      <a id="browserid" href="">Sign In</a>
-      <form method="POST" action="{{ url('browserid_verify') }}">
-        {{ csrf() }}
-        {{ browserid_form.as_p() }}
-      </form>
-      {% endif %}
-    </div>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    {{ browserid_form.media }}
-  </body>
-</html>
+{% extends "base.html" %}
+{% block content %}
+Hello!
+{% endblock content %}

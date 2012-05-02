@@ -70,7 +70,9 @@ AUTHENTICATION_BACKENDS = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS += (
+    'django.core.context_processors.static',
     'django_browserid.context_processors.browserid_form',
+    'popcorn_gallery.base.context_processors.common',
     )
 
 TEMPLATE_DIRS = (
@@ -79,7 +81,8 @@ TEMPLATE_DIRS = (
 )
 
 # funfactory locale middleware shouldn't change these urls.
-SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid']
+SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid',
+                        'project', 'projects']
 
 STATIC_URL = '/static/'
 
@@ -88,12 +91,14 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATIC_ROOT = path('static')
 
-STATICFILES_DIRS = (path('..', 'butter'),)
+STATICFILES_DIRS = (path('butter'),)
 
 
 # Browser ID
 BROWSERID_CREATE_USER = True
 LOGIN_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL_FAILURE = '/'
+
+ANON_ALWAYS = True
 
 # AUTH_PROFILE_MODULE = 'accounts.UserProfile'

@@ -14,4 +14,4 @@ def test(*args):
 
 def collectstatic():
     print yellow('Collecting static files')
-    local('python manage.py collectstatic -i Makefile')
+    local('python manage.py collectstatic --noinput')

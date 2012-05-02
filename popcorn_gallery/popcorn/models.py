@@ -22,7 +22,7 @@ class Project(models.Model):
         )
     uuid = UUIDField(unique=True)
     name = models.CharField(max_length=255)
-    user = models.ForeignKey('auth.User')
+    author = models.ForeignKey('auth.User')
     template = models.ForeignKey('popcorn.Template')
     metadata = models.TextField()
     html = models.TextField()
@@ -31,4 +31,16 @@ class Project(models.Model):
     modified = ModificationDateTimeField()
 
     def __unicode__(self):
-        return u'Project %s from %s' % (self.name, self.user)
+        return u'Project %s from %s' % (self.name, self.author)
+
+    @property
+    def butter_data(self):
+        """Returns the Project data for ``Butter``"""
+        return {
+            '_id': self.uuid,
+            'name': self.name,
+            'template': self.template.name,
+            'data': self.metadata,
+            'created': self.created,
+            'modified': self.modified,
+            }
