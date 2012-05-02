@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from .fixtures import create_user, create_template
+from .fixtures import create_user, create_template, create_project
 from ..models import Project, Template
 
 
@@ -26,3 +26,8 @@ class PopcornTest(TestCase):
         assert project.id, "Project couldn't be created"
         assert project.uuid, "Project UUID missing"
         self.assertEqual(project.status, Project.LIVE)
+
+    def test_butter_data(self):
+        project = create_project()
+        for attr in ['_id', 'name', 'template', 'data', 'created', 'modified']:
+            self.assertTrue(attr in project.butter_data)

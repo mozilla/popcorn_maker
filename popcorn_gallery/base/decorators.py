@@ -12,8 +12,9 @@ def json_handler(func):
     @functools.wraps(func)
     def wrapper(request, *args, **kwargs):
         request.JSON = {}
-        if (request.method == 'POST' and \
-            'application/json' in request.META.get('CONTENT_TYPE')):
+        content_type = request.META.get('CONTENT_TYPE')
+        request.is_json = True if 'application/json' in content_type else False
+        if (request.method == 'POST' and request.is_json):
             try:
                 data = json.loads(request.raw_post_data)
             except ValueError:
@@ -21,3 +22,4 @@ def json_handler(func):
             request.JSON = data
         return func(request, *args, **kwargs)
     return wrapper
+

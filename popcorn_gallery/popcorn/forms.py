@@ -7,8 +7,8 @@ class JSONField(forms.CharField):
 
     def clean(self, value):
         try:
-            value = json.dumps(value)
-        except ValueError:
+            value = json.dumps(value) if value else None
+        except TypeError:
             raise forms.ValidationError('Invalid JSON value')
         return super(JSONField, self).clean(value)
 
