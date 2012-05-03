@@ -1,6 +1,6 @@
 import functools
 
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.core.serializers.json import simplejson as json
 
 
@@ -23,3 +23,13 @@ def json_handler(func):
         return func(request, *args, **kwargs)
     return wrapper
 
+
+def login_required_ajax(func):
+    """Checks if the request is preformed via ajax by an authenticated user"""
+
+    @functools.wraps(func)
+    def wrapper(request, *args, **kwargs):
+        if request.is_ajax and not request.user.is_authenticated():
+            return HttpResponseForbidden()
+        return func(request, *args, **kwargs)
+    return wrapper

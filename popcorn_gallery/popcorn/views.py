@@ -11,7 +11,7 @@ from session_csrf import anonymous_csrf
 
 from .forms import ProjectForm
 from .models import Project, Template
-from ..base.decorators import json_handler
+from ..base.decorators import json_handler, login_required_ajax
 
 
 @anonymous_csrf
@@ -33,6 +33,7 @@ def template_config(request, slug='base'):
 
 
 @require_GET
+@login_required_ajax
 @login_required
 def project_list(request):
     """List of the projects that belong to a User"""
@@ -73,6 +74,7 @@ def save_project(json_data, user):
 
 @require_POST
 @json_handler
+@login_required_ajax
 @login_required
 def project_add(request):
     """End point for adding a ``Project``"""
@@ -82,6 +84,7 @@ def project_add(request):
 
 
 @json_handler
+@login_required_ajax
 @login_required
 def project_detail(request, uuid):
     """Handles the data for the Project"""

@@ -1,12 +1,18 @@
 import json
 
-from django.http import HttpResponseBadRequest
+from django.contrib.auth.models import AnonymousUser
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from ..decorators import json_handler
+from ..decorators import json_handler, login_required_ajax
 
+
+class AuthedUser(AnonymousUser):
+
+    def is_authenticated(self):
+        return True
 
 def view_mock(request):
     """Mock of a view"""
@@ -64,3 +70,25 @@ class PopcornDecoratorTests(TestCase):
                                     CONTENT_TYPE='application/json')
         response = mock(request)
         self.assertTrue(isinstance(response, HttpResponseBadRequest))
+
+
+class TestLoginRequredAjaxDecorator(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_get_anon(self):
+        mock = login_required_ajax(view_mock)
+        request = self.factory.get('/', {},
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.user = AnonymousUser()
+        response = mock(request)
+        self.assertRaises(isinstance(response, HttpResponseForbidden))
+
+    def test_get(self):
+        mock = login_required_ajax(view_mock)
+        request = self.factory.get('/', {},
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.user = AuthedUser()
+        response = mock(request)
+        self.assertEqual(response.method, 'GET')
