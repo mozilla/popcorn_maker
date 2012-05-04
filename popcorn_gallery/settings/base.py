@@ -34,7 +34,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     # Application base, containing global templates.
     'popcorn_gallery.base',
     'popcorn_gallery.popcorn',
-    'popcorn_gallery.accounts',
+    'popcorn_gallery.users',
 ]
 
 
@@ -101,4 +101,4 @@ LOGIN_REDIRECT_URL_FAILURE = '/'
 
 ANON_ALWAYS = True
 
-# AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+AUTH_PROFILE_MODULE = 'users.Profile'

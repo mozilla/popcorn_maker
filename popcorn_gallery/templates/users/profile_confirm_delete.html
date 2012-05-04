@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block page_title -%}: {{ object.display_name }}{% endblock -%}
+
+{% block content -%}
+<h1>{{ _('Delete Profile') }}</h1>
+
+{{ object }}
+
+<form action="{{ request.get_full_path() }}" method="POST">
+  {{ csrf() }}
+  <button type="submit">{{ _('Delete') }}</button>
+  <a href="{{ object.get_absolute_url() }}">{{ _('Cancel') }}</a>
+</form>
+
+{% trans persona_url="https://browserid.org/" -%}
+<p>Are you sure you want to delete your account?</p>
+<p>
+  Deleting your account with Mozilla Labs will not delete your Persona account.
+  <a href="{{ persona_url }}" target="_blank">Edit your Persona account</a>.
+</p>
+{%- endtrans %}
+{% endblock -%}

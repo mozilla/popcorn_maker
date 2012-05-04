@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content -%}
+
+{% if page_mode == 'edit' %}
+<img src="{{ profile.gravatar_url }}" />
+{% endif %}
+
+<form action="{{ url('users_edit') }}" method="post">
+  {{ form.as_p() }}
+  {{ csrf() }}
+  <p>
+    <button type="submit">Save</button>
+  </p>
+</form>
+{% endblock -%}

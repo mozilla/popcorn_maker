@@ -47,4 +47,3 @@ INTERNAL_IPS =(
     )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-TASTYPIE_FULL_DEBUG = True

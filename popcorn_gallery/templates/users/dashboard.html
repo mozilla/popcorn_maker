@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block page_title -%}: {{ _('Dashboard') }} : {{ object.display_name }}{% endblock -%}
+
+{% block content -%}
+<h1>{{ _('Dashboard') }}</h1>
+{{ object }}
+{% endblock -%}
