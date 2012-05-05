@@ -102,3 +102,6 @@ LOGIN_REDIRECT_URL_FAILURE = '/'
 ANON_ALWAYS = True
 
 AUTH_PROFILE_MODULE = 'users.Profile'
+
+
+MIDDLEWARE_CLASSES += ('popcorn_gallery.users.middleware.ProfileMiddleware', )

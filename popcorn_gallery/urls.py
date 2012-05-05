@@ -13,6 +13,7 @@ urlpatterns = patterns(
     '',
     (r'^admin/', include(admin.site.urls)),
     (r'^profile/', include('popcorn_gallery.users.urls')),
+    (r'^api/', include('popcorn_gallery.popcorn.urls')),
     url('^browserid/verify$', AjaxVerify.as_view(), name='browserid_verify'),
     url(r'^$', 'popcorn_gallery.popcorn.views.index', name='index'),
 )
@@ -24,16 +25,6 @@ urlpatterns += patterns(
     url(r'^logout/$', 'signout', name='logout'),
 )
 
-# For the initial popcorn_gallery integration
-urlpatterns += patterns(
-    'popcorn_gallery.popcorn.views',
-    url(r'^projects$', 'project_list', name='project_list'),
-    url(r'^project/null$', 'project_add', name='project_add'),
-    url(r'^project/(?P<uuid>[-\w]+)$', 'project_detail',
-        name='project_detail'),
-    url(r'^template/$', 'template_detail', name='template'),
-    url(r'^config/default.conf$', 'template_config', name='template_config'),
-    )
 
 ## In DEBUG mode, serve media files through Django.
 if settings.DEBUG:

@@ -5,8 +5,9 @@ from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.utils.unittest import TestCase
 
-from .fixtures import create_project, create_template, create_user
+from .fixtures import create_project, create_user
 from ..models import Project, Template
+
 
 class JSONClient(Client):
 
@@ -15,7 +16,6 @@ class JSONClient(Client):
         data = json.dumps(data)
         return super(JSONClient, self).post(path, data=data,
                                             content_type=content_type, **extra)
-
 
 class ButterIntegrationTestCase(TestCase):
 

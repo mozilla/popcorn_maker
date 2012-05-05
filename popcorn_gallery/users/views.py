@@ -59,8 +59,14 @@ def signout(request):
 
 def profile(request, username):
     """Display profile page for user specified by ``username``."""
-    user = get_object_or_404(auth.models.User, username=username)
-    profile = get_object_or_404(Profile, user=user)
+    try:
+        profile = Profile.objects.get(user__username=username)
+    except Profile.DoesNotExist:
+        raise Http404
+    # If the identifier hasn't been chosen that means the user hasn't
+    # accepted the Terms and Conditions
+    if not profile.has_chosen_identifier:
+        raise Http404
     return jingo.render(request, 'users/profile.html', {'object': profile})
 
 

@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test.client import Client
-#from django.utils.unittest import TestCase
 
 from funfactory.middleware import LocaleURLMiddleware
 from test_utils import TestCase
@@ -114,9 +113,7 @@ class ProfileDataTests(TestCase):
     def test_dashboard(self):
         url = reverse('users_dashboard')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        context = response.context
-        self.assertEqual(context['object'].user.username, self.user.username)
+        self.assertRedirects(response, reverse('users_edit'))
 
     @suppress_locale_middleware
     def test_signout(self):
@@ -128,22 +125,22 @@ class ProfileDataTests(TestCase):
     def test_delete_get(self):
         url = reverse('users_delete')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        context = response.context
-        self.assertEqual(context['object'].user.username, self.user.username)
+        self.assertRedirects(response, reverse('users_edit'))
 
     @suppress_locale_middleware
     def test_delete_post(self):
         url = reverse('users_delete')
         response = self.client.post(url, {})
-        self.assertRedirects(response, '/')
-        self.assertEquals(User.objects.all().count(), 0)
+        self.assertRedirects(response, reverse('users_edit'))
 
 
 class ProfileDataUpdatesTests(TestCase):
 
     def setUp(self):
         self.user = create_user('bob')
+        profile = self.user.get_profile()
+        profile.name = 'Bob'
+        profile.save()
         self.client.login(username='bob', password='bob')
 
     def tearDown(self):
