@@ -1,0 +1,13 @@
+README
+django_browserid/__init__.py
+django_browserid/auth.py
+django_browserid/base.py
+django_browserid/context_processors.py
+django_browserid/forms.py
+django_browserid/urls.py
+django_browserid/views.py
+django_browserid.egg-info/PKG-INFO
+django_browserid.egg-info/SOURCES.txt
+django_browserid.egg-info/dependency_links.txt
+django_browserid.egg-info/requires.txt
+django_browserid.egg-info/top_level.txt
