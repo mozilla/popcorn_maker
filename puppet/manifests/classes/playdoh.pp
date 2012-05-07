@@ -26,4 +26,10 @@ class playdoh ($project_path, $project_name, $username, $password){
     require => Exec["grant_mysql_database"];
   }
 
+  exec { "collectstatic":
+    cwd => "$project_path",
+    command => "fab collectstatic",
+    require => Exec["syncdb"];
+  }
+
 }
