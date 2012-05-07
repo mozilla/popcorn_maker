@@ -1,6 +1,6 @@
 # Project specific setup
 # TODO: Make this rely on things that are not straight-up exec.
-class playdoh ($project_path, $project_name, $username, $password){
+class playdoh ($project_path, $project_name, $password){
 
   file { "$project_path/popcorn_gallery/settings/local.py":
     ensure => file,
