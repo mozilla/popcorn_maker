@@ -8,9 +8,9 @@
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'playdoh_app',
-        'USER': 'root',
-        'PASSWORD': '',
+        'NAME': 'popcorn_gallery',
+        'USER': 'popcorn_gallery',
+        'PASSWORD': 'popcorn_gallery',
         'HOST': '',
         'PORT': '',
         'OPTIONS': {

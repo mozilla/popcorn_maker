@@ -18,12 +18,27 @@ Exec {
 class dev {
     class {
         init: before => Class[mysql];
-        mysql: before  => Class[python];
-        python: before => Class[apache];
-        apache: before => Class[playdoh];
         memcached: ;
-        playdoh: ;
         custom: ;
+    }
+    class { "python":
+      before => Class[apache],
+      project_path => $project_path;
+    }
+    class { "mysql":
+      before => Class[python],
+      password => $password;
+    }
+    class { "apache":
+      before => Class[playdoh],
+      server_name => $server_name,
+      project_path => $project_path;
+    }
+    class { "playdoh":
+      project_path => $project_path,
+      project_name => $project_name,
+      username => $username,
+      password => $password;
     }
 }
 

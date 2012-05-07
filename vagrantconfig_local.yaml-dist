@@ -3,5 +3,8 @@
 # Change to true if you can use nfs; using nfs significantly
 # improves performance.
 nfs: false
+gui: false
+server_name:
+# database access details, username can't be root
 username: 
 password: 

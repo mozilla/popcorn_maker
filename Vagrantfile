@@ -23,7 +23,9 @@ Vagrant::Config.run do |config|
     config.vm.forward_port 80, 8000
     config.vm.forward_port 8888, 8888
 
-    # config.vm.boot_mode = :gui
+    if CONF['gui'] == true
+      config.vm.boot_mode = :gui
+    end
     # Increase vagrant's patience during hang-y CentOS bootup
     # see: https://github.com/jedi4ever/veewee/issues/14
     config.ssh.max_tries = 50
@@ -41,6 +43,7 @@ Vagrant::Config.run do |config|
 
     config.vm.provision :puppet do |puppet|
         puppet.manifests_path = "puppet/manifests"
+        puppet.module_path = "puppet/modules"
         puppet.manifest_file  = "vagrant.pp"
         puppet.options = "--verbose --debug"
         puppet.facter = [
@@ -48,6 +51,7 @@ Vagrant::Config.run do |config|
             ['password', CONF['password']],
             ['project_path', MOUNT_POINT],
             ['project_name', PROJECT_NAME],
+            ['server_name', CONF['server_name']],
         ]
     end
 end
