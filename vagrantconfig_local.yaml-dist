@@ -5,5 +5,5 @@
 nfs: false
 gui: false
 server_name: local.mozillapopcorn.org
-# database access details, username can't be root
+# Used for the root mysql password
 password: root

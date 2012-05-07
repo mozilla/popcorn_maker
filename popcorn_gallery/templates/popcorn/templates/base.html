@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>{% import "includes/template-heading.html" as heading %}
 <html>
 <head>
     <title>Basic template</title>
@@ -36,6 +36,7 @@
     </style>
 </head>
 <body>
+  {{ heading.user_status(request.user) }}
     <video id="main" data-butter="media" controls src="{{ STATIC_URL }}external/popcorn-js/test/trailer.ogv">
     </video>
     <div class="container-div">
