@@ -11,33 +11,37 @@ $DB_NAME = $project_name
 $DB_PASS = $password
 
 Exec {
-    path => "/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin",
+  path => "/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin",
 }
 
 class dev {
-    class {
-        init: before => Class[mysql];
-        memcached: ;
-        custom: ;
-    }
-    class { "python":
-      before => Class[apache],
-      project_path => $project_path;
-    }
-    class { "mysql":
-      before => Class[python],
-      password => $password;
-    }
-    class { "apache":
-      before => Class[playdoh],
-      server_name => $server_name,
-      project_path => $project_path;
-    }
-    class { "playdoh":
-      project_path => $project_path,
-      project_name => $project_name,
-      password => $password;
-    }
+  class {
+    init: before => Class[mysql];
+    memcached: ;
+    versioning: ;
+  }
+  class { "python":
+    before => Class[apache],
+    project_path => $project_path;
+  }
+  class { "mysql":
+    before => Class[python],
+    password => $password;
+  }
+  class { "apache":
+    before => Class[playdoh],
+    server_name => $server_name,
+    project_path => $project_path;
+  }
+  class { "playdoh":
+    project_path => $project_path,
+    project_name => $project_name,
+    password => $password;
+  }
+  class { "custom" :
+    project_path => $project_path,
+    project_name => $project_name;
+  }
 }
 
 include dev

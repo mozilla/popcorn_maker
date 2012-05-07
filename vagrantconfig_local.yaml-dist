@@ -4,7 +4,6 @@
 # improves performance.
 nfs: false
 gui: false
-server_name:
+server_name: local.mozillapopcorn.org
 # database access details, username can't be root
-username: 
-password: 
+password: root
