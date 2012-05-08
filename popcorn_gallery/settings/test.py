@@ -47,3 +47,7 @@ INTERNAL_IPS =(
     )
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+INVALID_USERNAMES = (
+    'admin',
+    )

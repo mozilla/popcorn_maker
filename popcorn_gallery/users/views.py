@@ -87,6 +87,9 @@ def edit(request, template='users/edit.html'):
         form = ProfileFormClass(request.POST, instance=profile)
         if form.is_valid():
             profile = form.save()
+            if mode == 'create':
+                profile.user.username = form.cleaned_data['username']
+                profile.user.save()
             return redirect(profile.get_absolute_url())
     else:
         form = ProfileFormClass(instance=profile)

@@ -27,7 +27,7 @@ class PopcornIntegrationTestCase(TestCase):
     def get_url(self, name, user, project):
         kwargs = {
             'username': user.username,
-            'uuid': project.uuid
+            'shortcode': project.shortcode
             }
         return reverse(name, kwargs=kwargs)
 

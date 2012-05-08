@@ -31,11 +31,11 @@ class TestValidProjectDecorator(TestCase):
         for model in [Project, Template, User]:
             model.objects.all().delete()
 
-    def assertMockResponse(self, uuid, response, project):
+    def assertMockResponse(self, shortcode, response, project):
         """Asserts the right response from the mock view"""
         self.assertTrue(isinstance(response, WSGIRequest))
         self.assertTrue(isinstance(project, Project))
-        self.assertEqual(project.uuid, uuid)
+        self.assertEqual(project.shortcode, shortcode)
 
     def test_published_project(self):
         project = create_project(author=self.user)
@@ -43,8 +43,8 @@ class TestValidProjectDecorator(TestCase):
         request = self.factory.get('/')
         request.user = anon_user
         result = mock(request, username=self.user.username,
-                      uuid=project.uuid)
-        self.assertMockResponse(project.uuid, *result)
+                      shortcode=project.shortcode)
+        self.assertMockResponse(project.shortcode, *result)
 
     @tools.raises(Http404)
     def test_unpublished_project(self):
@@ -52,7 +52,7 @@ class TestValidProjectDecorator(TestCase):
         mock = valid_user_project(view_mock)
         request = self.factory.get('/')
         request.user = anon_user
-        mock(request, username=self.user.username, uuid=project.uuid)
+        mock(request, username=self.user.username, shortcode=project.shortcode)
 
     @tools.raises(Http404)
     def test_removed_project(self):
@@ -61,14 +61,15 @@ class TestValidProjectDecorator(TestCase):
         mock = valid_user_project(view_mock)
         request = self.factory.get('/')
         request.user = anon_user
-        mock(request, username=self.user.username, uuid=project.uuid)
+        mock(request, username=self.user.username, shortcode=project.shortcode)
 
     def test_unpublished_owner(self):
         project = create_project(author=self.user, status=Project.HIDDEN)
         mock = valid_user_project(view_mock)
         request = self.factory.get('/')
         request.user = self.user
-        result = mock(request, username=self.user.username, uuid=project.uuid)
+        result = mock(request, username=self.user.username,
+                      shortcode=project.shortcode)
 
     @tools.raises(Http404)
     def test_unpublished_other_user(self):
@@ -77,5 +78,6 @@ class TestValidProjectDecorator(TestCase):
         mock = valid_user_project(view_mock)
         request = self.factory.get('/')
         request.user = alex
-        result = mock(request, username=self.user.username, uuid=project.uuid)
+        result = mock(request, username=self.user.username,
+                      shortcode=project.shortcode)
 

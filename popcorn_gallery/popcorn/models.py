@@ -8,6 +8,7 @@ from django_extensions.db.fields import (CreationDateTimeField,
 from tower import ugettext_lazy as _
 
 from .managers import ProjectManager
+from .baseconv import base62
 
 
 def get_templates(prefix='popcorn/templates', extension=None):
@@ -68,7 +69,7 @@ class Project(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('user_project', [self.author.username, self.uuid])
+        return ('user_project', [self.author.username, self.shortcode])
 
     @property
     def butter_data(self):
@@ -85,6 +86,10 @@ class Project(models.Model):
     @property
     def is_published(self):
         return self.status == self.LIVE
+
+    @property
+    def shortcode(self):
+        return base62.from_decimal(self.pk)
 
 
 class Category(models.Model):

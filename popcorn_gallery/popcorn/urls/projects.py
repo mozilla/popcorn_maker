@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 
 
-project_pattern = '(?P<username>[-\w]+)/(?P<uuid>[-\w]+)'
+project_pattern = '(?P<username>[\w]+)/(?P<shortcode>[-\w]+)'
 
 urlpatterns = patterns(
     'popcorn_gallery.popcorn.views.projects',

@@ -29,11 +29,29 @@ class TestProfileForms(TestCase):
     def test_valid_data_create(self):
         user = create_user('bob')
         data = {'name': 'BOB',
-                'agreement': True}
+                'agreement': True,
+                'username': 'bob'}
         form = ProfileCreateForm(data, instance=user.get_profile())
         self.assertTrue(form.is_valid())
         instance = form.save()
         self.assertEqual(instance.name, 'BOB')
+
+    def test_duplicated_username(self):
+        alex = create_user('alex')
+        user = create_user('bob')
+        data = {'name': 'BOB',
+                'agreement': True,
+                'username': 'alex'}
+        form = ProfileCreateForm(data, instance=user.get_profile())
+        self.assertFalse(form.is_valid())
+
+    def test_blacklisted_username(self):
+        user = create_user('bob')
+        data = {'name': 'BOB',
+                'agreement': True,
+                'username': 'admin'}
+        form = ProfileCreateForm(data, instance=user.get_profile())
+        self.assertFalse(form.is_valid())
 
     def test_invalid_data_create(self):
         user = create_user('bob')

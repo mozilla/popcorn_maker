@@ -94,9 +94,36 @@ class ProfileDataTests(TestCase):
     @suppress_locale_middleware
     def test_profile_creation_post(self):
         url = reverse('users_edit')
-        response = self.client.post(url, {'name': 'BOB', 'agreement': True})
+        response = self.client.post(url, {'name': 'BOB',
+                                          'agreement': True,
+                                          'username': 'bob'})
         self.assertRedirects(response, reverse('users_profile',
-                                               args=[self.user.username]))
+                                               args=['bob']))
+
+    @suppress_locale_middleware
+    def test_profile_creation_existing_username(self):
+        alex = create_user('alex')
+        url = reverse('users_edit')
+        response = self.client.post(url, {'name': 'BOB',
+                                          'agreement': True,
+                                          'username': 'alex'})
+        self.assertEquals(response.status_code, 200)
+        context = response.context
+        self.assertTrue('form' in context)
+        self.assertTrue(isinstance(context['form'], ProfileCreateForm))
+        self.assertEqual(context['page_mode'], 'create')
+
+    @suppress_locale_middleware
+    def test_profile_creation_invalid_username(self):
+        url = reverse('users_edit')
+        response = self.client.post(url, {'name': 'BOB',
+                                          'agreement': True,
+                                          'username': 'admin'})
+        self.assertEquals(response.status_code, 200)
+        context = response.context
+        self.assertTrue('form' in context)
+        self.assertTrue(isinstance(context['form'], ProfileCreateForm))
+        self.assertEqual(context['page_mode'], 'create')
 
     @suppress_locale_middleware
     def test_profile_creation_post_invalid(self):

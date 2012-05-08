@@ -6,6 +6,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
+from ..baseconv import base62
 from ..forms import ProjectEditForm
 from ..models import Project
 
@@ -15,9 +16,14 @@ def valid_user_project(func):
     @functools.wraps(func)
     def wrapper(request, *args, **kwargs):
         username = kwargs.pop('username')
+        shortcode = kwargs.pop('shortcode')
+        try:
+            pk = base62.to_decimal(shortcode)
+        except Exception:
+            raise Http404
         params = {
             'author__username': username,
-            'uuid': kwargs.pop('uuid'),
+            'pk': pk,
             'is_removed': False,
             }
         if not request.user.is_authenticated() or \
