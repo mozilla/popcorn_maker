@@ -9,9 +9,9 @@ from django.shortcuts import render
 
 from session_csrf import anonymous_csrf
 
-from .forms import ProjectForm
-from .models import Project, Template
-from ..base.decorators import json_handler, login_required_ajax
+from ..forms import ProjectForm
+from ..models import Project, Template
+from ...base.decorators import json_handler, login_required_ajax
 
 
 @anonymous_csrf

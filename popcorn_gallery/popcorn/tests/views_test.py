@@ -2,10 +2,10 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from .fixtures import create_user, create_template, create_project
 from ..models import Project, Template
-from ..views import save_project
+from ..views.api import save_project
+from ..views.projects import user_project
 
-
-class PopcornViewsTest(TestCase):
+class PopcornViewsAPITest(TestCase):
 
     def tearDown(self):
         for model in [Project, User, Template]:

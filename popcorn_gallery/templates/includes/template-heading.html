@@ -1,4 +1,4 @@
-{% macro user_status(user) -%}
+{% macro user_status(user, project=None) -%}
 <div data-butter-exclude="true" id="butter-header">
   <div class="logo-drop"></div>
   <h1>Butter <sup style="text-decoration: underline;">0.3</sup></h1>
@@ -12,6 +12,9 @@
     <button id="butter-header-auth-out" title="Logout">Logout</button>
     {% else %}
     <button id="butter-header-auth" title="Login using BrowserID authentication">Login / Sign Up</button>
+    {% endif %}
+    {% if project and user == project.author %}
+    <a href="{{ url('user_project_edit', username=user.username, uuid=project.uuid) }}">Edit</a>
     {% endif %}
   </div>
 </div>

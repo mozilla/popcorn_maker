@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.utils.unittest import TestCase
 
-from .fixtures import create_project, create_user
+from .fixtures import create_project, create_user, create_template
 from ..models import Project, Template
 
 
@@ -66,8 +66,9 @@ class ButterIntegrationTestCase(TestCase):
 
     def test_list_projects(self):
         alex = create_user('alex')
-        project_a = create_project(author=alex)
-        project_b = create_project(author=self.user)
+        template = create_template()
+        project_a = create_project(author=alex, template=template)
+        project_b = create_project(author=self.user, template=template)
         response = self.client.get(reverse('project_list'))
         response_data = json.loads(response.content)
         self.assertEqual(response_data['error'], 'okay')

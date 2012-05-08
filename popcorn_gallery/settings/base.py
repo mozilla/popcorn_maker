@@ -19,7 +19,7 @@ MINIFY_BUNDLES = {
             'js/examples/libs/jquery-1.4.4.min.js',
             'js/examples/libs/jquery.cookie.js',
             'js/examples/init.js',
-        ),
+            ),
     }
 }
 
@@ -105,3 +105,5 @@ AUTH_PROFILE_MODULE = 'users.Profile'
 
 
 MIDDLEWARE_CLASSES += ('popcorn_gallery.users.middleware.ProfileMiddleware', )
+
+TEMPLATES_ROOT = path('popcorn_gallery', 'templates')

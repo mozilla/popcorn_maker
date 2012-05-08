@@ -1,10 +1,9 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test.client import Client
 
 from funfactory.middleware import LocaleURLMiddleware
 from test_utils import TestCase
-from mock import Mock, patch
+from mock import patch
 
 from .fixtures import create_user
 from ..forms import ProfileCreateForm, ProfileForm

@@ -2,6 +2,9 @@ import json
 
 from django import forms
 
+from .models import Project
+
+
 class JSONField(forms.CharField):
     """JSON field makes sure the value is dumped by JSON."""
 
@@ -18,3 +21,11 @@ class ProjectForm(forms.Form):
     name = forms.CharField()
     data = JSONField()
     template = forms.CharField()
+
+
+class ProjectEditForm(forms.ModelForm):
+
+    class Meta:
+        fields = ('name', 'is_shared', 'is_forkable', 'status')
+        model = Project
+

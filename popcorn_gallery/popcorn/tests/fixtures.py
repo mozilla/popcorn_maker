@@ -2,14 +2,24 @@ from django.contrib.auth.models import User
 from ..models import Template, Project
 
 
-def create_user(handle):
+def create_user(handle, with_profile=False):
     """Helper to create Users"""
     email = '%s@%s.com' % (handle, handle)
-    return User.objects.create_user(handle, email, handle)
+    user = User.objects.create_user(handle, email, handle)
+    if with_profile:
+        profile = user.get_profile()
+        profile.name = handle.title()
+        profile.save()
+    return user
 
 
 def create_template(**kwargs):
-    defaults = {'name': 'basic'}
+    defaults = {
+        'name': 'basic',
+        'slug': 'basic',
+        'template': 'popcorn/templates/test/base.html',
+        'config': 'popcorn/templates/test/config.cfg',
+        }
     if kwargs:
         defaults.update(kwargs)
     return Template.objects.create(**defaults)

@@ -13,11 +13,11 @@ urlpatterns = patterns(
     '',
     (r'^admin/', include(admin.site.urls)),
     (r'^profile/', include('popcorn_gallery.users.urls')),
-    (r'^api/', include('popcorn_gallery.popcorn.urls')),
-    url('^browserid/verify$', AjaxVerify.as_view(), name='browserid_verify'),
-    url(r'^$', 'popcorn_gallery.popcorn.views.index', name='index'),
-)
-
+    (r'^api/', include('popcorn_gallery.popcorn.urls.api')),
+    (r'', include('popcorn_gallery.popcorn.urls.projects')),
+    url(r'^browserid/verify$', AjaxVerify.as_view(), name='browserid_verify'),
+    url(r'^$', 'popcorn_gallery.popcorn.views.api.index', name='index'),
+    )
 
 urlpatterns += patterns(
     'popcorn_gallery.users.views',

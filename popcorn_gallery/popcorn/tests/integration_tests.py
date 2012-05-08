@@ -1,0 +1,242 @@
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.utils import simplejson as json
+
+from funfactory.middleware import LocaleURLMiddleware
+from test_utils import TestCase
+from mock import patch
+
+from .fixtures import create_user, create_project
+from ..models import Project, Template
+
+
+suppress_locale_middleware = patch.object(LocaleURLMiddleware,
+                                          'process_request',
+                                          lambda *args: None)
+
+
+class PopcornIntegrationTestCase(TestCase):
+    def setUp(self):
+        self.user = create_user('bob', with_profile=True)
+
+    def tearDown(self):
+        for model in [Project, User, Template]:
+            model.objects.all().delete()
+
+    def get_url(self, name, user, project):
+        kwargs = {
+            'username': user.username,
+            'uuid': project.uuid
+            }
+        return reverse(name, kwargs=kwargs)
+
+
+class DetailIntegrationTest(PopcornIntegrationTestCase):
+
+    @suppress_locale_middleware
+    def test_project_detail(self):
+        project = create_project(author=self.user, status=Project.LIVE)
+        url = self.get_url('user_project', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        context = response.context
+        self.assertEqual(context['object'], project)
+
+    @suppress_locale_middleware
+    def test_unpublished_project_anon(self):
+        project = create_project(author=self.user, status=Project.HIDDEN)
+        url = self.get_url('user_project', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_unpublished_project_user(self):
+        alex = create_user('alex', with_profile=True)
+        project = create_project(author=self.user, status=Project.HIDDEN)
+        url = self.get_url('user_project', self.user, project)
+        self.client.login(username=alex.username, password='alex')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_unpublished_project_owner(self):
+        project = create_project(author=self.user, status=Project.HIDDEN)
+        url = self.get_url('user_project', self.user, project)
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        context = response.context
+        self.assertEqual(context['object'], project)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_removed_project(self):
+        project = create_project(author=self.user, status=Project.LIVE,
+                                 is_removed=True)
+        url = self.get_url('user_project', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+
+class EditIntegrationTest(PopcornIntegrationTestCase):
+
+    valid_data = {
+        'is_shared': False,
+        'is_forkable': False,
+        'name': 'Changed!',
+        'status': Project.HIDDEN,
+        }
+
+    @suppress_locale_middleware
+    def test_edited_project_anon(self):
+        project = create_project(author=self.user)
+        url = self.get_url('user_project_edit', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_edited_project_anon_post(self):
+        project = create_project(author=self.user)
+        url = self.get_url('user_project_edit', self.user, project)
+        response = self.client.post(url, self.valid_data)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_edited_project_user(self):
+        project = create_project(author=self.user)
+        alex = create_user('alex', with_profile=True)
+        url = self.get_url('user_project_edit', self.user, project)
+        self.client.login(username=alex.username, password='alex')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_edited_project_user_post(self):
+        project = create_project(author=self.user)
+        alex = create_user('alex', with_profile=True)
+        url = self.get_url('user_project_edit', self.user, project)
+        self.client.login(username=alex.username, password='alex')
+        response = self.client.post(url, self.valid_data)
+        self.assertEqual(response.status_code, 404)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_edited_project_owner(self):
+        project = create_project(author=self.user)
+        url = self.get_url('user_project_edit', self.user, project)
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        context = response.context
+        self.assertEqual(context['object'], project)
+        self.assertEqual(context['form'].instance, project)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_edited_project_owner_post(self):
+        project = create_project(author=self.user)
+        url = self.get_url('user_project_edit', self.user, project)
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.post(url, self.valid_data)
+        self.assertRedirects(response, project.get_absolute_url())
+        project = Project.objects.get()
+        self.assertEqual(project.name, 'Changed!')
+
+
+class MetadataIntegrationTest(PopcornIntegrationTestCase):
+
+    @suppress_locale_middleware
+    def test_project_detail(self):
+        project = create_project(author=self.user, status=Project.LIVE)
+        url = self.get_url('user_project_meta', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(data['project'], project.name)
+
+    @suppress_locale_middleware
+    def test_unpublished_project_anon(self):
+        project = create_project(author=self.user, status=Project.HIDDEN)
+        url = self.get_url('user_project_meta', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_unpublished_project_user(self):
+        alex = create_user('alex', with_profile=True)
+        project = create_project(author=self.user, status=Project.HIDDEN)
+        url = self.get_url('user_project_meta', self.user, project)
+        self.client.login(username=alex.username, password='alex')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_unpublished_project_owner(self):
+        project = create_project(author=self.user, status=Project.HIDDEN)
+        url = self.get_url('user_project_meta', self.user, project)
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(data['project'], project.name)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_removed_project(self):
+        project = create_project(author=self.user, status=Project.LIVE,
+                                 is_removed=True)
+        url = self.get_url('user_project_meta', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+
+class DataIntegrationTest(PopcornIntegrationTestCase):
+
+    @suppress_locale_middleware
+    def test_project_detail(self):
+        project = create_project(author=self.user, status=Project.LIVE)
+        url = self.get_url('user_project_data', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(data['project'], '{"data": "foo"}')
+
+    @suppress_locale_middleware
+    def test_unpublished_project_anon(self):
+        project = create_project(author=self.user, status=Project.HIDDEN)
+        url = self.get_url('user_project_data', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_unpublished_project_user(self):
+        alex = create_user('alex', with_profile=True)
+        project = create_project(author=self.user, status=Project.HIDDEN)
+        url = self.get_url('user_project_data', self.user, project)
+        self.client.login(username=alex.username, password='alex')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_unpublished_project_owner(self):
+        project = create_project(author=self.user, status=Project.HIDDEN)
+        url = self.get_url('user_project_data', self.user, project)
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        self.assertEqual(data['project'], '{"data": "foo"}')
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_removed_project(self):
+        project = create_project(author=self.user, status=Project.LIVE,
+                                 is_removed=True)
+        url = self.get_url('user_project_data', self.user, project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)

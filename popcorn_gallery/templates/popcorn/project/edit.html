@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form method="post" id="form-edit-project-id" action=".">
+  {{ form.as_p() }}
+  {{ csrf() }}
+  <button type="submit">Update</button>
+</form>
+
+{% endblock content %}

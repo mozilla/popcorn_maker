@@ -1,7 +1,7 @@
 <!DOCTYPE html>{% import "includes/template-heading.html" as heading %}
 <html>
 <head>
-    <title>Basic template</title>
+    <title>{{ object.name }} - Basic template</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <script type="text/javascript">
       window.STATIC_URL = '{{ STATIC_URL }}';
@@ -36,7 +36,7 @@
     </style>
 </head>
 <body>
-  {{ heading.user_status(request.user) }}
+  {{ heading.user_status(request.user, object) }}
     <video id="main" data-butter="media" controls src="{{ STATIC_URL }}external/popcorn-js/test/trailer.ogv">
     </video>
     <div class="container-div">
