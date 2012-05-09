@@ -46,10 +46,10 @@ DEV = True
 # # Playdoh ships with sha512 password hashing by default. Bcrypt+HMAC is safer,
 # # so it is recommended. Please read <https://github.com/fwenzel/django-sha2#readme>,
 # # then switch this to bcrypt and pick a secret HMAC key for your application.
-# PWD_ALGORITHM = 'bcrypt'
-# HMAC_KEYS = {  # for bcrypt only
-#     '2011-01-01': 'cheesecake',
-# }
+PWD_ALGORITHM = 'bcrypt'
+HMAC_KEYS = {  # for bcrypt only
+    #'2011-01-01': 'cheesecake',
+}
 
 # Make this unique, and don't share it with anybody.  It cannot be blank.
 SECRET_KEY = ''
@@ -85,3 +85,10 @@ INTERNAL_IPS =  (
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 INVALID_USERNAMES = ()
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}

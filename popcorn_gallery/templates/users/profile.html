@@ -3,6 +3,15 @@
 
 
 {% block content -%}
-{{ object }}
-<img src="{{ object.gravatar_url }}" alt="" />
+<p>
+  <a href="{{ object.get_absolute_url() }}">{{ object.display_name }}</a>
+  <img src="{{ object.gravatar_url }}" alt="" />
+</p>
+<p>
+  {{ object.website }}
+</p>
+<p>
+  {{ object.bio }}
+</p>
+
 {% endblock -%}

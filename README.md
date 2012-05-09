@@ -9,11 +9,19 @@ The Project structure is based on Mozilla Playdoh http://playdoh.readthedocs.org
 Set up the development server
 =============================
 
+Clone the repository and the dependencies:
+
+    git clone --recursive git@github.com:alfredo/popcorn_gallery.git
+
 The setup is recomended to be done in a virtual machine, and this is where vagrant comes in handy.
 
 With vagrant you will have your code in your living in your local filesystem but the application running in a virtual linux machine. You can install the latest Vagrant package from http://vagrantup.com/
 
-Once you have installed vagrant grab a copy of this repository and copy the local vagrant settings from ``vagrantconfig_local.yaml-dist`` to ``vagrantconfig_local.yaml``  and edit as necessary
+From inside the repository
+
+Once you have installed vagrant grab a copy of this repository and copy the local vagrant settings, and edit as necessary:
+
+    cp vagrantconfig_local.yaml-dist vagrantconfig_local.yaml
 
 Please note that this file shouldn't be commited into the repository.
 
@@ -28,9 +36,13 @@ SSH into the virtual machine:
 Install the development dependencies:
 
     pip install -r requirements/dev.txt
-    git submodule update --init --recursive
 
-Edit ``settings/local.py`` with your details
+Edit ``popcorn_gallery/settings/local.py``  with your details:
+
+- ADMINS - add your own email address
+- SECRET_KEY
+- SITE_URL - 'http://local.mozillapopcorn.org'
+- HMAC_KEYS - Add your own key
 
 
 Add to /etc/hosts in your local machine:
@@ -44,5 +56,7 @@ The application should be available at:
 
 Run the test suite
 =================
+
+From inside the virtual box run:
 
     fab test
