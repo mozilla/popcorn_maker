@@ -10,6 +10,13 @@ urlpatterns = patterns(
         name='category_detail')
     )
 
+urlpatterns += patterns(
+    'popcorn_gallery.popcorn.views.projects',
+    url(r'^templates/$', 'template_list', name='template_list'),
+    url(r'^template/(?P<slug>[\w-]+)/$', 'template_detail',
+        name='template_detail')
+    )
+
 
 urlpatterns += patterns(
     'popcorn_gallery.popcorn.views.projects',

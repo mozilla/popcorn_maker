@@ -51,7 +51,6 @@ class PopcornTest(TestCase):
         self.assertEqual(Project.objects.all().count(), 1)
 
 
-
 class TemplateTest(TestCase):
 
     def tearDown(self):
@@ -63,6 +62,17 @@ class TemplateTest(TestCase):
         template = Template.objects.create(name='basic', slug='basic',
                                            template=template, config=config)
         assert template.id, "Template couldn't be created"
+        self.assertEqual(template.status, Template.LIVE)
+        self.assertEqual(template.is_featured, False)
+
+    def test_template_live_manager(self):
+        create_template(name='basic')
+        self.assertEqual(Template.live.all().count(), 1)
+
+    def test_template_live_manager_hidden(self):
+        create_template(status=Template.HIDDEN)
+        self.assertEqual(Template.live.all().count(), 0)
+        self.assertEqual(Template.objects.all().count(), 1)
 
 
 class CategoryTest(TestCase):

@@ -1,0 +1,11 @@
+[
+    {
+        "pk": 2, 
+        "model": "popcorn.category", 
+        "fields": {
+            "is_featured": false, 
+            "name": "Special", 
+            "slug": "special"
+        }
+    }
+]

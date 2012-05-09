@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404
 
 from ..baseconv import base62
 from ..forms import ProjectEditForm
-from ..models import Project, Category
+from ..models import Project, Category, Template
 
 
 def valid_user_project(func):
@@ -96,3 +96,15 @@ def category_detail(request, slug):
         'project_list': project_list
         }
     return render(request, 'category/object_detail.html', context)
+
+
+def template_list(request):
+    object_list = Template.live.all().order_by('-is_featured', 'name')
+    context = {
+        'object_list': object_list
+        }
+    return render(request, 'template/object_list.html', context)
+
+
+def template_detail(request, slug):
+    assert False, slug

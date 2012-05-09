@@ -1,0 +1,26 @@
+[
+    {
+        "pk": 2, 
+        "model": "popcorn.template", 
+        "fields": {
+            "status": 1, 
+            "is_featured": false, 
+            "name": "Advanced", 
+            "template": "popcorn/templates/test/base.html", 
+            "config": "popcorn/templates/test/config.cfg", 
+            "slug": "advanced"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "popcorn.template", 
+        "fields": {
+            "status": 1, 
+            "is_featured": true, 
+            "name": "Basic", 
+            "template": "popcorn/templates/test/base.html", 
+            "config": "popcorn/templates/test/config.cfg", 
+            "slug": "basic"
+        }
+    }
+]

@@ -7,7 +7,7 @@ from django_extensions.db.fields import (CreationDateTimeField,
                                          AutoSlugField)
 from tower import ugettext_lazy as _
 
-from .managers import ProjectManager
+from .managers import ProjectManager, TemplateManager
 from .baseconv import base62
 
 
@@ -28,15 +28,34 @@ def get_templates(prefix='popcorn/templates', extension=None):
 
 
 class Template(models.Model):
+    LIVE = 1
+    HIDDEN = 2
+    STATUS_CHOICES = (
+        (LIVE, _('Published')),
+        (HIDDEN, _('Hidden')),
+        )
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     template = models.CharField(max_length=255,
                                 choices=get_templates(extension='html'))
     config = models.CharField(max_length=255,
                               choices=get_templates(extension='cfg'))
+    is_featured = models.BooleanField(default=False)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=LIVE)
+
+    # managers
+    objects = models.Manager()
+    live = TemplateManager()
+
+    class Meta:
+        ordering = ('-is_featured', 'name')
 
     def __unicode__(self):
         return self.name
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('template_detail', [self.slug])
 
 
 class Project(models.Model):
@@ -57,6 +76,7 @@ class Project(models.Model):
     is_shared = models.BooleanField(default=True)
     is_forkable = models.BooleanField(default=True)
     is_removed = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
     created = CreationDateTimeField()
     modified = ModificationDateTimeField()
     categories = models.ManyToManyField('popcorn.Category', blank=True)
@@ -66,7 +86,7 @@ class Project(models.Model):
     live = ProjectManager()
 
     class Meta:
-        ordering = ('-modified', )
+        ordering = ('is_featured', '-modified', )
 
     def __unicode__(self):
         return u'Project %s from %s' % (self.name, self.author)

@@ -7,7 +7,8 @@ from funfactory.middleware import LocaleURLMiddleware
 from test_utils import TestCase
 from mock import patch
 
-from .fixtures import create_user, create_project, create_category
+from .fixtures import (create_user, create_project, create_category,
+                       create_template)
 from ..models import Project, Template, Category
 
 
@@ -278,3 +279,16 @@ class CategoryIntegrationTest(TestCase):
         context = response.context
         self.assertEqual(context['object'], self.category)
         self.assertEqual(len(context['project_list']), 0)
+
+
+class TemplateIntegrationTest(TestCase):
+
+    def tearDown(self):
+        Template.objects.all().delete()
+
+    @suppress_locale_middleware
+    def test_template_detail(self):
+        template = create_template()
+        response = self.client.get(reverse('template_list'))
+        context = response.context
+        self.assertEqual(len(context['object_list']), 1)

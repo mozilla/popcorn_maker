@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Templates</h1>
+{% for object in object_list %}
+<div>
+  {% if object.is_featured %}Featured:{% endif %} <a href="{{ object.get_absolute_url() }}">{{ object.name }}</a>
+</div>
+{% endfor %}
+{% endblock content %}
