@@ -3,7 +3,15 @@ from django.conf.urls.defaults import patterns, url
 
 project_pattern = '(?P<username>[\w]+)/(?P<shortcode>[-\w]+)'
 
+
 urlpatterns = patterns(
+    'popcorn_gallery.popcorn.views.projects',
+    url(r'^category/(?P<slug>[\w-]+)/$', 'category_detail',
+        name='category_detail')
+    )
+
+
+urlpatterns += patterns(
     'popcorn_gallery.popcorn.views.projects',
     url(r'^%s/$' % project_pattern, 'user_project', name='user_project'),
     url(r'^%s/edit/$' % project_pattern, 'user_project_edit',

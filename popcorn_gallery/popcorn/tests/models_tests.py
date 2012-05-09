@@ -32,13 +32,24 @@ class PopcornTest(TestCase):
             self.assertTrue(attr in project.butter_data)
 
     def test_project_live_manager(self):
-        project = create_project(status=Project.LIVE)
+        create_project(status=Project.LIVE)
         self.assertEqual(Project.live.all().count(), 1)
 
     def test_project_live_manager_hidden(self):
-        project = create_project(status=Project.HIDDEN)
+        create_project(status=Project.HIDDEN)
         self.assertEqual(Project.live.all().count(), 0)
         self.assertEqual(Project.objects.all().count(), 1)
+
+    def test_project_live_manager_removed(self):
+        create_project(status=Project.LIVE, is_removed=True)
+        self.assertEqual(Project.live.all().count(), 0)
+        self.assertEqual(Project.objects.all().count(), 1)
+
+    def test_project_live_manager_not_shared(self):
+        create_project(status=Project.LIVE, is_shared=False)
+        self.assertEqual(Project.live.all().count(), 0)
+        self.assertEqual(Project.objects.all().count(), 1)
+
 
 
 class TemplateTest(TestCase):

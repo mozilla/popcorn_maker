@@ -4,11 +4,11 @@ import json
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from ..baseconv import base62
 from ..forms import ProjectEditForm
-from ..models import Project
+from ..models import Project, Category
 
 
 def valid_user_project(func):
@@ -85,4 +85,14 @@ def user_project_edit(request, project):
         'form': form,
         'object': project,
         }
-    return render(request, 'popcorn/project/edit.html', context)
+    return render(request, 'project/edit.html', context)
+
+
+def category_detail(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    project_list = Project.live.filter(categories=category).order_by('-created')
+    context = {
+        'object': category,
+        'project_list': project_list
+        }
+    return render(request, 'category/object_detail.html', context)

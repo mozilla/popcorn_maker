@@ -65,6 +65,9 @@ class Project(models.Model):
     objects = models.Manager()
     live = ProjectManager()
 
+    class Meta:
+        ordering = ('-modified', )
+
     def __unicode__(self):
         return u'Project %s from %s' % (self.name, self.author)
 
@@ -103,3 +106,7 @@ class Category(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('category_detail', [self.slug])

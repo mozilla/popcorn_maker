@@ -5,4 +5,5 @@ class ProjectManager(models.Manager):
 
     def get_query_set(self):
         return (super(ProjectManager, self).get_query_set()
-                .filter(status=self.model.LIVE))
+                .filter(status=self.model.LIVE, is_shared=True,
+                        is_removed=False))

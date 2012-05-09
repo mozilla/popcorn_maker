@@ -7,8 +7,8 @@ from funfactory.middleware import LocaleURLMiddleware
 from test_utils import TestCase
 from mock import patch
 
-from .fixtures import create_user, create_project
-from ..models import Project, Template
+from .fixtures import create_user, create_project, create_category
+from ..models import Project, Template, Category
 
 
 suppress_locale_middleware = patch.object(LocaleURLMiddleware,
@@ -240,3 +240,41 @@ class DataIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_data', self.user, project)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+
+class CategoryIntegrationTest(TestCase):
+
+    def setUp(self):
+        self.category = create_category()
+        self.user = create_user('bob', with_profile=True)
+
+    def tearDown(self):
+        for model in [Project, User, Template, Category]:
+            model.objects.all().delete()
+
+    @suppress_locale_middleware
+    def test_category_detail(self):
+        project = create_project(author=self.user)
+        project.categories.add(self.category)
+        response = self.client.get(self.category.get_absolute_url())
+        context = response.context
+        self.assertEqual(context['object'], self.category)
+        self.assertEqual(len(context['project_list']), 1)
+
+    @suppress_locale_middleware
+    def test_category_detail_non_shared(self):
+        project = create_project(author=self.user, is_shared=False)
+        project.categories.add(self.category)
+        response = self.client.get(self.category.get_absolute_url())
+        context = response.context
+        self.assertEqual(context['object'], self.category)
+        self.assertEqual(len(context['project_list']), 0)
+
+    @suppress_locale_middleware
+    def test_category_detail_removed(self):
+        project = create_project(author=self.user, is_removed=True)
+        project.categories.add(self.category)
+        response = self.client.get(self.category.get_absolute_url())
+        context = response.context
+        self.assertEqual(context['object'], self.category)
+        self.assertEqual(len(context['project_list']), 0)
