@@ -28,6 +28,7 @@ class ButterIntegrationTestCase(TestCase):
 
     def setUp(self):
         self.user = create_user('bob')
+        self.template = create_template(slug='base-template')
         self.client = JSONClient()
         self.client.login(username='bob', password='bob')
 
@@ -73,3 +74,19 @@ class ButterIntegrationTestCase(TestCase):
         response_data = json.loads(response.content)
         self.assertEqual(response_data['error'], 'okay')
         self.assertEqual(len(response_data['projects']), 1)
+
+    def test_publish_project_get(self):
+        project = create_project(author=self.user)
+        url = reverse('project_publish', args=[project.uuid])
+        response = self.client.get(reverse('project_publish',
+                                           args=[project.uuid]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_publish_project(self):
+        project = create_project(author=self.user)
+        url = reverse('project_publish', args=[project.uuid])
+        response = self.client.post(reverse('project_publish',
+                                            args=[project.uuid]))
+        response_data = json.loads(response.content)
+        self.assertEqual(response_data['error'], 'okay')
+        self.assertTrue('url' in response_data)

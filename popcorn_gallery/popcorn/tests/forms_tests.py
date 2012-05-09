@@ -1,8 +1,17 @@
 from django.test import TestCase
+
+from .fixtures import create_template
+from ..models import Template
 from ..forms import ProjectForm
 
 
 class PopcornFormTests(TestCase):
+
+    def setUp(self):
+        create_template(slug='basic')
+
+    def tearDown(self):
+        Template.objects.all().delete()
 
     def test_project_form(self):
         data = {
