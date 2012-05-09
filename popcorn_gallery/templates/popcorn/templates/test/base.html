@@ -1,55 +1,55 @@
 <!DOCTYPE html>{% import "includes/template-heading.html" as heading %}
 <html>
-<head>
-    <title>{{ object.name }} - Basic template</title>
+  <head>
+    <title>{% if object %}{{ object.name }} - {% endif %}Basic template</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <script type="text/javascript">
       window.STATIC_URL = '{{ STATIC_URL }}';
     </script>
     <script src="https://browserid.org/include.js" type="text/javascript" data-butter-exclude></script>
-    <script src="{{ STATIC_URL }}src/butter.js" data-butter-exclude /></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}templates/test.js" data-butter-exclude /></script>
+    <script src="{{ STATIC_URL }}src/butter.js" data-butter-exclude></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}templates/test.js" data-butter-exclude></script>
     <style>
-        #main, .content-div {
-          float: left;
-        }
-        .content-div {
-          min-width: 200px;
-          min-height: 200px;
-          border: 3px solid #000;
-          margin: 5px;
-        }
-        .container-div {
-          float: left;
-          text-align: center;
-          font-family: helvetica;
-          font-style: bold;
-        }
-        #main {
-          min-width: 300px;
-          min-height: 200px;
-        }
-        video {
-          position: relative;
-          top: 30px;
-        }
+      #main, .content-div {
+      float: left;
+      }
+      .content-div {
+      width: 200px;
+      height: 200px;
+      border: 3px solid #000;
+      margin: 5px;
+      }
+      .container-div {
+      float: left;
+      text-align: center;
+      font-family: helvetica;
+      font-style: bold;
+      }
+      #main {
+      min-width: 300px;
+      min-height: 200px;
+      }
+      video {
+      position: relative;
+      top: 30px;
+      }
     </style>
-</head>
-<body>
-  {{ heading.user_status(request.user, object) }}
-    <video id="main" data-butter="media" controls src="{{ STATIC_URL }}external/popcorn-js/test/trailer.ogv">
+  </head>
+  <body>
+    {# heading.user_status(request.user, object) #}
+    <video id="main" data-butter="media" controls>
+      <source src="{{ STATIC_URL }}external/popcorn-js/test/trailer.ogv">
+        <source src="{{ STATIC_URL }}external/popcorn-js/test/trailer.mp4">
     </video>
     <div class="container-div">
-        <div class="content-div" data-butter="target" id="Area1"></div>
-        <p>Area 1</p>
+      <div class="content-div" data-butter="target" id="Area1"></div>
+      <p>Area 1</p>
     </div>
     <div class="container-div">
-        <div class="content-div" data-butter="target" id="Area2" data-butter-default ></div>
-        <p>Area 2</p>
+      <div class="content-div" data-butter="target" id="Area2" data-butter-default></div>
+      <p>Area 2</p>
     </div>
     <div id="target-div"></div>
-
     <input type="hidden" value="{{ csrf_token }}" name="csrfmiddlewaretoken" id="csrf_token_id">
-
-</body>
+  </body>
 </html>

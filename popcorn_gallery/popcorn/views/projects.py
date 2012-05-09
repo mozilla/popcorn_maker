@@ -107,4 +107,20 @@ def template_list(request):
 
 
 def template_detail(request, slug):
-    assert False, slug
+    try:
+        template = Template.live.get(slug=slug)
+    except Template.DoesNotExist:
+        raise Http404
+    context = {'template': template,
+               'object': None}
+    return render(request, template.template, context)
+
+
+def template_config(request, slug):
+    try:
+        template = Template.live.get(slug=slug)
+    except Template.DoesNotExist:
+        raise Http404
+    context = {'template': template,
+               'object': None}
+    return render(request, template.config, context)
