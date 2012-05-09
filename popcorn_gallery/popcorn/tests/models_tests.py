@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from .fixtures import create_user, create_template, create_project
-from ..models import Project, Template
+from ..models import Project, Template, Category
 
 
 class PopcornTest(TestCase):
@@ -53,3 +53,13 @@ class TemplateTest(TestCase):
                                            template=template, config=config)
         assert template.id, "Template couldn't be created"
 
+
+class CategoryTest(TestCase):
+
+    def tearDown(self):
+        Category.objects.all().delete()
+
+    def test_category_creation(self):
+        data = {'name': 'Special'}
+        category = Category.objects.create(**data)
+        assert category.id, 'Failed to create Category'

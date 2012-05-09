@@ -59,6 +59,7 @@ class Project(models.Model):
     is_removed = models.BooleanField(default=False)
     created = CreationDateTimeField()
     modified = ModificationDateTimeField()
+    categories = models.ManyToManyField('popcorn.Category', blank=True)
 
     # managers
     objects = models.Manager()
@@ -94,7 +95,11 @@ class Project(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
-    slug = AutoSlugField(populate_from=name)
+    slug = AutoSlugField(populate_from='name')
+    is_featured = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = u'Categories'
 
     def __unicode__(self):
         return self.name

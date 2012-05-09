@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from ..models import Template, Project
+from ..models import Template, Project, Category
 
 
 def create_user(handle, with_profile=False):
@@ -39,3 +39,10 @@ def create_project(**kwargs):
     if not 'template' in kwargs:
         defaults['template'] = create_template()
     return Project.objects.create(**defaults)
+
+
+def create_category(**kwargs):
+    defaults = {'name': 'Special'}
+    if kwargs:
+        defaults.update(kwargs)
+    return Category.objects.create(**defaults)
