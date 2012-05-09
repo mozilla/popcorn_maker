@@ -1,5 +1,17 @@
 [
     {
+        "pk": 1, 
+        "model": "popcorn.template", 
+        "fields": {
+            "status": 1, 
+            "is_featured": true, 
+            "name": "Basic", 
+            "template": "popcorn/templates/test/base.html", 
+            "config": "popcorn/templates/test/config.cfg", 
+            "slug": "basic"
+        }
+    }, 
+    {
         "pk": 2, 
         "model": "popcorn.template", 
         "fields": {
@@ -12,15 +24,15 @@
         }
     }, 
     {
-        "pk": 1, 
+        "pk": 3, 
         "model": "popcorn.template", 
         "fields": {
             "status": 1, 
-            "is_featured": true, 
-            "name": "Basic", 
+            "is_featured": false, 
+            "name": "default-butter-test", 
             "template": "popcorn/templates/test/base.html", 
             "config": "popcorn/templates/test/config.cfg", 
-            "slug": "basic"
+            "slug": "default-butter-test"
         }
     }
 ]
