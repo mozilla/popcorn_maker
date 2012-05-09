@@ -23,6 +23,8 @@ urlpatterns += patterns(
 urlpatterns += patterns(
     'popcorn_gallery.popcorn.views.projects',
     url(r'^%s/$' % project_pattern, 'user_project', name='user_project'),
+    url(r'^%s/config$' % project_pattern, 'user_project_config',
+        name='user_project_config'),
     url(r'^%s/edit/$' % project_pattern, 'user_project_edit',
         name='user_project_edit'),
     url(r'^%s/meta/$' % project_pattern, 'user_project_meta',

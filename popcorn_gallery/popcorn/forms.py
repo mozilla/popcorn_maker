@@ -2,7 +2,7 @@ import json
 
 from django import forms
 
-from .models import Project
+from .models import Project, Template
 
 
 class JSONField(forms.CharField):
@@ -20,7 +20,9 @@ class ProjectForm(forms.Form):
     """Form used to validate the data sent through the API."""
     name = forms.CharField()
     data = JSONField()
-    template = forms.CharField()
+    template = forms.ModelChoiceField(queryset=Template.live.all(),
+                                      empty_label=None,
+                                      to_field_name='slug')
 
 
 class ProjectEditForm(forms.ModelForm):

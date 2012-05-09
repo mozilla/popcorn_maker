@@ -7,6 +7,6 @@ urlpatterns = patterns(
     url(r'^project/null$', 'project_add', name='project_add'),
     url(r'^project/(?P<uuid>[-\w]+)$', 'project_detail',
         name='project_detail'),
-    url(r'^template/$', 'template_detail', name='template'),
-    url(r'^config/default.conf$', 'template_config', name='template_config'),
+    url(r'^publish/(?P<uuid>[-\w]+)$', 'project_publish',
+        name='project_publish'),
     )

@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
@@ -18,18 +19,6 @@ from ...base.decorators import json_handler, login_required_ajax
 def index(request):
     context = {}
     return render(request, 'index.html', context)
-
-
-@anonymous_csrf
-def template_detail(request, slug='base'):
-    context = {}
-    return render(request, 'popcorn/templates/base.html', context)
-
-
-@require_GET
-def template_config(request, slug='base'):
-    context = {}
-    return render(request, 'popcorn/templates/config.cfg', context)
 
 
 @require_GET
@@ -52,15 +41,12 @@ def save_project(json_data, user):
     """Helper to save the project"""
     form = ProjectForm(json_data)
     if form.is_valid():
-        # TODO: make sure we only get valid templates
-        template = (Template.objects
-                    .get_or_create(name=form.cleaned_data['template'])[0])
         data = {
             'name': form.cleaned_data['name'],
             'metadata': form.cleaned_data['data'],
             'html': '',
             'author': user,
-            'template': template,
+            'template': form.cleaned_data['template'],
             }
         project = Project.objects.create(**data)
         response = {
@@ -100,7 +86,27 @@ def project_detail(request, uuid):
         'error': 'okay',
         # Butter needs the project metadata as a string that can be
         # parsed to JSON
+        'url': project.get_absolute_url(),
         'project': project.metadata,
         }
     return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
                         mimetype='application/json')
+
+
+@json_handler
+@login_required_ajax
+@login_required
+def project_publish(request, uuid):
+    if request.method == 'POST':
+        try:
+            project = Project.objects.get(uuid=uuid, author=request.user)
+        except Project.DoesNotExist:
+            return Http404()
+        project.is_shared = True
+        response = {
+            'error': 'okay',
+            'url': '%s%s' % (settings.SITE_URL, project.get_absolute_url()),
+            }
+        return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
+                            mimetype='application/json')
+    raise Http404

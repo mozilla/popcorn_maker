@@ -43,6 +43,11 @@ def user_project(request, project):
     context = {'object': project}
     return render(request, project.template.template, context)
 
+@valid_user_project
+def user_project_config(request, project):
+    context = {'object': project}
+    return render(request, project.template.config, context)
+
 
 @valid_user_project
 def user_project_meta(request, project):
