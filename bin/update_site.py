@@ -24,7 +24,7 @@ VENDOR  = 1
 
 ENV_BRANCH = {
     # 'environment': [PROJECT_BRANCH, VENDOR_BRANCH],
-    'dev':   ['base',   'master'],
+    'dev':   ['master',   'master'],
     'stage': ['master', 'master'],
     'prod':  ['prod',   'master'],
 }
@@ -49,62 +49,6 @@ def update_site(env, debug):
     """Run through commands to update this site."""
     error_updating = False
     here = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    locale = os.path.join(here, 'locale')
-    unique = md5(locale).hexdigest()
-    project_branch = {'branch': ENV_BRANCH[env][PROJECT]}
-    vendor_branch = {'branch': ENV_BRANCH[env][VENDOR]}
-
-    commands = [
-        (CHDIR, here),
-        (EXEC,  GIT_PULL % project_branch),
-        (EXEC,  GIT_SUBMODULE),
-    ]
-
-    # Checkout the locale repo into locale/ if the URL is known
-    if LOCALE_REPO_URL and not os.path.exists(os.path.join(locale, '.svn')):
-        commands += [
-            (EXEC, SVN_CO % {'url': LOCALE_REPO_URL}),
-            (EXEC, COMPILE_MO % {'localedir': locale, 'unique': unique}),
-        ]
-
-    # Update locale dir if applicable
-    if os.path.exists(os.path.join(locale, '.svn')):
-        commands += [
-            (CHDIR, locale),
-            (EXEC, SVN_UP),
-            (CHDIR, here),
-            (EXEC, COMPILE_MO % {'localedir': locale, 'unique': unique}),
-        ]
-    elif os.path.exists(os.path.join(locale, '.git')):
-        commands += [
-            (CHDIR, locale),
-            (EXEC, GIT_PULL % 'master'),
-            (CHDIR, here),
-        ]
-
-    commands += [
-        (CHDIR, os.path.join(here, 'vendor')),
-        (EXEC,  GIT_PULL % vendor_branch),
-        (EXEC,  GIT_SUBMODULE),
-        (CHDIR, os.path.join(here)),
-        (EXEC, 'python2.6 vendor/src/schematic/schematic migrations/'),
-        (EXEC, 'python2.6 manage.py compress_assets'),
-    ]
-
-    for cmd, cmd_args in commands:
-        if CHDIR == cmd:
-            if debug:
-                sys.stdout.write("cd %s\n" % cmd_args)
-            os.chdir(cmd_args)
-        elif EXEC == cmd:
-            if debug:
-                sys.stdout.write("%s\n" % cmd_args)
-            if not 0 == os.system(cmd_args):
-                error_updating = True
-                break
-        else:
-            raise Exception("Unknown type of command %s" % cmd)
-
     if error_updating:
         sys.stderr.write("There was an error while updating. Please try again "
                          "later. Aborting.\n")
