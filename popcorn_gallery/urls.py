@@ -16,8 +16,17 @@ urlpatterns = patterns(
     (r'^api/', include('popcorn_gallery.popcorn.urls.api')),
     (r'', include('popcorn_gallery.popcorn.urls.projects')),
     url(r'^browserid/verify$', AjaxVerify.as_view(), name='browserid_verify'),
-    url(r'^$', 'popcorn_gallery.popcorn.views.api.index', name='index'),
+    url(r'^$', 'popcorn_gallery.base.views.homepage', name='index'),
     )
+
+# static pages
+urlpatterns += patterns(
+    'popcorn_gallery.base.views',
+    url('^about/$', 'about', name='about'),
+    url('^help/$', 'help', name='help'),
+    url('^legal/$', 'legal', name='legal'),
+    )
+
 
 urlpatterns += patterns(
     'popcorn_gallery.users.views',

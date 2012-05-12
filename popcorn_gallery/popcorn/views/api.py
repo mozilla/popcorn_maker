@@ -5,20 +5,10 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
 from django.http import HttpResponse, Http404
-from django.shortcuts import render
-
-
-from session_csrf import anonymous_csrf
 
 from ..forms import ProjectForm
-from ..models import Project, Template
+from ..models import Project
 from ...base.decorators import json_handler, login_required_ajax
-
-
-@anonymous_csrf
-def index(request):
-    context = {}
-    return render(request, 'index.html', context)
 
 
 @require_GET

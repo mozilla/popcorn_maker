@@ -1,27 +1,32 @@
-<!DOCTYPE html>
+<!DOCTYPE html>{% import "includes/navigation.html" as navigation %}
 <html>
-<head>
-  <title>{% block title %}Popcorn Maker{% endblock title %}</title>
-  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-  {% block styles %}{% endblock styles %}
-  <script type="text/javascript">
-    window.STATIC_URL = '{{ STATIC_URL }}';
-  </script>
-  {% block scripts %}{% endblock scripts %}
-</head>
-<body>
-  <header>
-    {% if not request.user.is_authenticated() %}
-    <a id="browserid" href="#TODO">Sign In</a>
-    <form method="POST" action="{{ url('browserid_verify') }}">
-      {{ csrf() }}
-      {{ browserid_form.as_p() }}
-    </form>
-    {% endif %}
-  </header>
-  {% block content %}{% endblock content %}
-  {{ csrf_token }}
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  {{ browserid_form.media }}
-</body>
+  <head>
+    <title>{% block title %}Popcorn Maker{% endblock title %}</title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    {% block styles %}{% endblock styles %}
+    <script type="text/javascript">
+      window.STATIC_URL = '{{ STATIC_URL }}';
+    </script>
+    {% block scripts %}{% endblock scripts %}
+  </head>
+  <body>
+    <header>
+      {{ navigation.navigation() }}
+
+      {% if not request.user.is_authenticated() %}
+      <a id="browserid" href="#TODO">Sign In</a>
+      <form method="POST" action="{{ url('browserid_verify') }}">
+        {{ csrf() }}
+        {{ browserid_form.as_p() }}
+      </form>
+      {% endif %}
+    </header>
+    {% block content %}{% endblock content %}
+
+    <div>CSRF Token {{ csrf_token }}</div>
+
+    {# TODO: django browser ID requires jquery #}
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    {{ browserid_form.media }}
+  </body>
 </html>
