@@ -3,8 +3,7 @@
 
 {% block content -%}
 <h1>{{ _('Delete Profile') }}</h1>
-
-{{ profile }}
+<p>Removing your profile will permanently remove any Projects you have created as well.</p>
 
 <form action="{{ request.get_full_path() }}" method="POST">
   {{ csrf() }}

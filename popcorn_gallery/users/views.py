@@ -2,15 +2,13 @@ import json
 
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.decorators import method_decorator
-from django.views.generic import DeleteView
 
 import jingo
 
 from django_browserid.views import Verify
+from funfactory.urlresolvers import reverse
 from tower import ugettext as _
 
 from .models import Profile
@@ -116,10 +114,11 @@ def edit(request, template='users/edit.html'):
 def delete_profile(request, template='users/profile_confirm_delete.html'):
     profile = get_object_or_404(Profile, user=request.user)
     if request.method == 'POST':
+        Project.objects.filter(author=request.user).delete()
         profile.delete()
         request.user.delete()
         auth.logout(request)
         messages.success(request, _(u'Your profile was successfully deleted.'))
-        return redirect('/')
+        return redirect(reverse('homepage'))
     context = {'profile': profile}
     return jingo.render(request, template, context)
