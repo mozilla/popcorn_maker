@@ -132,7 +132,7 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['object'], project)
+        self.assertEqual(context['project'], project)
         self.assertEqual(context['form'].instance, project)
         self.client.logout()
 

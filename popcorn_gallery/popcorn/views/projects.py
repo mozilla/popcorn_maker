@@ -90,7 +90,7 @@ def user_project_edit(request, project):
         form = ProjectEditForm(instance=project)
     context = {
         'form': form,
-        'object': project,
+        'project': project,
         }
     return render(request, 'project/edit.html', context)
 

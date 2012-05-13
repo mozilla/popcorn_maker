@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-
+<h1>Editing {{ project.name }}</h1>
 <form method="post" id="form-edit-project-id" action=".">
   {{ form.as_p() }}
   {{ csrf() }}
   <button type="submit">Update</button>
 </form>
 
+<a href="{{ url('user_project_delete', username=request.user.username, shortcode=project.shortcode) }}">Delete Project</a>
 {% endblock content %}
