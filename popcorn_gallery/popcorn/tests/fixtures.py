@@ -17,8 +17,8 @@ def create_template(**kwargs):
     defaults = {
         'name': 'basic',
         'slug': 'basic',
-        'template': 'butter/test/base.html',
-        'config': 'butter/test/config.cfg',
+        'template': 'butter/default-butter/base.html',
+        'config': 'butter/default-butter/config.cfg',
         }
     if kwargs:
         defaults.update(kwargs)
@@ -29,7 +29,6 @@ def create_project(**kwargs):
     defaults = {
         "name": 'Popcorn Project',
         "metadata": "{\"data\": \"foo\"}",
-        "template": "base-template",
         "html": "<!DOCTYPE html5>",
         }
     if kwargs:

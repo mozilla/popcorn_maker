@@ -224,7 +224,6 @@ class ProfileDataUpdatesTests(TestCase):
         self.assertEquals(User.objects.all().count(), 0)
 
 
-
 class TestProfileProjects(TestCase):
 
     def setUp(self):
