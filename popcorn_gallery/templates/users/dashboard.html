@@ -14,6 +14,14 @@
 {{ profile.bio }}
 {% endif %}
 
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 <section>
   <h1>{{ _('Your Projects') }}</h1>
   <ul>

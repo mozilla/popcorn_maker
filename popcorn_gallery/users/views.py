@@ -11,7 +11,6 @@ from django.views.generic import DeleteView
 import jingo
 
 from django_browserid.views import Verify
-from funfactory.urlresolvers import reverse
 from tower import ugettext as _
 
 from .models import Profile

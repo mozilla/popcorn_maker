@@ -29,6 +29,7 @@ ROOT_URLCONF = 'popcorn_gallery.urls'
 INSTALLED_APPS = list(INSTALLED_APPS) + [
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'django.contrib.messages',
     'django_extensions',
     'django_browserid',
     # Application base, containing global templates.
@@ -92,6 +93,9 @@ STATIC_ROOT = path('static')
 
 STATICFILES_DIRS = (path('butter'),)
 
+# contrib.messages
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
 
 # Browser ID
 BROWSERID_CREATE_USER = True
@@ -103,7 +107,7 @@ ANON_ALWAYS = True
 AUTH_PROFILE_MODULE = 'users.Profile'
 
 
-MIDDLEWARE_CLASSES += ('popcorn_gallery.users.middleware.ProfileMiddleware', )
+MIDDLEWARE_CLASSES += ('popcorn_gallery.users.middleware.ProfileMiddleware',)
 
 TEMPLATES_ROOT = path('popcorn_gallery', 'templates')
 

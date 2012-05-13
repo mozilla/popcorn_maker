@@ -3,9 +3,11 @@ import json
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
+from funfactory.urlresolvers import reverse
 from ..baseconv import base62
 from ..forms import ProjectEditForm
 from ..models import Project, Category, Template
@@ -91,6 +93,19 @@ def user_project_edit(request, project):
         'object': project,
         }
     return render(request, 'project/edit.html', context)
+
+
+@valid_user_project
+def user_project_delete(request, project):
+    if not request.user == project.author:
+        raise Http404
+    if request.method == 'POST':
+        messages.success(request, 'Project removed successfully')
+        project.delete()
+        return HttpResponseRedirect(reverse('users_dashboard'))
+    context = {'project': project}
+    return render(request, 'project/delete.html', context)
+
 
 
 def category_detail(request, slug):

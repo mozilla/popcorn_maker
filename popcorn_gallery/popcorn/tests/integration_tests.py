@@ -242,6 +242,66 @@ class DataIntegrationTest(PopcornIntegrationTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+class DeleteIntegrationTest(PopcornIntegrationTestCase):
+
+    def setUp(self):
+        super(DeleteIntegrationTest, self).setUp()
+        category = create_category(name='Special')
+        self.project = create_project(author=self.user)
+        self.project.categories.add(category)
+
+    def tearDown(self):
+        super(DeleteIntegrationTest, self).tearDown()
+        Category.objects.all().delete()
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_delete_get(self):
+        url = self.get_url('user_project_delete', self.user, self.project)
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['project'], self.project)
+
+    @suppress_locale_middleware
+    def test_delete_post(self):
+        url = self.get_url('user_project_delete', self.user, self.project)
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.post(url, {})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(reverse('users_dashboard'), response['Location'])
+        self.assertEqual(Project.objects.all().count(), 0)
+        self.assertEqual(Category.objects.all().count(), 1)
+        self.assertEqual(User.objects.all().count(), 1)
+
+    @suppress_locale_middleware
+    def test_delete_not_owner_get(self):
+        alex = create_user('alex', with_profile=True)
+        url = self.get_url('user_project_delete', self.user, self.project)
+        self.client.login(username=alex.username, password='alex')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_delete_not_owner_post(self):
+        alex = create_user('alex', with_profile=True)
+        url = self.get_url('user_project_delete', self.user, self.project)
+        self.client.login(username=alex.username, password='alex')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_delete_anon_get(self):
+        url = self.get_url('user_project_delete', self.user, self.project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_delete_anon_post(self):
+        url = self.get_url('user_project_delete', self.user, self.project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
 
 class CategoryIntegrationTest(TestCase):
 

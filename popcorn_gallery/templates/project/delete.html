@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ project.name}} confirmation - {{ super() }}{% endblock title %}
+
+{% block content %}
+<h1>You are about to delete your project "{{ project.name }}"</h1>
+<p>This action is permanent and once it is gone we can't help you to get it back.</p>
+<form method="post" id="form-project-delete-id" action=".">
+  <a href="{{ project.get_absolute_url() }}">Cancel</a>
+  <button type="submit">Delete</button>
+  {{ csrf() }}
+</form>
+{% endblock content %}

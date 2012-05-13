@@ -32,4 +32,6 @@ urlpatterns += patterns(
         name='user_project_meta'),
     url(r'^%s/data/$' % project_pattern, 'user_project_data',
         name='user_project_data'),
+    url(r'^%s/delete/$' % project_pattern, 'user_project_delete',
+        name='user_project_delete'),
     )
