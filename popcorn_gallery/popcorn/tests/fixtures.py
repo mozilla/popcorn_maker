@@ -17,8 +17,8 @@ def create_template(**kwargs):
     defaults = {
         'name': 'basic',
         'slug': 'basic',
-        'template': 'popcorn/templates/test/base.html',
-        'config': 'popcorn/templates/test/config.cfg',
+        'template': 'butter/test/base.html',
+        'config': 'butter/test/config.cfg',
         }
     if kwargs:
         defaults.update(kwargs)

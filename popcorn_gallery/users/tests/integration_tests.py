@@ -220,7 +220,7 @@ class ProfileDataUpdatesTests(TestCase):
     def test_delete_post(self):
         url = reverse('users_delete')
         response = self.client.post(url, {})
-        self.assertRedirects(response, '/')
+        self.assertEqual(response.status_code, 302)
         self.assertEquals(User.objects.all().count(), 0)
 
 

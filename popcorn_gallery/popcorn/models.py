@@ -11,7 +11,7 @@ from .managers import ProjectManager, TemplateManager
 from .baseconv import base62
 
 
-def get_templates(prefix='popcorn/templates', extension=None):
+def get_templates(prefix='butter', extension=None):
     """List the files with the given extension"""
     template_choices = []
     if extension:
