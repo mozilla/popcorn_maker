@@ -36,7 +36,9 @@
     </style>
   </head>
   <body>
-    {# heading.user_status(request.user, object) #}
+    {% if request.user.is_authenticated() %}
+    {{ heading.user_status(request.user, object) }}
+    {% endif%}
     <video id="main" data-butter="media" controls>
       <source src="{{ STATIC_URL }}external/popcorn-js/test/trailer.ogv">
         <source src="{{ STATIC_URL }}external/popcorn-js/test/trailer.mp4">

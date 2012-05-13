@@ -16,6 +16,7 @@ from tower import ugettext as _
 
 from .models import Profile
 from .forms import ProfileCreateForm, ProfileForm
+from ..popcorn.models import Project
 
 
 class AjaxVerify(Verify):
@@ -47,8 +48,13 @@ class AjaxVerify(Verify):
 @login_required
 def dashboard(request):
     """Display first page of activities for a users dashboard."""
-    profile = request.user.get_profile()
-    return jingo.render(request, 'users/dashboard.html', {'object': profile})
+    user_profile = request.user.get_profile()
+    project_list = Project.objects.filter(author=request.user)
+    context = {
+        'profile': user_profile,
+        'project_list': project_list,
+        }
+    return jingo.render(request, 'users/dashboard.html', context)
 
 
 def signout(request):
@@ -63,11 +69,16 @@ def profile(request, username):
         profile = Profile.objects.get(user__username=username)
     except Profile.DoesNotExist:
         raise Http404
+    project_list = Project.live.filter(author=profile.user)
     # If the identifier hasn't been chosen that means the user hasn't
     # accepted the Terms and Conditions
     if not profile.has_chosen_identifier:
         raise Http404
-    return jingo.render(request, 'users/profile.html', {'object': profile})
+    context = {
+        'profile': profile,
+        'project_list': project_list,
+        }
+    return jingo.render(request, 'users/profile.html', context)
 
 
 @login_required
@@ -110,5 +121,5 @@ def delete_profile(request, template='users/profile_confirm_delete.html'):
         auth.logout(request)
         messages.success(request, _(u'Your profile was successfully deleted.'))
         return redirect('/')
-    context = {'object': profile}
+    context = {'profile': profile}
     return jingo.render(request, template, context)

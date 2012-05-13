@@ -1,7 +1,28 @@
-{% extends "base.html" %}
-{% block page_title -%}: {{ _('Dashboard') }} : {{ object.display_name }}{% endblock -%}
+{% extends "users/profile.html" %}
+{% block title -%}
+{{ _('Dashboard') }} : {{ profile.display_name }} - {{ super() }}
+{% endblock title -%}
 
 {% block content -%}
-<h1>{{ _('Dashboard') }}</h1>
-{{ object }}
+<h1>{{ _('Your Dashboard') }}</h1>
+<img src="{{ profile.gravatar_url }}" alt="" />
+<a href="{{ url('users_edit') }}">Edit your profile</a>
+{% if profile.website %}
+<a href="{{ profile.website }}">{{ profile.website }}</a>
+{% endif %}
+{% if profile.bio  %}
+{{ profile.bio }}
+{% endif %}
+
+<section>
+  <h1>{{ _('Your Projects') }}</h1>
+  <ul>
+    {% for project in project_list %}
+    <li>
+      <a href="{{ project.get_absolute_url() }}">{{ project.name }}</a>
+    </li>
+    {% endfor%}
+  </ul>
+</section>
+
 {% endblock -%}

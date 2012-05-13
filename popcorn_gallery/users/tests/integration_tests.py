@@ -38,7 +38,7 @@ class ProfileDataAnonTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['object'].user.username, 'bob')
+        self.assertEqual(context['profile'].user.username, 'bob')
 
     @suppress_locale_middleware
     def test_dashboard(self):
@@ -207,7 +207,7 @@ class ProfileDataUpdatesTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['object'].user.username, self.user.username)
+        self.assertEqual(context['profile'].user.username, self.user.username)
 
     @suppress_locale_middleware
     def test_delete_get(self):
@@ -215,7 +215,7 @@ class ProfileDataUpdatesTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['object'].user.username, self.user.username)
+        self.assertEqual(context['profile'].user.username, self.user.username)
 
     @suppress_locale_middleware
     def test_delete_post(self):

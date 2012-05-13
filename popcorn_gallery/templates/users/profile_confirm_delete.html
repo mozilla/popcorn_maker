@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block page_title -%}: {{ object.display_name }}{% endblock -%}
+{% block page_title -%}: {{ profile.display_name }}{% endblock -%}
 
 {% block content -%}
 <h1>{{ _('Delete Profile') }}</h1>
 
-{{ object }}
+{{ profile }}
 
 <form action="{{ request.get_full_path() }}" method="POST">
   {{ csrf() }}
   <button type="submit">{{ _('Delete') }}</button>
-  <a href="{{ object.get_absolute_url() }}">{{ _('Cancel') }}</a>
+  <a href="{{ profile.get_absolute_url() }}">{{ _('Cancel') }}</a>
 </form>
 
 {% trans persona_url="https://browserid.org/" -%}

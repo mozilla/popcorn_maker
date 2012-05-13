@@ -1,17 +1,30 @@
 {% extends "base.html" %}
-{% block page_title -%}: {{ profile.display_name }}{% endblock -%}
-
+{% block page_title -%}
+Profile: {{ profile.display_name }} - {{ super() }}
+{% endblock -%}
 
 {% block content -%}
-<p>
-  <a href="{{ object.get_absolute_url() }}">{{ object.display_name }}</a>
-  <img src="{{ object.gravatar_url }}" alt="" />
-</p>
-<p>
-  {{ object.website }}
-</p>
-<p>
-  {{ object.bio }}
-</p>
+
+<h1>Profile: {{ profile.display_name }}</h1>
+<img src="{{ profile.gravatar_url }}" alt="" />
+{% if profile.website %}
+<a href="{{ profile.website }}">{{ profile.website }}</a>
+{% endif %}
+{% if profile.bio  %}
+{{ profile.bio }}
+{% endif %}
+
+
+
+<section>
+  <h1>{{ _('Projects') }}</h1>
+  <ul>
+    {% for project in project_list %}
+    <li>
+      <a href="{{ project.get_absolute_url() }}">{{ project.name }}</a>
+    </li>
+    {% endfor%}
+  </ul>
+</section>
 
 {% endblock -%}
