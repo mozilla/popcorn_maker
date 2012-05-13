@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}
+Made with Popcorn - {{ super() }}
+{% endblock title %}
+
+{% block content %}
+<h1>Made with Popcorn</h1>
+
+{% for project in project_list %}
+<section>
+  <h1><a href="{{ project.get_absolute_url() }}">{{ project.name }}</a></h1>
+  by <a href="{{ project.author.get_absolute_url() }}">{{ project.author.profile.display_name }}</a> on {{ project.created }}
+</section>
+{% endfor%}
+{% endblock content %}

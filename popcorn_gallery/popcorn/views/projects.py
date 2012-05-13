@@ -129,3 +129,11 @@ def template_config(request, slug):
     context = {'template': template,
                'object': None}
     return render(request, template.config, context)
+
+
+def project_list(request):
+    project_list = Project.live.all()
+    context = {
+        'project_list': project_list
+        }
+    return render(request, 'project/object_list.html', context)

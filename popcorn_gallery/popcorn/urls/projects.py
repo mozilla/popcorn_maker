@@ -7,7 +7,8 @@ project_pattern = '(?P<username>[\w]+)/(?P<shortcode>[-\w]+)'
 urlpatterns = patterns(
     'popcorn_gallery.popcorn.views.projects',
     url(r'^category/(?P<slug>[\w-]+)/$', 'category_detail',
-        name='category_detail')
+        name='category_detail'),
+    url(r'^projects/$', 'project_list', name='project_list'),
     )
 
 urlpatterns += patterns(

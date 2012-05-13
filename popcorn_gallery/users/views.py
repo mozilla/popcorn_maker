@@ -49,7 +49,8 @@ class AjaxVerify(Verify):
 def dashboard(request):
     """Display first page of activities for a users dashboard."""
     user_profile = request.user.get_profile()
-    project_list = Project.objects.filter(author=request.user)
+    project_list = Project.objects.filter(author=request.user,
+                                          is_removed=False)
     context = {
         'profile': user_profile,
         'project_list': project_list,

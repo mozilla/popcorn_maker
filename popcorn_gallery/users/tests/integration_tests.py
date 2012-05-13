@@ -8,6 +8,8 @@ from mock import patch
 from .fixtures import create_user
 from ..forms import ProfileCreateForm, ProfileForm
 from ..models import Profile
+from ...popcorn.tests.fixtures import create_project, create_template
+from ...popcorn.models import Project
 
 suppress_locale_middleware = patch.object(LocaleURLMiddleware,
                                           'process_request',
@@ -163,10 +165,7 @@ class ProfileDataTests(TestCase):
 class ProfileDataUpdatesTests(TestCase):
 
     def setUp(self):
-        self.user = create_user('bob')
-        profile = self.user.get_profile()
-        profile.name = 'Bob'
-        profile.save()
+        self.user = create_user('bob', with_profile=True)
         self.client.login(username='bob', password='bob')
 
     def tearDown(self):
@@ -223,3 +222,88 @@ class ProfileDataUpdatesTests(TestCase):
         response = self.client.post(url, {})
         self.assertRedirects(response, '/')
         self.assertEquals(User.objects.all().count(), 0)
+
+
+
+class TestProfileProjects(TestCase):
+
+    def setUp(self):
+        self.user = create_user('bob', with_profile=True)
+        self.client.login(username='bob', password='bob')
+        template = create_template()
+        self.project = create_project(name='Bob project', author=self.user,
+                                      template=template)
+        self.alex = create_user('alex')
+        create_project(name='Alex project', author=self.alex, template=template)
+
+    def tearDown(self):
+        self.client.logout()
+        for model in [Profile, User, Project]:
+            model.objects.all().delete()
+
+    def assert_ownership(self, project_list, user):
+        for project in project_list:
+            self.assertEqual(project.author, user)
+
+    @suppress_locale_middleware
+    def test_user_dashboard(self):
+        url = reverse('users_dashboard')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        project_list = response.context['project_list']
+        self.assertEqual(len(project_list), 1)
+        self.assert_ownership(project_list, self.user)
+
+    @suppress_locale_middleware
+    def test_user_profile(self):
+        url = reverse('users_profile', args=['alex'])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        project_list = response.context['project_list']
+        self.assertEqual(len(project_list), 1)
+        self.assert_ownership(project_list, self.alex)
+
+    @suppress_locale_middleware
+    def test_hidden_projects_dashboard(self):
+        self.project.status = Project.HIDDEN
+        self.project.save()
+        url = reverse('users_dashboard')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        project_list = response.context['project_list']
+        self.assertEqual(len(project_list), 1)
+        self.assert_ownership(project_list, self.user)
+
+    @suppress_locale_middleware
+    def test_remove_projects_dashboard(self):
+        self.project.is_removed = True
+        self.project.save()
+        url = reverse('users_dashboard')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        project_list = response.context['project_list']
+        self.assertEqual(len(project_list), 0)
+        self.assert_ownership(project_list, self.user)
+
+    @suppress_locale_middleware
+    def test_hidden_projects_profile(self):
+        self.project.status = Project.HIDDEN
+        self.project.save()
+        url = reverse('users_profile', args=['bob'])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        project_list = response.context['project_list']
+        self.assertEqual(len(project_list), 0)
+        self.assert_ownership(project_list, self.user)
+
+    @suppress_locale_middleware
+    def test_removed_projects_profile(self):
+        self.project.is_removed = True
+        self.project.save()
+        url = reverse('users_dashboard')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        project_list = response.context['project_list']
+        self.assertEqual(len(project_list), 0)
+        self.assert_ownership(project_list, self.user)
+

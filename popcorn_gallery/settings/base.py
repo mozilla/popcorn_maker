@@ -81,8 +81,7 @@ TEMPLATE_DIRS = (
 )
 
 # funfactory locale middleware shouldn't change these urls.
-SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid',
-                        'project', 'projects']
+SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid']
 
 STATIC_URL = '/static/'
 
