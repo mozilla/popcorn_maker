@@ -13,5 +13,9 @@
     <button type="submit">Save</button>
   </p>
 </form>
+
+{% if page_mode == 'edit' %}
 <a href="{{ url('users_delete') }}">Delete my account</a>
+{% endif %}
+
 {% endblock -%}
