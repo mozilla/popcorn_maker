@@ -28,6 +28,6 @@ class ProjectForm(forms.Form):
 class ProjectEditForm(forms.ModelForm):
 
     class Meta:
-        fields = ('name', 'is_shared', 'is_forkable', 'status')
+        fields = ('name', 'description', 'is_shared', 'is_forkable', 'status')
         model = Project
 

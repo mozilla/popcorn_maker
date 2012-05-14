@@ -36,12 +36,14 @@ class Template(models.Model):
         )
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
+    description = models.TextField(blank=True)
     template = models.CharField(max_length=255,
                                 choices=get_templates(extension='html'))
     config = models.CharField(max_length=255,
                               choices=get_templates(extension='cfg'))
     is_featured = models.BooleanField(default=False)
     status = models.IntegerField(choices=STATUS_CHOICES, default=LIVE)
+    categories = models.ManyToManyField('popcorn.Category', blank=True)
 
     # managers
     objects = models.Manager()
@@ -68,6 +70,7 @@ class Project(models.Model):
         )
     uuid = UUIDField(unique=True)
     name = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
     author = models.ForeignKey('auth.User')
     template = models.ForeignKey('popcorn.Template')
     metadata = models.TextField()

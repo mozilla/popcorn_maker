@@ -1,8 +1,8 @@
 from django.test import TestCase
 
 from .fixtures import create_template
-from ..models import Template
-from ..forms import ProjectForm
+from ..models import Template, Project
+from ..forms import ProjectForm, ProjectEditForm
 
 
 class PopcornFormTests(TestCase):
@@ -39,4 +39,28 @@ class PopcornFormTests(TestCase):
             'data': 2 + 1j,
             }
         form = ProjectForm(data)
+        self.assertFalse(form.is_valid())
+
+    def test_project_edit_form(self):
+        data = {
+            'name': 'Awesome project!',
+            'status': Project.LIVE,
+            }
+        form = ProjectEditForm(data)
+        self.assertTrue(form.is_valid())
+
+    def test_project_edit_form_full(self):
+        data = {
+            'name': 'Awesome project!',
+            'description': 'Hello world!',
+            'status': Project.LIVE,
+            'is_shared': True,
+            'is_forkable': True
+            }
+        form = ProjectEditForm(data)
+        self.assertTrue(form.is_valid())
+
+    def test_project_edit_form_invalid(self):
+        data = {'name': ''}
+        form = ProjectEditForm(data)
         self.assertFalse(form.is_valid())

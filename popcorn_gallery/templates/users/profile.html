@@ -22,6 +22,7 @@ Profile: {{ profile.display_name }} - {{ super() }}
     {% for project in project_list %}
     <li>
       <a href="{{ project.get_absolute_url() }}">{{ project.name }}</a>
+      {{ project.description }}
     </li>
     {% endfor%}
   </ul>

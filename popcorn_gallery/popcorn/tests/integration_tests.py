@@ -88,6 +88,7 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         'is_forkable': False,
         'name': 'Changed!',
         'status': Project.HIDDEN,
+        'description': 'Description of the project',
         }
 
     @suppress_locale_middleware
