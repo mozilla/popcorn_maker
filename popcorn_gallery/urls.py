@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from .users.views import AjaxVerify
 from funfactory.monkeypatches import patch
@@ -43,3 +44,4 @@ if settings.DEBUG:
         (r'^%s/(?P<path>.*)$' % media_url, 'django.views.static.serve',
          {'document_root': settings.MEDIA_ROOT}),
     )
+    urlpatterns += staticfiles_urlpatterns()
