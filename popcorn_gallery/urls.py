@@ -30,7 +30,8 @@ urlpatterns += patterns(
 
 
 def test_500(request):
-    assert False, request
+    import django_browserid
+    assert False, (request, django_browserid)
 
 urlpatterns += patterns('', url(r'^500/$', test_500, name='500'))
 
