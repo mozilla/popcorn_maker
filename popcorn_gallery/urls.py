@@ -28,15 +28,6 @@ urlpatterns += patterns(
     url('^legal/$', 'legal', name='legal'),
     )
 
-
-if settings.DEBUG:
-
-    def test_500(request):
-        assert False, request
-
-    urlpatterns += patterns('', url(r'^500/$', test_500, name='500'))
-
-
 urlpatterns += patterns(
     'popcorn_gallery.users.views',
     url(r'^dashboard/$', 'dashboard', name='users_dashboard'),

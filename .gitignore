@@ -19,4 +19,4 @@ tmp/*
 *.mo
 vagrantconfig_local.yaml
 .vagrant
-static/
+/static/
