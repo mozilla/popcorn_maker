@@ -30,8 +30,8 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.messages',
-    'django_extensions',
     'django_browserid',
+    'django_extensions',
     'south',
     # Application base, containing global templates.
     'popcorn_gallery.base',
@@ -97,7 +97,11 @@ ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATIC_ROOT = path('static')
 
-STATICFILES_DIRS = (path('butter'),)
+STATICFILES_DIRS = (
+    path('butter'),
+    path('vendor-local', 'lib', 'python', 'django_browserid', 'static'),
+    )
+
 
 # contrib.messages
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

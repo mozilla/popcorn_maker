@@ -29,18 +29,12 @@ urlpatterns += patterns(
     )
 
 
-def test_500(request):
-    import os
-    from django.utils.importlib import import_module
-    paths = []
-    for app in settings.INSTALLED_APPS:
-        mod = import_module(app)
-        mod_path = os.path.dirname(mod.__file__)
-        paths.append(mod_path)
-    assert False, paths
+if settings.DEBUG:
 
+    def test_500(request):
+        assert False, request
 
-urlpatterns += patterns('', url(r'^500/$', test_500, name='500'))
+    urlpatterns += patterns('', url(r'^500/$', test_500, name='500'))
 
 
 urlpatterns += patterns(
