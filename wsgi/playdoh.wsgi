@@ -8,8 +8,6 @@ os.environ.setdefault('CELERY_LOADER', 'django')
 # Add the app dir to the python path so we can import manage.
 wsgidir = os.path.dirname(__file__)
 site.addsitedir(os.path.abspath(os.path.join(wsgidir, '../')))
-# TODO install these packages
-site.addsitedir('/home/vagrant/.virtualenvs/popcorn_gallery/lib/python2.6/site-packages')
 
 # manage adds /apps, /lib, and /vendor to the Python path.
 import manage
