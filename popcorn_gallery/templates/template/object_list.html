@@ -1,9 +1,26 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Templates</h1>
-{% for object in object_list %}
+
+{% block content_title %}
+<h1>Get started</h1>
+<p>Get started with one of these ready-to-go templates!</p>
+{% endblock content_title %}
+
+{% if category %}
+<h2>{{ category.name }}</h2>
+{% endif %}
+
+{% for object in template_list %}
 <div>
-  {% if object.is_featured %}Featured:{% endif %} <a href="{{ object.get_absolute_url() }}">{{ object.name }}</a>
+  {% if object.is_featured %}Featured:{% endif %} <a href="{{ url('template_summary', object.slug) }}">{{ object.name }}</a>
 </div>
 {% endfor %}
+
+<h2>Categories</h2>
+{% for category in category_list %}
+<div>
+  <a href="{{ category.get_templates_url() }}">{{ category }}</a>
+</div>
+{% endfor%}
+
 {% endblock content %}

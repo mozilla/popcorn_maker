@@ -6,6 +6,10 @@ Made with Popcorn - {{ super() }}
 {% block content %}
 <h1>Made with Popcorn</h1>
 
+{% if category %}
+<h2>Category: {{ category.name }}</h2>
+{% endif %}
+
 {% for project in project_list %}
 <section>
   <h1><a href="{{ project.get_absolute_url() }}">{{ project.name }}</a></h1>
@@ -13,4 +17,13 @@ Made with Popcorn - {{ super() }}
   <p>{{ project.description }}</p>
 </section>
 {% endfor%}
+
+<h2>Categories</h2>
+{% for category in category_list %}
+<div>
+  <a href="{{ category.get_projects_url() }}">{{ category }}</a>
+</div>
+{% endfor%}
+
+
 {% endblock content %}

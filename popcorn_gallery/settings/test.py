@@ -1,3 +1,4 @@
+import logging
 from .base import *
 
 
@@ -51,3 +52,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 INVALID_USERNAMES = (
     'admin',
     )
+
+debug = dict(level=logging.DEBUG)
+error = dict(level=logging.ERROR)
+
+LOGGING = {
+    'loggers': {
+        'south': error,
+    },
+}

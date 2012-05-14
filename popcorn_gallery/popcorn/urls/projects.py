@@ -6,18 +6,22 @@ project_pattern = '(?P<username>[\w]+)/(?P<shortcode>[-\w]+)'
 
 urlpatterns = patterns(
     'popcorn_gallery.popcorn.views.projects',
-    url(r'^category/(?P<slug>[\w-]+)/$', 'category_detail',
-        name='category_detail'),
     url(r'^projects/$', 'project_list', name='project_list'),
+    url(r'^projects/category/(?P<slug>[\w-]+)/$', 'project_list',
+        name='project_list_category'),
     )
 
 urlpatterns += patterns(
     'popcorn_gallery.popcorn.views.projects',
     url(r'^templates/$', 'template_list', name='template_list'),
+    url(r'^templates/category/(?P<slug>[\w-]+)/$', 'template_list',
+        name='template_list_category'),
     url(r'^template/(?P<slug>[\w-]+)/$', 'template_detail',
         name='template_detail'),
     url(r'^template/(?P<slug>[\w-]+)/config$', 'template_config',
-        name='template_config')
+        name='template_config'),
+    url(r'^template/(?P<slug>[\w-]+)/summary/$', 'template_summary',
+        name='template_summary'),
     )
 
 

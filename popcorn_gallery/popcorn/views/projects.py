@@ -107,21 +107,39 @@ def user_project_delete(request, project):
     return render(request, 'project/delete.html', context)
 
 
-
-def category_detail(request, slug):
-    category = get_object_or_404(Category, slug=slug)
-    project_list = Project.live.filter(categories=category).order_by('-created')
+def project_list(request, slug=None):
+    if slug:
+        category = get_object_or_404(Category, slug=slug)
+        kwargs = {'categories': category}
+    else:
+        category = None
+        kwargs = {}
+    object_list = (Project.live.filter(**kwargs)
+                   .order_by('-is_featured','-created'))
+    category_list = Category.objects.filter(is_featured=True)
     context = {
-        'object': category,
-        'project_list': project_list
+        'category': category,
+        'project_list': object_list,
+        'category_list': category_list,
         }
-    return render(request, 'category/object_detail.html', context)
+    return render(request, 'project/object_list.html', context)
 
 
-def template_list(request):
-    object_list = Template.live.all().order_by('-is_featured', 'name')
+def template_list(request, slug=None):
+    """Lists all the available templates. Filters by category too"""
+    if slug:
+        category = get_object_or_404(Category, slug=slug)
+        kwargs = {'categories': category}
+    else:
+        category = None
+        kwargs = {}
+    object_list = (Template.live.filter(**kwargs)
+                   .order_by('-is_featured', 'name'))
+    category_list = Category.objects.filter(is_featured=True)
     context = {
-        'object_list': object_list
+        'template_list': object_list,
+        'category': category,
+        'category_list': category_list,
         }
     return render(request, 'template/object_list.html', context)
 
@@ -136,6 +154,20 @@ def template_detail(request, slug):
     return render(request, template.template, context)
 
 
+def template_summary(request, slug):
+    try:
+        template = Template.live.get(slug=slug)
+    except Template.DoesNotExist:
+        raise Http404
+    category_list = Category.objects.filter(is_featured=True)
+    context = {
+        'template': template,
+        'object': None,
+        'category_list': category_list,
+        }
+    return render(request, 'template/object_detail.html', context)
+
+
 def template_config(request, slug):
     try:
         template = Template.live.get(slug=slug)
@@ -144,11 +176,3 @@ def template_config(request, slug):
     context = {'template': template,
                'object': None}
     return render(request, template.config, context)
-
-
-def project_list(request):
-    project_list = Project.live.all()
-    context = {
-        'project_list': project_list
-        }
-    return render(request, 'project/object_list.html', context)

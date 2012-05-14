@@ -33,6 +33,45 @@ class PopcornIntegrationTestCase(TestCase):
         return reverse(name, kwargs=kwargs)
 
 
+class ProjectIntegrationTest(PopcornIntegrationTestCase):
+
+    def setUp(self):
+        super(ProjectIntegrationTest, self).setUp()
+        self.category = create_category(is_featured=True)
+
+    def tearDown(self):
+        super(ProjectIntegrationTest, self).tearDown()
+        Category.objects.all().delete()
+
+    @suppress_locale_middleware
+    def test_project_list(self):
+        project = create_project(author=self.user)
+        project.categories.add(self.category)
+        response = self.client.get(reverse('project_list'))
+        context = response.context
+        self.assertEqual(len(context['project_list']), 1)
+        self.assertEqual(len(context['category_list']), 1)
+        self.assertFalse(context['category'])
+
+    @suppress_locale_middleware
+    def test_project_list_category(self):
+        project = create_project(author=self.user)
+        project.categories.add(self.category)
+        response = self.client.get(reverse('project_list_category',
+                                           args=[self.category.slug]))
+        context = response.context
+        self.assertEqual(len(context['project_list']), 1)
+        self.assertEqual(len(context['category_list']), 1)
+        self.assertEqual(context['category'], self.category)
+
+    @suppress_locale_middleware
+    def test_project_list_invalid_category(self):
+        project = create_project(author=self.user)
+        response = self.client.get(reverse('project_list_category',
+                                           args=['invalid']))
+        self.assertEqual(response.status_code, 404)
+
+
 class DetailIntegrationTest(PopcornIntegrationTestCase):
 
     @suppress_locale_middleware
@@ -307,7 +346,7 @@ class DeleteIntegrationTest(PopcornIntegrationTestCase):
 class CategoryIntegrationTest(TestCase):
 
     def setUp(self):
-        self.category = create_category()
+        self.category = create_category(is_featured=True)
         self.user = create_user('bob', with_profile=True)
 
     def tearDown(self):
@@ -315,41 +354,124 @@ class CategoryIntegrationTest(TestCase):
             model.objects.all().delete()
 
     @suppress_locale_middleware
-    def test_category_detail(self):
+    def test_project_category_detail(self):
         project = create_project(author=self.user)
         project.categories.add(self.category)
-        response = self.client.get(self.category.get_absolute_url())
+        response = self.client.get(self.category.get_projects_url())
         context = response.context
-        self.assertEqual(context['object'], self.category)
+        self.assertEqual(context['category'], self.category)
         self.assertEqual(len(context['project_list']), 1)
+        self.assertEqual(len(context['category_list']), 1)
 
     @suppress_locale_middleware
-    def test_category_detail_non_shared(self):
+    def test_project_category_detail_non_shared(self):
         project = create_project(author=self.user, is_shared=False)
         project.categories.add(self.category)
-        response = self.client.get(self.category.get_absolute_url())
+        response = self.client.get(self.category.get_projects_url())
         context = response.context
-        self.assertEqual(context['object'], self.category)
+        self.assertEqual(context['category'], self.category)
         self.assertEqual(len(context['project_list']), 0)
 
     @suppress_locale_middleware
     def test_category_detail_removed(self):
         project = create_project(author=self.user, is_removed=True)
         project.categories.add(self.category)
-        response = self.client.get(self.category.get_absolute_url())
+        response = self.client.get(self.category.get_projects_url())
         context = response.context
-        self.assertEqual(context['object'], self.category)
+        self.assertEqual(context['category'], self.category)
         self.assertEqual(len(context['project_list']), 0)
 
 
 class TemplateIntegrationTest(TestCase):
 
+    def setUp(self):
+        self.category = create_category(is_featured=True)
+
     def tearDown(self):
-        Template.objects.all().delete()
+        for model in [Template, Category]:
+            model.objects.all().delete()
+
+    @suppress_locale_middleware
+    def test_template_list(self):
+        template = create_template(is_featured=True)
+        response = self.client.get(reverse('template_list'))
+        context = response.context
+        self.assertEqual(len(context['template_list']), 1)
+        self.assertEqual(len(context['category_list']), 1)
+
+    @suppress_locale_middleware
+    def test_template_list_category(self):
+        category = create_category()
+        template = create_template(is_featured=True)
+        template.categories.add(category)
+        response = self.client.get(reverse('template_list_category',
+                                           args=[category.slug]))
+        context = response.context
+        self.assertEqual(len(context['template_list']), 1)
+        self.assertEqual(len(context['category_list']), 1)
+        self.assertEqual(context['category'], category)
+
+    @suppress_locale_middleware
+    def test_template_list_hidden(self):
+        template = create_template(status=Template.HIDDEN)
+        response = self.client.get(reverse('template_list'))
+        context = response.context
+        self.assertEqual(len(context['template_list']), 0)
+        self.assertEqual(len(context['category_list']), 1)
+
+    @suppress_locale_middleware
+    def test_template_list_category_hidden(self):
+        category = create_category()
+        template = create_template(status=Template.HIDDEN)
+        template.categories.add(category)
+        response = self.client.get(reverse('template_list_category',
+                                           args=[category.slug]))
+        context = response.context
+        self.assertEqual(len(context['template_list']), 0)
+        self.assertEqual(len(context['category_list']), 1)
+        self.assertEqual(context['category'], category)
+
+    @suppress_locale_middleware
+    def test_template_detail_hidden(self):
+        template = create_template(status=Template.HIDDEN)
+        response = self.client.get(reverse('template_detail',
+                                           args=[template.slug]))
+        self.assertEqual(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_template_detail(self):
         template = create_template()
-        response = self.client.get(reverse('template_list'))
-        context = response.context
-        self.assertEqual(len(context['object_list']), 1)
+        response = self.client.get(reverse('template_detail',
+                                           args=[template.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['template'], template)
+
+    @suppress_locale_middleware
+    def test_template_summary_hidden(self):
+        template = create_template(status=Template.HIDDEN)
+        response = self.client.get(reverse('template_summary',
+                                           args=[template.slug]))
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_template_summary(self):
+        template = create_template()
+        response = self.client.get(reverse('template_summary',
+                                           args=[template.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['template'], template)
+
+    @suppress_locale_middleware
+    def test_template_config_hidden(self):
+        template = create_template(status=Template.HIDDEN)
+        response = self.client.get(reverse('template_summary',
+                                           args=[template.slug]))
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_template_config(self):
+        template = create_template()
+        response = self.client.get(reverse('template_summary',
+                                           args=[template.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['template'], template)

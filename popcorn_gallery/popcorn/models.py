@@ -66,7 +66,7 @@ class Project(models.Model):
     HIDDEN = 2
     STATUS_CHOICES = (
         (LIVE, _('Published')),
-        (HIDDEN, _('Hidden')),
+        (HIDDEN, _('Unpublished')),
         )
     uuid = UUIDField(unique=True)
     name = models.CharField(max_length=255)
@@ -131,5 +131,9 @@ class Category(models.Model):
         return self.name
 
     @models.permalink
-    def get_absolute_url(self):
-        return ('category_detail', [self.slug])
+    def get_templates_url(self):
+        return ('template_list_category', [self.slug])
+
+    @models.permalink
+    def get_projects_url(self):
+        return ('project_list_category', [self.slug])
