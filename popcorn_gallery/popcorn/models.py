@@ -32,7 +32,7 @@ class Template(models.Model):
     HIDDEN = 2
     STATUS_CHOICES = (
         (LIVE, _('Published')),
-        (HIDDEN, _('Hidden')),
+        (HIDDEN, _('Unpublished')),
         )
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)

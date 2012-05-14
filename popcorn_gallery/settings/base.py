@@ -82,6 +82,11 @@ TEMPLATE_DIRS = (
     path('butter', 'templates'),
 )
 
+
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda o: "/profile/%s/" % o.username,
+}
+
 # funfactory locale middleware shouldn't change these urls.
 SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid']
 

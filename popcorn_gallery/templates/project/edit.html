@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Editing {{ project.name }}</h1>
+<h1>Editing project {{ project.name }}</h1>
 <form method="post" id="form-edit-project-id" action=".">
   {{ form.as_p() }}
   {{ csrf() }}

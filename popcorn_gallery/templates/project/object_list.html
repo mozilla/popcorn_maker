@@ -10,6 +10,7 @@ Made with Popcorn - {{ super() }}
 <section>
   <h1><a href="{{ project.get_absolute_url() }}">{{ project.name }}</a></h1>
   by <a href="{{ project.author.get_absolute_url() }}">{{ project.author.profile.display_name }}</a> on {{ project.created }}
+  <p>{{ project.description }}</p>
 </section>
 {% endfor%}
 {% endblock content %}
