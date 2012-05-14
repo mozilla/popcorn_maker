@@ -49,6 +49,26 @@ def update_site(env, debug):
     """Run through commands to update this site."""
     error_updating = False
     here = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    # Commands to apply any migration and syncdb
+    commands = [
+        (CHDIR, here),
+        (EXEC, 'python manage.py syncdb'),
+        (EXEC, 'python manage.py migrate popcorn 0001 --fake'),
+        (EXEC, 'python manage.py migrate'),
+        ]
+    for cmd, cmd_args in commands:
+        if CHDIR == cmd:
+            if debug:
+                sys.stdout.write("cd %s\n" % cmd_args)
+            os.chdir(cmd_args)
+        elif EXEC == cmd:
+            if debug:
+                sys.stdout.write("%s\n" % cmd_args)
+            if not 0 == os.system(cmd_args):
+                error_updating = True
+                break
+        else:
+            raise Exception("Unknown type of command %s" % cmd)
     if error_updating:
         sys.stderr.write("There was an error while updating. Please try again "
                          "later. Aborting.\n")

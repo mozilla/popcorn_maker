@@ -26,6 +26,12 @@ class playdoh ($project_path, $project_name, $password){
     require => Exec["grant_mysql_database"];
   }
 
+  exec { "migrations":
+    cwd => "$project_path",
+    command => "python manage.py migrate",
+    require => Exec["grant_mysql_database"];
+  }
+
   exec { "collectstatic":
     cwd => "$project_path",
     command => "fab collectstatic",

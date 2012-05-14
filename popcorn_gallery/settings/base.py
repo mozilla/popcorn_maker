@@ -32,6 +32,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'django.contrib.messages',
     'django_extensions',
     'django_browserid',
+    'south',
     # Application base, containing global templates.
     'popcorn_gallery.base',
     'popcorn_gallery.popcorn',
