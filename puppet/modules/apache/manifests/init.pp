@@ -30,6 +30,17 @@ class apache($server_name, $project_path) {
         content => template("apache/apache.conf"),
       }
 
+      file {"/etc/apache2/ports.conf":
+        path => "/etc/apache2/ports.conf",
+        mode => 0644,
+        owner => root,
+        group => root,
+        ensure => file,
+        require => Package["apache2-dev"],
+        notify => Service["apache2"],
+        content => template("apache/ports.conf"),
+      }
+
       exec { "restart-apache2":
         command => "/etc/init.d/apache2 restart",
         refreshonly => true,

@@ -33,6 +33,11 @@ class dev {
     server_name => $server_name,
     project_path => $project_path;
   }
+  class { "nginx":
+    before => Class[apache],
+    server_name => $server_name,
+    project_path => $project_path;
+  }
   class { "playdoh":
     project_path => $project_path,
     project_name => $project_name,
