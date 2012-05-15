@@ -19,6 +19,7 @@ class dev {
     init: before => Class[mysql];
     memcached: ;
     versioning: ;
+    nodejs: before => Class[playdoh];
   }
   class { "python":
     before => Class[apache],

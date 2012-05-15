@@ -15,6 +15,11 @@ class python ($project_path){
         command => "pip install -r $project_path/requirements/compiled.txt",
         require => Package['python-pip'],
       }
+
+      exec { "pip-install-development":
+        command => "pip install -r $project_path/requirements/dev.txt",
+        require => Package['python-pip'],
+      }
     }
   }
 }

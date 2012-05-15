@@ -38,4 +38,14 @@ class playdoh ($project_path, $project_name, $password){
     require => Exec["syncdb"];
   }
 
+  exec {"update_butter":
+    cwd => "$project_path/butter",
+    command => "npm install";
+  }
+
+  exec {"butter_assets":
+    cwd => "$project_path/butter",
+    command => "node make";
+  }
+
 }
