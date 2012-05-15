@@ -122,3 +122,5 @@ MIDDLEWARE_CLASSES += ('popcorn_gallery.users.middleware.ProfileMiddleware',)
 TEMPLATES_ROOT = path('popcorn_gallery', 'templates')
 
 INVALID_USERNAMES = ()
+
+PROJECT_ROOT = path('')
