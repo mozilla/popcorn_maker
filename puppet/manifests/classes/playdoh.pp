@@ -45,17 +45,17 @@ class playdoh ($project_path, $project_name, $password){
     require => Exec["migrations"];
   }
 
-  exec {"butter_assets":
-    cwd => $butter_path,
-    command => "su - vagrant -c 'cd $butter_path && node make'",
-    require => Exec["update_butter"];
-  }
+  # exec {"butter_assets":
+  #   cwd => $butter_path,
+  #   command => "su - vagrant -c 'cd $butter_path && node make'",
+  #   require => Exec["update_butter"];
+  # }
 
-  exec { "collectstatic":
-    cwd => "$project_path",
-    command => "su - vagrant -c 'cd $project_path && fab collectstatic'",
-    require => Exec["butter_assets"];
-  }
+  # exec { "collectstatic":
+  #   cwd => "$project_path",
+  #   command => "su - vagrant -c 'cd $project_path && fab collectstatic'",
+  #   require => Exec["butter_assets"];
+  # }
 
 
 }
