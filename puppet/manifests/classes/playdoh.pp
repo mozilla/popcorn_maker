@@ -29,23 +29,33 @@ class playdoh ($project_path, $project_name, $password){
   exec { "migrations":
     cwd => "$project_path",
     command => "python manage.py migrate",
-    require => Exec["grant_mysql_database"];
+    require => Exec["syncdb"];
+  }
+
+  $butter_env = ["HOME=/home/vagrant",
+                 "PREFIX=$project_path/butter",
+                 "NPM_CONFIG_CACHE=$project_path/butter",
+                 "NPM_CONFIG_LOGLEVEL=verbose",
+                 ]
+  $butter_path = "$project_path/butter"
+
+  exec {"update_butter":
+    cwd => $butter_path,
+    command => "su - vagrant -c 'cd $butter_path && npm install'",
+    require => Exec["migrations"];
+  }
+
+  exec {"butter_assets":
+    cwd => $butter_path,
+    command => "su - vagrant -c 'cd $butter_path && node make'",
+    require => Exec["update_butter"];
   }
 
   exec { "collectstatic":
     cwd => "$project_path",
-    command => "fab collectstatic",
-    require => Exec["syncdb"];
+    command => "su - vagrant -c 'cd $project_path && fab collectstatic'",
+    require => Exec["butter_assets"];
   }
 
-  exec {"update_butter":
-    cwd => "$project_path/butter",
-    command => "npm install";
-  }
-
-  exec {"butter_assets":
-    cwd => "$project_path/butter",
-    command => "node make";
-  }
 
 }
