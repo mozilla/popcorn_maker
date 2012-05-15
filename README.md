@@ -33,7 +33,7 @@ Edit ``vagrantconfig_local.yaml`` if you want to change any of the defaults.
 Now we are ready to provision the machine run.
 
     vagrant up
-    
+
 This will take a few minutes, so go on and reward yourself with a nice cup of tea!
 
 
@@ -50,7 +50,11 @@ Amend ``popcorn_gallery/settings/local.py``  with your details:
 Preapare the static assets
 ==========================
 
-Because the project is has a lot of media that needs to be served the files need to be collected and prepared to be served.
+Because the project is has a lot of media that needs to be served the files need to be collected and prepared.
+
+SSH into the virtualbox:
+
+    vagrant ssh
 
 Run from te root of the project:
 
