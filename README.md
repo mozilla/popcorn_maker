@@ -47,6 +47,16 @@ Amend ``popcorn_gallery/settings/local.py``  with your details:
 - HMAC_KEYS: Uncomment or add your own key.
 
 
+Preapare the static assets
+==========================
+
+Because the project is has a lot of media that needs to be served the files need to be collected and prepared to be served.
+
+Run from te root of the project:
+
+    fab collectstatic
+
+
 Add a host alias
 ================
 
