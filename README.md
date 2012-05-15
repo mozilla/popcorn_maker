@@ -6,57 +6,68 @@ Django app to power the Popcorn Maker! http://mozillapopcorn.org/
 The Project structure is based on Mozilla Playdoh http://playdoh.readthedocs.org/en/latest/index.html
 
 
-Set up the development server
-=============================
+Getting the source code
+=======================
 
-Clone the repository and the dependencies:
+Clone the repository and its dependencies:
 
     git clone --recursive git@github.com:alfredo/popcorn_gallery.git
 
-The setup is recomended to be done in a virtual machine, and this is where vagrant comes in handy.
 
-With vagrant you will have your code in your living in your local filesystem but the application running in a virtual linux machine. You can install the latest Vagrant package from http://vagrantup.com/
+Setup the application
+=====================
 
-From inside the repository
+The recommended setup is using vagrant and virtual box, you can get them from:
 
-Once you have installed vagrant grab a copy of this repository and copy the local vagrant settings, and edit as necessary:
+- Virtualbox: https://www.virtualbox.org/wiki/Downloads
+- Vagrant: http://vagrantup.com/
+
+This will keep the code living in your filesystem but the application running inside a VM.
+
+Once you've installed vagrant, from the root of the repository copy the local vagrant settings.
 
     cp vagrantconfig_local.yaml-dist vagrantconfig_local.yaml
 
-Please note that this file shouldn't be commited into the repository.
+Edit ``vagrantconfig_local.yaml`` if you want to change any of the defaults.
 
-To provision the machine run, this may take a few minutes:
+Now we are ready to provision the machine run.
 
     vagrant up
+    
+This will take a few minutes, so go on and reward yourself with a nice cup of tea!
 
-SSH into the virtual machine:
 
-    vagrant ssh
+Update the local settings file
+==============================
 
-Install the development dependencies:
+Amend ``popcorn_gallery/settings/local.py``  with your details:
 
-    pip install -r requirements/dev.txt
-
-Edit ``popcorn_gallery/settings/local.py``  with your details:
-
-- ADMINS - add your own email address
+- ADMINS: Add your email address and name.
 - SECRET_KEY
-- SITE_URL - 'http://local.mozillapopcorn.org'
-- HMAC_KEYS - Add your own key
+- HMAC_KEYS: Uncomment or add your own key.
 
+
+Add a host alias
+================
+
+This is done so ou can access the application via: http://local.mozillapopcorn.org
 
 Add to /etc/hosts in your local machine:
 
     33.33.33.11 local.mozillapopcorn.org
 
-The application should be available at:
+Now the application should be available at:
 
     http://local.mozillapopcorn.org
 
 
-Run the test suite
-=================
+Runing the test suite
+=====================
 
-From inside the virtual box run:
+SSH into the virtualbox:
+
+    vagrant ssh
+
+And run the test suite:
 
     fab test
