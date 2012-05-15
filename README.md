@@ -51,7 +51,7 @@ Add to /etc/hosts in your local machine:
 
 The application should be available at:
 
-    http://localhost.mozillapopcorn.org
+    http://local.mozillapopcorn.org
 
 
 Run the test suite
