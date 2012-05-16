@@ -5,12 +5,12 @@
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <meta name="viewport" content="initial-scale=1.0, width=device-width">
     {% block styles %}
-    <link rel="stylesheet" media="screen,projection,tv" href="{{ MEDIA_URL }}ignite/css/normalise.css" />
-    <link rel="stylesheet" media="screen,projection,tv" href="{{ MEDIA_URL }}ignite/css/devices.css" />
-    <link rel="stylesheet" media="all and (min-width:30em)" href="{{ MEDIA_URL }}ignite/css/desktop.css" />
+    <link rel="stylesheet" media="screen,projection,tv" href="{{ STATIC_URL }}ignite/css/normalise.css" />
+    <link rel="stylesheet" media="screen,projection,tv" href="{{ STATIC_URL }}ignite/css/devices.css" />
+    <link rel="stylesheet" media="all and (min-width:30em)" href="{{ STATIC_URL }}ignite/css/desktop.css" />
     <!--[if lt IE 9]>
         <script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <link rel="stylesheet" media="screen,projection,tv" href="{{ MEDIA_URL }}ignite/css/desktop.css" />
+        <link rel="stylesheet" media="screen,projection,tv" href="{{ STATIC_URL }}ignite/css/desktop.css" />
         <![endif]-->
     {% endblock styles %}
     <script type="text/javascript">

@@ -85,3 +85,34 @@ SSH into the virtualbox:
 And run the test suite:
 
     fab test
+
+
+Picking up development server updates
+=====================================
+
+The development server provisioning is done via Puppet http://puppetlabs.com/ to pick up the latest changes once you updated the project run:
+
+    vagrant provision
+
+
+Speed up the server
+===================
+
+At the moment the wsgi application is served via apache, which it's a bit hacky in order to pick up the file changes and reload automaticaly.
+
+If you want to speed up the application you could try stop apache and run the application via the development server.
+
+NGINX is proxy-passing the port 8000 to 80 and serving most of the static files.
+
+SSH into the virtual box:
+
+    vagrant ssh
+
+Stop apache:
+
+    sudo /etc/init.d/apache2 stop
+
+Run the development server
+
+    python manage.py runserver
+

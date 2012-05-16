@@ -41,6 +41,7 @@ class Template(models.Model):
                                 choices=get_templates(extension='html'))
     config = models.CharField(max_length=255,
                               choices=get_templates(extension='cfg'))
+    thumbnail = models.ImageField(upload_to="templates", blank=True)
     is_featured = models.BooleanField(default=False)
     status = models.IntegerField(choices=STATUS_CHOICES, default=LIVE)
     categories = models.ManyToManyField('popcorn.Category', blank=True)

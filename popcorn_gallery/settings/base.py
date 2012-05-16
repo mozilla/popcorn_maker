@@ -99,7 +99,7 @@ STATIC_ROOT = path('static')
 
 STATICFILES_DIRS = (
     path('butter'),
-    path('vendor-local', 'lib', 'python', 'django_browserid', 'static'),
+    path('assets'),
     )
 
 
