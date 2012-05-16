@@ -1,0 +1,243 @@
+/**= Desktop only */
+.columns {
+    margin-left: -10px;
+}
+.highlight .columns {
+    margin-left: 0;
+}
+.col {
+    float: left;
+    padding: 10px;
+    width: 33%;
+}
+.equal .col {
+    width: 50%;
+}
+.content_columns .main {
+    width: 67%;
+}
+.content_columns .bonus {
+    width: 33%;
+}
+.with_nav .nav {
+    width: 25%;
+}
+.with_nav .main {
+    width: 75%;
+}
+.col img {
+    width: 100%;
+}
+figure {
+    margin-top: 30px;
+    text-align: center
+}
+figure img {
+    width: auto !important;
+ }   
+#disqus_thread img {
+    width: auto;
+}
+#user_profile .user_tools {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+/* Masthead */
+.masthead .brand {
+    float: left;
+}
+.masthead nav {
+    float: right;
+    margin-right: 130px;
+}
+.user_tools {
+    float: right;
+}
+.tagline:before {
+    content: "&nbsp;";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    text-indent: -9999em;
+    background: transparent url(../img/css/content_artwork.png) no-repeat 0 0;
+    background-size: 100% 100%;
+}
+/**= Overrides from devices.css */
+.busta {
+    max-width: 980px;
+    padding: 0 10px;
+    margin: 0 auto;
+}
+.frame {
+    width: 100%;
+    float: none;
+    margin-right: 0;
+}
+.submissions .frame {
+    width: 100%;
+}
+.partners h2 {
+    line-height: 75px;
+    margin-bottom: 1em;
+}
+.partners ul {
+    margin: 1.1125em 0 1.1125em 20px;
+}
+.widgets .popularity {
+    float: right;
+    padding: 0;
+    clear: none;
+}
+/**= Main content */
+/* homepage */
+.submissions .col:nth-child(3n + 1) {
+    clear: left;
+}
+.sweet {
+    padding: 0 2em 0 0;
+    border-radius: 24px;
+}
+h1 .sweet {
+    padding-right: 0;
+    margin-top: -1em;
+    display: inline-block;
+}
+.sweet em {
+    margin: 0 30px 0 0;
+    display: inline-block;
+    border-top-left-radius: 24px;
+    border-bottom-left-radius: 24px;
+}
+.sweet em:after {
+    width: 0;
+    height: 0;
+    content: ".";
+    text-indent: -9999em;
+    border-top: 14px solid transparent;
+    border-bottom: 14px solid transparent;
+    border-left: 14px solid #ed4619;
+    position: absolute;
+    top: 0;
+    right: -14px;
+}
+header .shout {
+    float: left;
+}
+header .meta {
+    float: right;
+}
+header .meta p {
+    padding: 8px;
+    margin-right: 20px;
+}
+header .meta p,
+header .meta cta {
+    float: left;
+}
+header .meta em {
+    font-weight: bold;
+    font-style: normal;
+}
+.ignite_info p {
+    background: transparent;
+    background-image: url(../img/css/lightning-bolt.png), url(../img/css/homepage_arrow.png), url(../img/css/homepage_arrow.png);
+    background-position: 40px 50%, 130px 0, 100% 0;
+    background-repeat: no-repeat;
+    width: 85%;
+    padding-left: 180px;
+    padding-right: 40px;
+}
+.ignite_info .gather {
+    float: left;
+    width: 15%;
+    text-align: center;
+    padding: 2em 0;
+}
+.ignite_info br {
+    display: block;
+}
+.methods:after {
+    content: "&nbsp;";
+    position: absolute;
+    height: 2em;
+    border-bottom: 1px solid #9BC4DF;
+    width: 100%;
+    left: 0;
+    top: 0;
+    display: block;
+    text-indent: -9999em;
+}
+.methods li {
+    border-left: 1px solid #9bc4df;
+    padding: 4em 20px 1em;
+    position: relative;
+}
+.methods .intro {
+    padding-bottom: 50px;
+    min-height: 8.5em;
+    margin: 0;
+}
+.methods .col-foot {
+    position: absolute;
+    left: 20px;
+    bottom: 1em;
+}
+.methods ul li:first-child {
+    border-left: none;
+}
+.focus_areas .col {
+    border-left: 1px solid #C7DDEB;
+    width: 20%;
+}
+.focus_areas ul li:first-child {
+    border-left: none;
+}
+/* the about diagram */
+.rounds {
+    float: left;
+    width: 18%;
+}
+.development {
+    width: 75%;
+}
+.application {
+    float: left;
+    margin: 4em 0 0;
+}
+.development .round:before {
+    content: ".";
+    text-indent: -9999em;
+    width: 1440px;
+    height: 150px;
+    position: absolute;
+    z-index: 1;
+    background: transparent url(../img/css/process_bg.png) no-repeat 0 0;
+    left: -104px;
+    bottom: -28px;
+}
+.development .all .round:first-child:before {
+    content: none;
+}
+/* single submission */
+#show_submission h1 {
+    float: left;
+    width: 60%;
+}
+#show_submission .entre div.col {
+    width: 67%;
+}
+#wmd-input {
+    padding-top: 50px;
+}
+/* User profile */
+header.vcard {
+    padding-right: 100px;
+}
+/* Index pages */
+.index {
+    float: right;
+}
