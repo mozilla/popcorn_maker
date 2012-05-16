@@ -16,7 +16,7 @@ def get_templates(prefix='butter', extension=None):
     template_choices = []
     if extension:
         extension = '.%s' % extension
-    new_path = os.path.join(settings.TEMPLATES_ROOT, prefix)
+    new_path = os.path.join(settings.POPCORN_TEMPLATES_ROOT, prefix)
     for root, dir_list, file_list in os.walk(new_path):
         for template in file_list:
             full_path = os.path.join(root, template)

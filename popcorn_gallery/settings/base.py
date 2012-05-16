@@ -119,7 +119,7 @@ AUTH_PROFILE_MODULE = 'users.Profile'
 
 MIDDLEWARE_CLASSES += ('popcorn_gallery.users.middleware.ProfileMiddleware',)
 
-TEMPLATES_ROOT = path('popcorn_gallery', 'templates')
+POPCORN_TEMPLATES_ROOT = path('popcorn_gallery', 'templates')
 
 INVALID_USERNAMES = ()
 
