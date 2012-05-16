@@ -17,6 +17,9 @@
     {% if project and user == project.author %}
     <a href="{{ url('user_project_edit', username=user.username, shortcode=project.shortcode) }}">Edit</a>
     {% endif %}
+    {% if project and user == project.author %}
+    <a href="{{ url('user_project_delete', username=user.username, shortcode=project.shortcode) }}">Delete</a>
+    {% endif %}
   </div>
 </div>
 {%- endmacro %}
