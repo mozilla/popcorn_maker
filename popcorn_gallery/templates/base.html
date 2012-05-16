@@ -34,9 +34,6 @@
       {% endif %}
     </header>
     {% block content %}{% endblock content %}
-
-    <div>CSRF Token {{ csrf_token }}</div>
-
     {# TODO: django browser ID requires jquery #}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     {{ browserid_form.media }}
