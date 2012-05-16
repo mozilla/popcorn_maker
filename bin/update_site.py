@@ -52,9 +52,10 @@ def update_site(env, debug):
     # Commands to apply any migration and syncdb
     commands = [
         (CHDIR, here),
-        (EXEC, 'python manage.py collectstatic --noinput'),
         (EXEC, 'python manage.py syncdb'),
         (EXEC, 'python manage.py migrate'),
+        (EXEC, 'python manage.py collectstatic --noinput'),
+        (EXEC, 'python manage.py popcorn_import_butter'),
         ]
     for cmd, cmd_args in commands:
         if CHDIR == cmd:
