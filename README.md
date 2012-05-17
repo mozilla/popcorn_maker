@@ -30,6 +30,8 @@ Once you've installed vagrant, from the root of the repository copy the local va
 
 Edit ``vagrantconfig_local.yaml`` if you want to change any of the defaults.
 
+If you are on an NFS capable OS I recommend that you change ``nfs`` to ``true``, VirtualBox has know issues sharing files natively, more about this: http://vagrantup.com/docs/nfs.html
+
 Now we are ready to provision the machine run.
 
     vagrant up
@@ -40,11 +42,11 @@ This will take a few minutes, so go on and reward yourself with a nice cup of te
 Update the local settings file
 ==============================
 
-Amend ``popcorn_gallery/settings/local.py``  with your details:
+Amend ``popcorn_gallery/settings/local.py``  adding your details:
 
-- ADMINS: Add your email address and name.
-- SECRET_KEY
-- HMAC_KEYS: Uncomment or add your own key.
+- ADMINS: Add an email address and a name.
+- SECRET_KEY: This can be anything.
+- HMAC_KEYS: Uncomment or add your own key inside it.
 
 
 Preapare the static assets
@@ -87,10 +89,12 @@ And run the test suite:
     fab test
 
 
-Picking up development server updates
-=====================================
+Updating the development server
+===============================
 
-The development server provisioning is done via Puppet http://puppetlabs.com/ to pick up the latest changes once you updated the project run:
+The development server can be updated from time to time, and it is done via Puppet http://puppetlabs.com/
+
+Update the server by running in your local machine from the root of the project:
 
     vagrant provision
 
@@ -116,3 +120,10 @@ Run the development server
 
     python manage.py runserver
 
+
+Creating a superuser
+====================
+
+From inside the VM run:
+
+    python manage.py createsuperuser
