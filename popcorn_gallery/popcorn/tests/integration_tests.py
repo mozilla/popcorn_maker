@@ -4,12 +4,14 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 
 from funfactory.middleware import LocaleURLMiddleware
+from funfactory.urlresolvers import reverse as funfactory_reverse
 from test_utils import TestCase
 from mock import patch
 
 from .fixtures import (create_user, create_project, create_project_category,
                        create_template, create_template_category)
-from ..models import Project, Template, TemplateCategory, ProjectCategory
+from ..models import (Project, Template, TemplateCategory, ProjectCategory,
+                      ProjectCategoryMembership)
 
 
 suppress_locale_middleware = patch.object(LocaleURLMiddleware,
@@ -475,3 +477,40 @@ class TemplateIntegrationTest(TestCase):
                                            args=[template.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['template'], template)
+
+
+class TestCategoryMembershipIntegrationTest(TestCase):
+
+    def setUp(self):
+        self.category = create_project_category()
+        self.user = create_user('bob', with_profile=True)
+        self.client.login(username=self.user.username, password='bob')
+        self.url = reverse('project_category_join', args=[self.category.slug])
+
+    def tearDown(self):
+        for model in [ProjectCategoryMembership, ProjectCategory, User]:
+            model.objects.all().delete()
+        self.client.logout()
+
+    def assertContextMessage(self, context, message_status):
+        self.assertTrue('messages' in context)
+        for item in list(context['messages']):
+            self.assertEqual(item.tags, message_status)
+
+    @suppress_locale_middleware
+    def test_membership_request_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['category'], self.category)
+
+    @suppress_locale_middleware
+    def test_membership_request_post(self):
+        response = self.client.post(self.url, {}, follow=True)
+        self.assertContextMessage(response.context, 'success')
+
+    @suppress_locale_middleware
+    def test_duplicate_membership_request(self):
+        ProjectCategoryMembership.objects.create(user=self.user.profile,
+                                                 project_category=self.category)
+        response = self.client.post(self.url, {}, follow=True)
+        self.assertContextMessage(response.context, 'error')
