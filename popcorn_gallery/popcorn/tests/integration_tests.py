@@ -7,9 +7,9 @@ from funfactory.middleware import LocaleURLMiddleware
 from test_utils import TestCase
 from mock import patch
 
-from .fixtures import (create_user, create_project, create_category,
-                       create_template)
-from ..models import Project, Template, Category
+from .fixtures import (create_user, create_project, create_project_category,
+                       create_template, create_template_category)
+from ..models import Project, Template, TemplateCategory, ProjectCategory
 
 
 suppress_locale_middleware = patch.object(LocaleURLMiddleware,
@@ -37,11 +37,11 @@ class ProjectIntegrationTest(PopcornIntegrationTestCase):
 
     def setUp(self):
         super(ProjectIntegrationTest, self).setUp()
-        self.category = create_category(is_featured=True)
+        self.category = create_project_category(is_featured=True)
 
     def tearDown(self):
         super(ProjectIntegrationTest, self).tearDown()
-        Category.objects.all().delete()
+        ProjectCategory.objects.all().delete()
 
     @suppress_locale_middleware
     def test_project_list(self):
@@ -286,13 +286,13 @@ class DeleteIntegrationTest(PopcornIntegrationTestCase):
 
     def setUp(self):
         super(DeleteIntegrationTest, self).setUp()
-        category = create_category(name='Special')
+        category = create_project_category(name='Special')
         self.project = create_project(author=self.user)
         self.project.categories.add(category)
 
     def tearDown(self):
         super(DeleteIntegrationTest, self).tearDown()
-        Category.objects.all().delete()
+        ProjectCategory.objects.all().delete()
         self.client.logout()
 
     @suppress_locale_middleware
@@ -311,7 +311,7 @@ class DeleteIntegrationTest(PopcornIntegrationTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue(reverse('users_dashboard'), response['Location'])
         self.assertEqual(Project.objects.all().count(), 0)
-        self.assertEqual(Category.objects.all().count(), 1)
+        self.assertEqual(ProjectCategory.objects.all().count(), 1)
         self.assertEqual(User.objects.all().count(), 1)
 
     @suppress_locale_middleware
@@ -346,18 +346,18 @@ class DeleteIntegrationTest(PopcornIntegrationTestCase):
 class CategoryIntegrationTest(TestCase):
 
     def setUp(self):
-        self.category = create_category(is_featured=True)
+        self.category = create_project_category(is_featured=True)
         self.user = create_user('bob', with_profile=True)
 
     def tearDown(self):
-        for model in [Project, User, Template, Category]:
+        for model in [Project, User, Template, ProjectCategory]:
             model.objects.all().delete()
 
     @suppress_locale_middleware
     def test_project_category_detail(self):
         project = create_project(author=self.user)
         project.categories.add(self.category)
-        response = self.client.get(self.category.get_projects_url())
+        response = self.client.get(self.category.get_absolute_url())
         context = response.context
         self.assertEqual(context['category'], self.category)
         self.assertEqual(len(context['project_list']), 1)
@@ -367,7 +367,7 @@ class CategoryIntegrationTest(TestCase):
     def test_project_category_detail_non_shared(self):
         project = create_project(author=self.user, is_shared=False)
         project.categories.add(self.category)
-        response = self.client.get(self.category.get_projects_url())
+        response = self.client.get(self.category.get_absolute_url())
         context = response.context
         self.assertEqual(context['category'], self.category)
         self.assertEqual(len(context['project_list']), 0)
@@ -376,7 +376,7 @@ class CategoryIntegrationTest(TestCase):
     def test_category_detail_removed(self):
         project = create_project(author=self.user, is_removed=True)
         project.categories.add(self.category)
-        response = self.client.get(self.category.get_projects_url())
+        response = self.client.get(self.category.get_absolute_url())
         context = response.context
         self.assertEqual(context['category'], self.category)
         self.assertEqual(len(context['project_list']), 0)
@@ -385,10 +385,10 @@ class CategoryIntegrationTest(TestCase):
 class TemplateIntegrationTest(TestCase):
 
     def setUp(self):
-        self.category = create_category(is_featured=True)
+        self.category = create_template_category(is_featured=True)
 
     def tearDown(self):
-        for model in [Template, Category]:
+        for model in [Template, TemplateCategory]:
             model.objects.all().delete()
 
     @suppress_locale_middleware
@@ -401,7 +401,7 @@ class TemplateIntegrationTest(TestCase):
 
     @suppress_locale_middleware
     def test_template_list_category(self):
-        category = create_category()
+        category = create_template_category()
         template = create_template(is_featured=True)
         template.categories.add(category)
         response = self.client.get(reverse('template_list_category',
@@ -421,7 +421,7 @@ class TemplateIntegrationTest(TestCase):
 
     @suppress_locale_middleware
     def test_template_list_category_hidden(self):
-        category = create_category()
+        category = create_template_category()
         template = create_template(status=Template.HIDDEN)
         template.categories.add(category)
         response = self.client.get(reverse('template_list_category',

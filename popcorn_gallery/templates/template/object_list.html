@@ -19,7 +19,7 @@
 <h2>Categories</h2>
 {% for category in category_list %}
 <div>
-  <a href="{{ category.get_templates_url() }}">{{ category }}</a>
+  <a href="{{ category.get_absolute_url() }}">{{ category }}</a>
 </div>
 {% endfor%}
 

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from .fixtures import create_user, create_template, create_project
-from ..models import Project, Template, Category
+from ..models import Project, Template, ProjectCategory, TemplateCategory
 
 
 class PopcornTest(TestCase):
@@ -75,12 +75,23 @@ class TemplateTest(TestCase):
         self.assertEqual(Template.objects.all().count(), 1)
 
 
-class CategoryTest(TestCase):
+class ProjectCategoryTest(TestCase):
 
     def tearDown(self):
-        Category.objects.all().delete()
+        ProjectCategory.objects.all().delete()
 
     def test_category_creation(self):
         data = {'name': 'Special'}
-        category = Category.objects.create(**data)
+        category = ProjectCategory.objects.create(**data)
+        assert category.id, 'Failed to create Category'
+
+
+class TemplateCategoryTest(TestCase):
+
+    def tearDown(self):
+        TemplateCategory.objects.all().delete()
+
+    def test_category_creation(self):
+        data = {'name': 'Special'}
+        category = TemplateCategory.objects.create(**data)
         assert category.id, 'Failed to create Category'

@@ -72,6 +72,9 @@ class TemplateCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('template_list_category', [self.slug])
 
 
 class Project(models.Model):
@@ -144,10 +147,6 @@ class ProjectCategory(models.Model):
     def __unicode__(self):
         return self.name
 
-#     @models.permalink
-#     def get_templates_url(self):
-#         return ('template_list_category', [self.slug])
-
-#     @models.permalink
-#     def get_projects_url(self):
-#         return ('project_list_category', [self.slug])
+    @models.permalink
+    def get_absolute_url(self):
+        return ('project_list_category', [self.slug])
