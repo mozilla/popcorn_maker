@@ -49,18 +49,23 @@ Amend ``popcorn_gallery/settings/local.py``  adding your details:
 - HMAC_KEYS: Uncomment or add your own key inside it.
 
 
-Preapare the static assets
-==========================
+Updating the application
+========================
 
-Because the project is has a lot of media that needs to be served the files need to be collected and prepared.
+The application is under heavy development, and when you update there could be a few database or asset changes.
 
-SSH into the virtualbox:
+There is an script is provided to make sure it is keep in sync
+
+SSH into the VM:
 
     vagrant ssh
 
-Run from te root of the project:
+Run the update script
 
-    fab collectstatic
+    fab update
+
+
+This will syncronize the database, run any database schema or data migrations, and compile the assets from Butter.
 
 
 Add a host alias
@@ -87,23 +92,6 @@ SSH into the virtualbox:
 And run the test suite:
 
     fab test
-
-
-Updating the application
-========================
-
-The application is under heavy development, and can have big changes. But an script is provided to make sure it is keep in sync
-
-SSH into the VM:
-
-    vagrant ssh
-
-Run the update script
-
-    fab update
-
-
-This will syncronize the database, run any database schema or data migrations, and compile the assets from Butter.
 
 
 Updating the development server

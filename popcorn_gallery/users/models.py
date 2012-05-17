@@ -17,7 +17,8 @@ class Profile(models.Model):
                               blank=True)
     bio = models.TextField(verbose_name=_(u'Bio'), blank=True)
     featured = models.BooleanField(default=False)
-
+    categories = models.ManyToManyField('popcorn.ProjectCategory',
+                                        through='popcorn.ProjectCategoryMembership')
 
     def __unicode__(self):
         """Return a string representation of the user."""

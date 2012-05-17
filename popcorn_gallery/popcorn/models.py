@@ -150,3 +150,29 @@ class ProjectCategory(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('project_list_category', [self.slug])
+
+
+class ProjectCategoryMembership(models.Model):
+    """Intermediary Model to determine when a user is member of a given
+    ``ProjectCategory``"""
+    APPROVED = 1
+    PENDING = 2
+    DENIED = 3
+    STATUS_CHOICES = (
+        (APPROVED, _('Approved')),
+        (PENDING, _('Pending')),
+        (DENIED, _('Denied')),
+        )
+    user = models.ForeignKey('users.Profile')
+    project_category = models.ForeignKey('popcorn.ProjectCategory')
+    status = models.IntegerField(choices=STATUS_CHOICES, default=PENDING)
+    created = CreationDateTimeField()
+    modified = ModificationDateTimeField()
+
+    class Meta:
+        unique_together = ('user', 'project_category')
+
+    def __unicode__(self):
+        return u'Category %s for user %s: %s' % (self.user,
+                                                 self.project_category,
+                                                 self.get_status_display())

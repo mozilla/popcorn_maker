@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Join {{ category.name }} - {{ super() }}{% endblock title %}
+
+{% block content %}
+<h1>Apply to join: {{ category.name }}</h1>
+<form method="post" id="form-join-category-id" action="">
+  <button type="submit">Apply</button>
+  {{ csrf() }}
+</form>
+{% endblock content %}

@@ -29,14 +29,21 @@ def prepare_butter():
 def syncdb():
     print yellow('Syncing the database')
     with lcd(settings.PROJECT_ROOT):
-        local('python manage.py syncdb --noinput ')
-        local('python manage.py migrate --noinput ')
+        local('python manage.py syncdb --noinput')
+        local('python manage.py migrate --noinput')
+
+
+def import_butter_templates():
+    print yellow('Importing Butter templates')
+    with lcd(settings.PROJECT_ROOT):
+        local('python manage.py popcorn_import_butter')
 
 
 def update():
     print yellow('Updating the site:')
     syncdb()
     prepare_butter()
+    import_butter_templates()
 
 
 def collectstatic():

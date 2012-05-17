@@ -9,6 +9,10 @@ urlpatterns = patterns(
     url(r'^projects/$', 'project_list', name='project_list'),
     url(r'^projects/category/(?P<slug>[\w-]+)/$', 'project_list',
         name='project_list_category'),
+    url(r'^projects/category/(?P<slug>[\w-]+)/$', 'project_list',
+        name='project_list_category'),
+    url(r'^projects/category/(?P<slug>[\w-]+)/join/$', 'project_category_join',
+        name='project_category_join'),
     )
 
 urlpatterns += patterns(

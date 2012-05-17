@@ -4,6 +4,7 @@ import json
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
@@ -123,6 +124,15 @@ def project_list(request, slug=None):
         'category_list': category_list,
         }
     return render(request, 'project/object_list.html', context)
+
+
+@login_required
+def project_category_join(request, slug):
+    category = get_object_or_404(ProjectCategory, slug=slug)
+    if request.method == 'POST':
+        assert False, category
+    context = {'category': category}
+    return render(request, 'category/join.html', context)
 
 
 def template_list(request, slug=None):
