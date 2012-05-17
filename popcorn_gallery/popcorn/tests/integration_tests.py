@@ -33,6 +33,11 @@ class PopcornIntegrationTestCase(TestCase):
             }
         return reverse(name, kwargs=kwargs)
 
+    def assertContextMessage(self, context, message_status):
+        self.assertTrue('messages' in context)
+        for item in list(context['messages']):
+            self.assertEqual(item.tags, message_status)
+
 
 class ProjectIntegrationTest(PopcornIntegrationTestCase):
 
@@ -186,6 +191,79 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         self.assertRedirects(response, project.get_absolute_url())
         project = Project.objects.get()
         self.assertEqual(project.name, 'Changed!')
+
+
+class EditProjectCategoryIntegrationTest(PopcornIntegrationTestCase):
+
+    def setUp(self):
+        super(EditProjectCategoryIntegrationTest, self).setUp()
+        self.project = create_project(author=self.user, status=Project.LIVE)
+        self.category = create_project_category()
+        self.data = {
+            'name': 'Awesome project!',
+            'description': 'Hello world!',
+            'status': Project.LIVE,
+            'is_shared': True,
+            'is_forkable': True,
+            'categories': [self.category.pk]
+            }
+        self.client.login(username=self.user.username, password='bob')
+        self.url = self.get_url('user_project_edit', self.user, self.project)
+
+    def tearDown(self):
+        super(EditProjectCategoryIntegrationTest, self).tearDown()
+        for model in [ProjectCategoryMembership, ProjectCategory, User]:
+            model.objects.all().delete()
+        self.client.logout()
+
+    def add_membership(self, status):
+        data = {
+            'user': self.user.profile,
+            'project_category': self.category,
+            'status': getattr(ProjectCategoryMembership, status)
+            }
+        return ProjectCategoryMembership.objects.create(**data)
+
+    @suppress_locale_middleware
+    def test_edit_project_category_get(self):
+        self.add_membership('APPROVED')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'].has_categories)
+
+    @suppress_locale_middleware
+    def test_edit_project_category_denied_get(self):
+        self.add_membership('DENIED')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['form'].has_categories)
+
+    @suppress_locale_middleware
+    def test_edit_project_category_pending_get(self):
+        self.add_membership('PENDING')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['form'].has_categories)
+
+    @suppress_locale_middleware
+    def test_edit_project_category_post(self):
+        self.add_membership('APPROVED')
+        response = self.client.post(self.url, self.data, follow=True)
+        self.assertContextMessage(response.context, 'success')
+
+    @suppress_locale_middleware
+    def test_edit_project_category_denied_post(self):
+        self.add_membership('DENIED')
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'].errors)
+
+    @suppress_locale_middleware
+    def test_edit_project_category_pending_post(self):
+        self.add_membership('PENDING')
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['form'].errors)
 
 
 class MetadataIntegrationTest(PopcornIntegrationTestCase):
