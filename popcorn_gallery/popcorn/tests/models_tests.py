@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from .fixtures import create_user, create_template, create_project
-from ..models import Project, Template, ProjectCategory, TemplateCategory
+from .fixtures import (create_user, create_template, create_project,
+                       create_project_category)
+from ..models import (Project, Template, ProjectCategory, TemplateCategory,
+                      ProjectCategoryMembership)
 
 
 class PopcornTest(TestCase):
@@ -95,3 +97,20 @@ class TemplateCategoryTest(TestCase):
         data = {'name': 'Special'}
         category = TemplateCategory.objects.create(**data)
         assert category.id, 'Failed to create Category'
+
+
+class ProjectCategoryMembershipTest(TestCase):
+
+    def tearDown(self):
+        for model in [ProjectCategoryMembership, ProjectCategory, User]:
+            model.objects.all().delete()
+
+    def test_membership_creation(self):
+        user = create_user('bob', with_profile=True)
+        data = {
+            'user': user.profile,
+            'project_category': create_project_category(),
+            }
+        membership = ProjectCategoryMembership.objects.create(**data)
+        self.assertEqual(ProjectCategoryMembership.PENDING, membership.status)
+        assert membership.created, "Missing created date"

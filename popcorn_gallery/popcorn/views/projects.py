@@ -9,9 +9,12 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
 from funfactory.urlresolvers import reverse
+from tower import ugettext as _
+
 from ..baseconv import base62
 from ..forms import ProjectEditForm
-from ..models import Project, ProjectCategory, Template, TemplateCategory
+from ..models import (Project, ProjectCategory, Template, TemplateCategory,
+                      ProjectCategoryMembership)
 
 
 def valid_user_project(func):
@@ -101,7 +104,7 @@ def user_project_delete(request, project):
     if not request.user == project.author:
         raise Http404
     if request.method == 'POST':
-        messages.success(request, 'Project removed successfully')
+        messages.success(request, _('Project removed successfully'))
         project.delete()
         return HttpResponseRedirect(reverse('users_dashboard'))
     context = {'project': project}
@@ -130,9 +133,16 @@ def project_list(request, slug=None):
 def project_category_join(request, slug):
     category = get_object_or_404(ProjectCategory, slug=slug)
     if request.method == 'POST':
-        assert False, category
+        membership, created = (ProjectCategoryMembership.objects
+                               .get_or_create(user=request.user.profile,
+                                              project_category=category))
+        if created:
+            messages.success(request, _('Your request has been sent'))
+        else:
+            messages.error(request, _('You have previoiusly sent this request'))
+        return HttpResponseRedirect(reverse('users_dashboard'))
     context = {'category': category}
-    return render(request, 'category/join.html', context)
+    return render(request, 'project/join_category.html', context)
 
 
 def template_list(request, slug=None):

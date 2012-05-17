@@ -8,6 +8,7 @@ Made with Popcorn - {{ super() }}
 
 {% if category %}
 <h2>Category: {{ category.name }}</h2>
+<a href="{{ url('project_category_join', slug=category.slug) }}">Join this category</a>
 {% endif %}
 
 {% for project in project_list %}

@@ -173,6 +173,6 @@ class ProjectCategoryMembership(models.Model):
         unique_together = ('user', 'project_category')
 
     def __unicode__(self):
-        return u'Category %s for user %s: %s' % (self.user,
-                                                 self.project_category,
-                                                 self.get_status_display())
+        return u'%s membership for %s: %s' %(self.project_category,
+                                                self.user,
+                                                self.get_status_display())
