@@ -10,7 +10,7 @@ from django.shortcuts import render, get_object_or_404
 from funfactory.urlresolvers import reverse
 from ..baseconv import base62
 from ..forms import ProjectEditForm
-from ..models import Project, Category, Template
+from ..models import Project, ProjectCategory, Template, TemplateCategory
 
 
 def valid_user_project(func):
@@ -109,14 +109,14 @@ def user_project_delete(request, project):
 
 def project_list(request, slug=None):
     if slug:
-        category = get_object_or_404(Category, slug=slug)
+        category = get_object_or_404(ProjectCategory, slug=slug)
         kwargs = {'categories': category}
     else:
         category = None
         kwargs = {}
     object_list = (Project.live.filter(**kwargs)
                    .order_by('-is_featured','-created'))
-    category_list = Category.objects.filter(is_featured=True)
+    category_list = ProjectCategory.objects.filter(is_featured=True)
     context = {
         'category': category,
         'project_list': object_list,
@@ -128,14 +128,14 @@ def project_list(request, slug=None):
 def template_list(request, slug=None):
     """Lists all the available templates. Filters by category too"""
     if slug:
-        category = get_object_or_404(Category, slug=slug)
+        category = get_object_or_404(TemplateCategory, slug=slug)
         kwargs = {'categories': category}
     else:
         category = None
         kwargs = {}
     object_list = (Template.live.filter(**kwargs)
                    .order_by('-is_featured', 'name'))
-    category_list = Category.objects.filter(is_featured=True)
+    category_list = TemplateCategory.objects.filter(is_featured=True)
     context = {
         'template_list': object_list,
         'category': category,
@@ -159,7 +159,7 @@ def template_summary(request, slug):
         template = Template.live.get(slug=slug)
     except Template.DoesNotExist:
         raise Http404
-    category_list = Category.objects.filter(is_featured=True)
+    category_list = TemplateCategory.objects.filter(is_featured=True)
     context = {
         'template': template,
         'object': None,

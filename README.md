@@ -89,6 +89,23 @@ And run the test suite:
     fab test
 
 
+Updating the application
+========================
+
+The application is under heavy development, and can have big changes. But an script is provided to make sure it is keep in sync
+
+SSH into the VM:
+
+    vagrant ssh
+
+Run the update script
+
+    fab update
+
+
+This will syncronize the database, run any database schema or data migrations, and compile the assets from Butter.
+
+
 Updating the development server
 ===============================
 

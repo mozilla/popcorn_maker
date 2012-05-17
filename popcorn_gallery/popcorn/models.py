@@ -44,7 +44,7 @@ class Template(models.Model):
     thumbnail = models.ImageField(upload_to="templates", blank=True)
     is_featured = models.BooleanField(default=False)
     status = models.IntegerField(choices=STATUS_CHOICES, default=LIVE)
-    categories = models.ManyToManyField('popcorn.Category', blank=True)
+    categories = models.ManyToManyField('popcorn.TemplateCategory', blank=True)
 
     # managers
     objects = models.Manager()
@@ -59,6 +59,19 @@ class Template(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('template_detail', [self.slug])
+
+
+class TemplateCategory(models.Model):
+    name = models.CharField(max_length=255)
+    slug = AutoSlugField(populate_from='name')
+    is_featured = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = u'Template Categories'
+
+    def __unicode__(self):
+        return self.name
+
 
 
 class Project(models.Model):
@@ -83,7 +96,7 @@ class Project(models.Model):
     is_featured = models.BooleanField(default=False)
     created = CreationDateTimeField()
     modified = ModificationDateTimeField()
-    categories = models.ManyToManyField('popcorn.Category', blank=True)
+    categories = models.ManyToManyField('popcorn.ProjectCategory', blank=True)
 
     # managers
     objects = models.Manager()
@@ -120,21 +133,21 @@ class Project(models.Model):
         return base62.from_decimal(self.pk)
 
 
-class Category(models.Model):
+class ProjectCategory(models.Model):
     name = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from='name')
     is_featured = models.BooleanField(default=False)
 
     class Meta:
-        verbose_name_plural = u'Categories'
+        verbose_name_plural = u'Project Categories'
 
     def __unicode__(self):
         return self.name
 
-    @models.permalink
-    def get_templates_url(self):
-        return ('template_list_category', [self.slug])
+#     @models.permalink
+#     def get_templates_url(self):
+#         return ('template_list_category', [self.slug])
 
-    @models.permalink
-    def get_projects_url(self):
-        return ('project_list_category', [self.slug])
+#     @models.permalink
+#     def get_projects_url(self):
+#         return ('project_list_category', [self.slug])

@@ -19,10 +19,25 @@ def test(*args):
         local('python manage.py test --noinput '
               '--settings=popcorn_gallery.settings.test')
 
+
 def prepare_butter():
     print yellow('Compiling Butter files.')
     with lcd(os.path.join(settings.PROJECT_ROOT, 'butter')):
         local('node make')
+
+
+def syncdb():
+    print yellow('Syncing the database')
+    with lcd(settings.PROJECT_ROOT):
+        local('python manage.py syncdb --noinput ')
+        local('python manage.py migrate --noinput ')
+
+
+def update():
+    print yellow('Updating the site:')
+    syncdb()
+    prepare_butter()
+
 
 def collectstatic():
     prepare_butter()
