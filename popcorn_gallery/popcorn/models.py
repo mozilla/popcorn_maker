@@ -89,6 +89,7 @@ class Project(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     author = models.ForeignKey('auth.User')
+    url = models.URLField(blank=True)
     template = models.ForeignKey('popcorn.Template')
     metadata = models.TextField()
     html = models.TextField()

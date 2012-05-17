@@ -1,8 +1,9 @@
 import json
 
 from django import forms
+from django.forms.widgets import CheckboxSelectMultiple
 
-from .models import Project, Template
+from .models import Project, Template, ProjectCategory, ProjectCategoryMembership
 
 
 class JSONField(forms.CharField):
@@ -27,7 +28,21 @@ class ProjectForm(forms.Form):
 
 class ProjectEditForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(ProjectEditForm, self).__init__(*args, **kwargs)
+        queryset = (ProjectCategory.objects
+                    .filter(projectcategorymembership__user=user,
+                            projectcategorymembership__status=ProjectCategoryMembership.APPROVED))
+        self.has_categories = True if queryset else False
+        self.fields.update({
+            'categories': forms.ModelMultipleChoiceField(queryset=queryset,
+                                                         required=False,
+                                                         widget=CheckboxSelectMultiple)
+                                                         })
+
     class Meta:
-        fields = ('name', 'description', 'is_shared', 'is_forkable', 'status')
+        fields = ('name', 'description', 'is_shared', 'is_forkable', 'status',
+                  'categories')
         model = Project
 

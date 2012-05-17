@@ -86,12 +86,14 @@ def user_project_edit(request, project):
     if not request.user == project.author:
         raise Http404
     if request.method == 'POST':
-        form = ProjectEditForm(request.POST, instance=project)
+        form = ProjectEditForm(request.POST, instance=project,
+                               user=request.user.get_profile())
         if form.is_valid():
             instance = form.save()
             return HttpResponseRedirect(instance.get_absolute_url())
     else:
-        form = ProjectEditForm(instance=project)
+        form = ProjectEditForm(instance=project,
+                               user=request.user.get_profile())
     context = {
         'form': form,
         'project': project,

@@ -4,7 +4,6 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 
 from funfactory.middleware import LocaleURLMiddleware
-from funfactory.urlresolvers import reverse as funfactory_reverse
 from test_utils import TestCase
 from mock import patch
 
