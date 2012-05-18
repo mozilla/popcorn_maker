@@ -1,7 +1,7 @@
 <!DOCTYPE html>{% import "includes/template-heading.html" as heading %}
 <html>
   <head>
-    <title>{% if object %}{{ object.name }} - {% endif %}Basic template</title>
+    <title>{% if project %}{{ project.name }} - {% endif %} {{ template.name }} - Popcornjs</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <script src="https://browserid.org/include.js" type="text/javascript" data-butter-exclude></script>
     <script src="{{ STATIC_URL }}src/butter.js" data-butter-exclude></script>
@@ -34,7 +34,7 @@
   </head>
   <body>
     {% if request.user.is_authenticated() %}
-    {# heading.user_status(request.user, object) #}
+    {# heading.user_status(request.user, template, project) #}
     {% endif%}
     <video id="main" data-butter="media" controls>
       <source src="{{ STATIC_URL }}external/popcorn-js/test/trailer.ogv">

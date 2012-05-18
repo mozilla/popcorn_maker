@@ -1,26 +1,14 @@
-import json
-
 from django import forms
 from django.forms.widgets import CheckboxSelectMultiple
 
 from .models import Project, Template, ProjectCategory, ProjectCategoryMembership
-
-
-class JSONField(forms.CharField):
-    """JSON field makes sure the value is dumped by JSON."""
-
-    def clean(self, value):
-        try:
-            value = json.dumps(value) if value else None
-        except TypeError:
-            raise forms.ValidationError('Invalid JSON value')
-        return super(JSONField, self).clean(value)
+from .fields import PopcornJSONField
 
 
 class ProjectForm(forms.Form):
     """Form used to validate the data sent through the API."""
     name = forms.CharField()
-    data = JSONField()
+    data = PopcornJSONField()
     template = forms.ModelChoiceField(queryset=Template.live.all(),
                                       empty_label=None,
                                       to_field_name='slug')

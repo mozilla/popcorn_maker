@@ -46,12 +46,12 @@ def valid_user_project(func):
 
 @valid_user_project
 def user_project(request, project):
-    context = {'object': project}
+    context = {'project': project, 'template': project.template}
     return render(request, project.template.template, context)
 
 @valid_user_project
 def user_project_config(request, project):
-    context = {'object': project}
+    context = {'project': project }
     return render(request, project.template.config, context)
 
 
@@ -172,7 +172,7 @@ def template_detail(request, slug):
     except Template.DoesNotExist:
         raise Http404
     context = {'template': template,
-               'object': None}
+               'project': None}
     return render(request, template.template, context)
 
 

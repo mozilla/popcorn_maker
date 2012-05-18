@@ -87,7 +87,8 @@ class DetailIntegrationTest(PopcornIntegrationTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['object'], project)
+        self.assertEqual(context['project'], project)
+        self.assertEqual(context['template'], project.template)
 
     @suppress_locale_middleware
     def test_unpublished_project_anon(self):
@@ -114,7 +115,7 @@ class DetailIntegrationTest(PopcornIntegrationTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['object'], project)
+        self.assertEqual(context['project'], project)
         self.client.logout()
 
     @suppress_locale_middleware
