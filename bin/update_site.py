@@ -52,7 +52,6 @@ def update_site(env, debug):
     # Commands to apply any migration and syncdb
     commands = [
         (CHDIR, here),
-        (EXEC, 'python manage.py reset_db --router=default --noinput'),
         (EXEC, 'python manage.py syncdb --noinput'),
         (EXEC, 'python manage.py migrate --noinput'),
         (EXEC, 'python manage.py collectstatic --noinput'),
