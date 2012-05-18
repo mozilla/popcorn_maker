@@ -110,8 +110,8 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # Browser ID
 BROWSERID_CREATE_USER = True
 LOGIN_REDIRECT_URL = '/dashboard/'
-LOGIN_REDIRECT_URL_FAILURE = '/'
-LOGIN_URL = '/'
+LOGIN_REDIRECT_URL_FAILURE = '/login/failed/'
+LOGIN_URL = '/login/'
 
 ANON_ALWAYS = True
 

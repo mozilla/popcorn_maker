@@ -5,7 +5,7 @@
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <script src="https://browserid.org/include.js" type="text/javascript" data-butter-exclude></script>
     <script src="{{ STATIC_URL }}src/butter.js" data-butter-exclude></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}templates/test.js" data-butter-exclude></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}butter/test.js" data-butter-exclude></script>
     <style>
       #main, .content-div {
       float: left;
@@ -34,7 +34,7 @@
   </head>
   <body>
     {% if request.user.is_authenticated() %}
-    {{ heading.user_status(request.user, object) }}
+    {# heading.user_status(request.user, object) #}
     {% endif%}
     <video id="main" data-butter="media" controls>
       <source src="{{ STATIC_URL }}external/popcorn-js/test/trailer.ogv">
