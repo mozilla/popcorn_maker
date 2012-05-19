@@ -11,7 +11,7 @@ def about(request):
     return render(request, 'about.html', context)
 
 
-def help(request):
+def help_page(request):
     context = {}
     return render(request, 'help.html', context)
 
@@ -19,4 +19,3 @@ def help(request):
 def legal(request):
     context = {}
     return render(request, 'legal.html', context)
-

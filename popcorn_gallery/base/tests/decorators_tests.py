@@ -71,6 +71,22 @@ class PopcornDecoratorTests(TestCase):
         response = mock(request)
         self.assertTrue(isinstance(response, HttpResponseBadRequest))
 
+    def test_json_post_invalid_keys(self):
+        """JSON sent is invalid"""
+        mock = json_handler(view_mock)
+        request = self.factory.post('/', {0: 'foo'},
+                                    CONTENT_TYPE='application/json')
+        response = mock(request)
+        self.assertTrue(isinstance(response, HttpResponseBadRequest))
+
+    def test_json_post_javascript_key(self):
+        """JSON sent is invalid"""
+        mock = json_handler(view_mock)
+        request = self.factory.post('/', {'<script>alert()</script>': 'foo'},
+                                    CONTENT_TYPE='application/json')
+        response = mock(request)
+        self.assertTrue(isinstance(response, HttpResponseBadRequest))
+
 
 class TestLoginRequredAjaxDecorator(TestCase):
 

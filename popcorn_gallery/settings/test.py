@@ -13,7 +13,7 @@ DATABASES = {
     }
 }
 
-DEBUG = TEMPLATE_DEBUG = True
+DEBUG = TEMPLATE_DEBUG = False
 
 # Is this a development instance? Set this to True on development/master
 # instances and False on stage/prod.
@@ -35,6 +35,7 @@ NOSE_ARGS = [
     '--nocapture',
     '--failure-detail',
     '--with-progressive',
+    '--logging-filter=-south',
     ]
 
 # NOSE_PLUGINS = []

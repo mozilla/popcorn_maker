@@ -24,7 +24,7 @@ urlpatterns = patterns(
 urlpatterns += patterns(
     'popcorn_gallery.base.views',
     url('^about/$', 'about', name='about'),
-    url('^help/$', 'help', name='help'),
+    url('^help/$', 'help_page', name='help'),
     url('^legal/$', 'legal', name='legal'),
     )
 

@@ -125,3 +125,12 @@ POPCORN_TEMPLATES_ROOT = path('popcorn_gallery', 'templates')
 INVALID_USERNAMES = ()
 
 PROJECT_ROOT = path('')
+
+
+# Valid domains for popcorn, must be lowercase
+POPCORN_VALID_DOMAINS = (
+    'mozillapopcorn.org',
+    'www.youtube.com',
+    'twitter.com',
+    'vimeo.com',
+    )

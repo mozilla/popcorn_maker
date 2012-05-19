@@ -28,5 +28,3 @@ def import_popcorn_templates(popcorn_path, prefix):
         data['name'] = candidate
         Template.objects.create(**data)
     return
-
-
