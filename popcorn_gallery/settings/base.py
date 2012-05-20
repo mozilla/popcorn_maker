@@ -34,6 +34,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'django_extensions',
     'south',
     'taggit',
+    'django_mailer',
     # Application base, containing global templates.
     'popcorn_gallery.base',
     'popcorn_gallery.popcorn',
