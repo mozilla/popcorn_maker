@@ -2,11 +2,24 @@
 {% block title %}Template: {{ template.name }} - {{ super() }}{% endblock title %}
 
 {% block content %}
-<h1>Project: {{ template.name }}</h1>
+<h1>Template: {{ template.name }}</h1>
 {{ template.description }}
 <a href="{{ template.get_absolute_url() }}">Make something with this Template</a>
 {% if template.thumbnail  %}
 <img src="{{ template.thumbnail.url }}"  />
 {% endif %}
+
+{% if project_list %}
+<section>
+  <h1>Related Projects</h1>
+  {% for project in project_list %}
+  <div>
+    <a href="{{ project.get_absolute_url() }}">{{ project.name }}</a> by 
+    <a href="{{ project.author.get_absolute_url() }}">{{ project.author.profile.display_name }}</a>
+  </div>
+  {% endfor%}
+</section>
+{% endif %}
+
 
 {% endblock content %}
