@@ -1,0 +1,10 @@
+{% macro tag_list(tag_list) -%}
+{% if tag_list %}
+<h2>Tags</h2>
+<ul>
+  {% for tag in tag_list %}
+  <li>{{ tag }}</li>
+  {% endfor%}
+</ul>
+{% endif %}
+{%- endmacro %}

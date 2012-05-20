@@ -183,11 +183,13 @@ def template_summary(request, slug):
         raise Http404
     category_list = TemplateCategory.objects.filter(is_featured=True)
     project_list = Project.live.filter(template=template)[:5]
+    tag_list = template.tags.all()
     context = {
         'template': template,
         'object': None,
         'category_list': category_list,
         'project_list': project_list,
+        'tag_list': tag_list,
         }
     return render(request, 'template/object_detail.html', context)
 

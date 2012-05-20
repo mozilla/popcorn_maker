@@ -540,6 +540,10 @@ class TemplateIntegrationTest(TestCase):
                                            args=[template.slug]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['template'], template)
+        self.assertTrue('object' in response.context)
+        self.assertTrue('project_list' in response.context)
+        self.assertTrue('tag_list' in response.context)
+
 
     @suppress_locale_middleware
     def test_template_config_hidden(self):

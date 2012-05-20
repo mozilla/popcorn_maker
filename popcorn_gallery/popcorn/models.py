@@ -5,7 +5,9 @@ from django.db import models
 from django_extensions.db.fields import (CreationDateTimeField,
                                          ModificationDateTimeField, UUIDField,
                                          AutoSlugField)
+from taggit.managers import TaggableManager
 from tower import ugettext_lazy as _
+
 
 from .managers import ProjectManager, TemplateManager
 from .baseconv import base62
@@ -45,6 +47,7 @@ class Template(models.Model):
     is_featured = models.BooleanField(default=False)
     status = models.IntegerField(choices=STATUS_CHOICES, default=LIVE)
     categories = models.ManyToManyField('popcorn.TemplateCategory', blank=True)
+    tags = TaggableManager()
 
     # managers
     objects = models.Manager()
