@@ -1,4 +1,6 @@
 {% extends "users/profile.html" %}
+{% import "includes/activity.html" as activity %}
+
 {% block title -%}
 {{ _('Dashboard') }} : {{ profile.display_name }} - {{ super() }}
 {% endblock title -%}
@@ -45,5 +47,7 @@
     {% endfor%}
   </table>
 </section>
+
+{{ activity.activity(activity_list) }}
 
 {% endblock -%}

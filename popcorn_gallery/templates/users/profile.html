@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% import "includes/activity.html" as activity %}
+
 {% block page_title -%}
 Profile: {{ profile.display_name }} - {{ super() }}
 {% endblock -%}
@@ -14,8 +16,6 @@ Profile: {{ profile.display_name }} - {{ super() }}
 {{ profile.bio }}
 {% endif %}
 
-
-
 <section>
   <h1>{{ _('Projects') }}</h1>
   <ul>
@@ -27,5 +27,7 @@ Profile: {{ profile.display_name }} - {{ super() }}
     {% endfor%}
   </ul>
 </section>
+
+{{ activity.activity(activity_list) }}
 
 {% endblock -%}

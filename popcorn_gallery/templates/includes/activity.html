@@ -1,0 +1,12 @@
+{% macro activity(activity_list) -%}
+{% if activity_list %}
+<h1>Activity</h1>
+<ul>
+  {% for activity in activity_list %}
+  <li>
+    <p>{{ activity.user.profile.display_name }} {{ activity.body }} on {{ activity.created }} {% if activity.url %}<a href="{{ activity.url }}">more...</a>{% endif %}</p>
+  </li>
+  {% endfor%}
+</ul>
+{% endif %}
+{%- endmacro %}

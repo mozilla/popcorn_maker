@@ -27,6 +27,17 @@ class PopcornTest(TestCase):
         self.assertTrue(project.is_forkable)
         self.assertTrue(project.is_shared)
         self.assertFalse(project.is_removed)
+        self.assertTrue(project.is_published)
+
+    def test_hidden_project(self):
+        project = create_project(status=Project.HIDDEN)
+        self.assertFalse(project.is_removed)
+        self.assertFalse(project.is_published)
+
+    def test_removed_project(self):
+        project = create_project(is_removed=True)
+        self.assertEqual(project.status, project.LIVE)
+        self.assertFalse(project.is_published)
 
     def test_butter_data(self):
         project = create_project()

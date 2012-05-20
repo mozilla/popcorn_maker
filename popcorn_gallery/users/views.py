@@ -14,6 +14,7 @@ from tower import ugettext as _
 from .models import Profile
 from .forms import ProfileCreateForm, ProfileForm
 from ..popcorn.models import Project
+from ..activity.models import Activity
 
 
 class AjaxVerify(Verify):
@@ -48,9 +49,11 @@ def dashboard(request):
     user_profile = request.user.get_profile()
     project_list = Project.objects.filter(author=request.user,
                                           is_removed=False)
+    activity_list = Activity.objects.get_for_user(request.user)[:5]
     context = {
         'profile': user_profile,
         'project_list': project_list,
+        'activity_list': activity_list,
         }
     return jingo.render(request, 'users/dashboard.html', context)
 
@@ -67,14 +70,16 @@ def profile(request, username):
         profile = Profile.objects.get(user__username=username)
     except Profile.DoesNotExist:
         raise Http404
-    project_list = Project.live.filter(author=profile.user)
     # If the identifier hasn't been chosen that means the user hasn't
     # accepted the Terms and Conditions
     if not profile.has_chosen_identifier:
         raise Http404
+    project_list = Project.live.filter(author=profile.user)
+    activity_list = Activity.objects.get_for_user(profile.user)[:5]
     context = {
         'profile': profile,
         'project_list': project_list,
+        'activity_list': activity_list,
         }
     return jingo.render(request, 'users/profile.html', context)
 

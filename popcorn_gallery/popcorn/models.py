@@ -133,7 +133,7 @@ class Project(models.Model):
 
     @property
     def is_published(self):
-        return self.status == self.LIVE
+        return (self.status == self.LIVE) and not self.is_removed
 
     @property
     def shortcode(self):
