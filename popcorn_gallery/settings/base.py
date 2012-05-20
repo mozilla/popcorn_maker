@@ -37,6 +37,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'popcorn_gallery.base',
     'popcorn_gallery.popcorn',
     'popcorn_gallery.users',
+    'popcorn_gallery.notifications',
 ]
 
 
@@ -75,6 +76,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.static',
     'django_browserid.context_processors.browserid_form',
     'popcorn_gallery.base.context_processors.common',
+    'popcorn_gallery.notifications.context_processors.notifications',
     )
 
 TEMPLATE_DIRS = (

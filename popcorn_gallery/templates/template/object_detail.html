@@ -5,4 +5,8 @@
 <h1>Project: {{ template.name }}</h1>
 {{ template.description }}
 <a href="{{ template.get_absolute_url() }}">Make something with this Template</a>
+{% if template.thumbnail  %}
+<img src="{{ template.thumbnail.url }}"  />
+{% endif %}
+
 {% endblock content %}

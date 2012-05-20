@@ -1,5 +1,7 @@
-<!DOCTYPE html>{% import "includes/navigation.html" as navigation %}
+<!DOCTYPE html>
 <html>
+  {% import "includes/navigation.html" as navigation %}
+  {% import "includes/notifications.html" as notifications %}
   <head>
     <title>{% block title %}Popcorn Maker{% endblock title %}</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
@@ -34,6 +36,9 @@
       {% endif %}
     </header>
     {% block content %}{% endblock content %}
+    <aside>
+      {{ notifications.notifications(notice_list) }}
+    </aside>
     {# TODO: django browser ID requires jquery #}
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     {{ browserid_form.media }}

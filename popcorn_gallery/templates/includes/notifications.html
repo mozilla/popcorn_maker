@@ -1,0 +1,13 @@
+{% macro notifications(notice_list) -%}
+{% if notice_list %}
+<h1>Announcements</h1>
+<ul>
+  {% for notice in notice_list %}
+  <li>
+    <h3>{{ notice.title }}</h3>
+    <p>{{ notice.body }}</p>
+  </li>
+  {% endfor%}
+</ul>
+{% endif %}
+{%- endmacro %}
