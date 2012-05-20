@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
 
 from funfactory.urlresolvers import reverse
 from tower import ugettext as _
@@ -15,6 +16,7 @@ from ..baseconv import base62
 from ..forms import ProjectEditForm
 from ..models import (Project, ProjectCategory, Template, TemplateCategory,
                       ProjectCategoryMembership)
+from ...base.utils import notify_admins
 
 
 def valid_user_project(func):
@@ -134,14 +136,24 @@ def project_list(request, slug=None):
 @login_required
 def project_category_join(request, slug):
     category = get_object_or_404(ProjectCategory, slug=slug)
+    membership_data = {
+        'user': request.user.profile,
+        'project_category': category,
+        }
+    try:
+        membership = (ProjectCategoryMembership.objects.get(**membership_data))
+        messages.error(request, _('You have previously sent this request'))
+        return HttpResponseRedirect(reverse('users_dashboard'))
+    except ProjectCategoryMembership.DoesNotExist:
+        pass
     if request.method == 'POST':
-        membership, created = (ProjectCategoryMembership.objects
-                               .get_or_create(user=request.user.profile,
-                                              project_category=category))
-        if created:
-            messages.success(request, _('Your request has been sent'))
-        else:
-            messages.error(request, _('You have previoiusly sent this request'))
+        membership = (ProjectCategoryMembership.objects.create(**membership_data))
+        messages.success(request, _('Your request has been sent'))
+        context = {'membership': membership, 'SITE_URL': settings.SITE_URL,}
+        subject = render_to_string('project/email/join_subject.txt', context)
+        subject = ''.join(subject.splitlines())
+        body = render_to_string('project/email/join_body.txt', context)
+        notify_admins(subject, body)
         return HttpResponseRedirect(reverse('users_dashboard'))
     context = {'category': category}
     return render(request, 'project/join_category.html', context)

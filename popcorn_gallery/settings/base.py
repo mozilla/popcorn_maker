@@ -138,3 +138,6 @@ POPCORN_VALID_DOMAINS = (
     'twitter.com',
     'vimeo.com',
     )
+
+EMAIL_BACKEND = 'django_mailer.smtp_queue.EmailBackend'
+EMAIL_SUBJECT_PREFIX = '[Popcorn] '

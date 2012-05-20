@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 
@@ -591,7 +592,24 @@ class TestCategoryMembershipIntegrationTest(TestCase):
         self.assertContextMessage(response.context, 'success')
 
     @suppress_locale_middleware
-    def test_duplicate_membership_request(self):
+    def test_membership_request_post_admin_notification(self):
+        admin = create_user('admin', with_profile=True)
+        admin.is_staff = True
+        admin.is_superuser = True
+        admin.save()
+        response = self.client.post(self.url, {}, follow=True)
+        self.assertContextMessage(response.context, 'success')
+        self.assertEqual(len(mail.outbox), 1)
+
+    @suppress_locale_middleware
+    def test_duplicate_membership_request_get(self):
+        ProjectCategoryMembership.objects.create(user=self.user.profile,
+                                                 project_category=self.category)
+        response = self.client.get(self.url, follow=True)
+        self.assertContextMessage(response.context, 'error')
+
+    @suppress_locale_middleware
+    def test_duplicate_membership_request_post(self):
         ProjectCategoryMembership.objects.create(user=self.user.profile,
                                                  project_category=self.category)
         response = self.client.post(self.url, {}, follow=True)

@@ -27,6 +27,9 @@ HMAC_KEYS = { # for bcrypt only
     '2011-01-01': 'cheesecake',
 }
 
+# we need to test the mail that is sent.
+EXCLUDED_APPS = ('django_mailer',)
+INSTALLED_APPS = filter(lambda a: a not in EXCLUDED_APPS, INSTALLED_APPS)
 
 NOSE_ARGS = [
     '-s',
@@ -62,3 +65,4 @@ LOGGING = {
         'south': error,
     },
 }
+
