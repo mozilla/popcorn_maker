@@ -11,7 +11,8 @@ from mock import patch
 from .fixtures import (create_user, create_project, create_project_category,
                        create_template, create_template_category,
                        create_external_project)
-from ..forms import ProjectEditForm, ExternalProjectEditForm
+from ..forms import (ProjectEditForm, ExternalProjectEditForm,
+                     ProjectSubmissionForm)
 from ..models import (Project, Template, TemplateCategory, ProjectCategory,
                       ProjectCategoryMembership)
 
@@ -621,6 +622,70 @@ class TestCategoryMembershipIntegrationTest(TestCase):
                                                  project_category=self.category)
         response = self.client.post(self.url, {}, follow=True)
         self.assertContextMessage(response.context, 'error')
+
+
+class TestExternalProjectSubmissionTest(PopcornIntegrationTestCase):
+
+    def setUp(self):
+        super(TestExternalProjectSubmissionTest, self).setUp()
+        self.url = reverse('project_submission')
+
+    @suppress_locale_middleware
+    def test_submission_get_anon(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+
+    @suppress_locale_middleware
+    def test_submission_post_anon(self):
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 302)
+
+    @suppress_locale_middleware
+    def test_submission_get(self):
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context['form'],
+                                   ProjectSubmissionForm))
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_submission_post_invalid(self):
+        data = {
+            'name': 'Hello world!',
+            'description': 'This was made with Popcorn'
+            }
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context['form'],
+                                   ProjectSubmissionForm))
+        self.assertTrue(response.context['form'].errors)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_submission_post(self):
+        data = {
+            'name': 'Hello world!',
+            'description': 'This was made with Popcorn',
+            'url': 'http://mozillapopcorn.org/',
+            }
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.post(self.url, data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue('project' in response.context)
+        project = response.context['project']
+        self.assertEqual(project.name, 'Hello world!')
+        self.assertEqual(project.url, 'http://mozillapopcorn.org/')
+        self.assertFalse(project.is_shared)
+        self.assertFalse(project.is_forkable)
+        self.assertFalse(project.is_published)
+        absolute_url = reverse('user_project_summary',
+                               args=[project.author.username,
+                                     project.shortcode])
+        self.assertEqual(project.get_absolute_url(), absolute_url)
+        self.client.logout()
+
 
 
 class TestExternalProjectIntegrationTest(PopcornIntegrationTestCase):

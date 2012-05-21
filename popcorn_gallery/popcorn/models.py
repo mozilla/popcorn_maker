@@ -93,6 +93,7 @@ class Project(models.Model):
     description = models.TextField(blank=True)
     author = models.ForeignKey('auth.User')
     url = models.URLField(blank=True)
+    thumbnail = models.ImageField(upload_to="projects", blank=True)
     template = models.ForeignKey('popcorn.Template', blank=True, null=True)
     metadata = models.TextField()
     html = models.TextField()

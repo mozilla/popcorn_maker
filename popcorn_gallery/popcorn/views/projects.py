@@ -181,7 +181,9 @@ def project_submission(request):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.author = request.user
+            instance.is_forkable = False
             instance.save()
+            return HttpResponseRedirect(instance.get_absolute_url())
     else:
         form = ProjectSubmissionForm()
     context = {'form': form}
