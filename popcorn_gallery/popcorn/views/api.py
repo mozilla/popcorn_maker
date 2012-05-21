@@ -16,12 +16,10 @@ from ...base.decorators import json_handler, login_required_ajax
 @login_required
 def project_list(request):
     """List of the projects that belong to a User"""
-    object_list = []
-    for p in Project.objects.filter(author=request.user):
-        object_list.append({'name': p.name, 'id': p.uuid})
+    queryset = Project.objects.filter(author=request.user)
     response = {
         'error': 'okay',
-        'projects': object_list,
+        'projects': [{'name': p.name, 'id': p.uuid} for p in queryset],
         }
     return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
                         mimetype='application/json')
