@@ -71,16 +71,17 @@ This will syncronize the database, run any database schema or data migrations, a
 Add a host alias
 ================
 
-This is done so ou can access the application via: http://local.mozillapopcorn.org
+This is done so you can access the application via: http://local.mozillapopcorn.org and perform the browserid assertion.
 
-Add to /etc/hosts in your local machine:
+If you are on OSX or *NIX add an alias by running the following command in your local machine:
 
-    33.33.33.11 local.mozillapopcorn.org
+    echo "33.33.33.11 local.mozillapopcorn.org" | sudo tee -a /etc/hosts
+
+Or if you prefer a GUI try http://code.google.com/p/gmask/
 
 Now the application should be available at:
 
     http://local.mozillapopcorn.org
-
 
 Runing the test suite
 =====================

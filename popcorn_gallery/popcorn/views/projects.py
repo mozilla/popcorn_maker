@@ -13,7 +13,8 @@ from funfactory.urlresolvers import reverse
 from tower import ugettext as _
 
 from ..baseconv import base62
-from ..forms import ProjectEditForm
+from ..forms import (ProjectEditForm, ExternalProjectEditForm,
+                     ProjectSubmissionForm)
 from ..models import (Project, ProjectCategory, Template, TemplateCategory,
                       ProjectCategoryMembership)
 from ...base.utils import notify_admins
@@ -42,23 +43,38 @@ def valid_user_project(func):
                        .get(**params))
         except Project.DoesNotExist:
             raise Http404
+        return func(request, project=project, *args, **kwargs)
+    return wrapper
+
+
+def is_popcorn_project(func):
+    """Decorator that makes sure that project was made with a
+    popcorn ``Template`` """
+    @functools.wraps(func)
+    def wrapper(request, *args, **kwargs):
+        project = kwargs.pop('project')
+        if not project.template:
+            raise Http404
         return func(request, project, *args, **kwargs)
     return wrapper
 
 
 @valid_user_project
+@is_popcorn_project
 def user_project(request, project):
     context = {'project': project, 'template': project.template}
     return render(request, project.template.template, context)
 
 
 @valid_user_project
+@is_popcorn_project
 def user_project_config(request, project):
     context = {'project': project }
     return render(request, project.template.config, context)
 
 
 @valid_user_project
+@is_popcorn_project
 def user_project_meta(request, project):
     profile = project.author.get_profile()
     context = {
@@ -73,6 +89,7 @@ def user_project_meta(request, project):
 
 
 @valid_user_project
+@is_popcorn_project
 def user_project_data(request, project):
     context = {
         'error': 'okay',
@@ -83,20 +100,21 @@ def user_project_data(request, project):
     return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder),
                         mimetype='application/json')
 
+
 @login_required
 @valid_user_project
 def user_project_edit(request, project):
     if not request.user == project.author:
         raise Http404
+    FormClass = ExternalProjectEditForm if project.is_external else ProjectEditForm
     if request.method == 'POST':
-        form = ProjectEditForm(request.POST, instance=project,
-                               user=request.user.get_profile())
+        form = FormClass(request.POST, instance=project,
+                         user=request.user.get_profile())
         if form.is_valid():
             instance = form.save()
             return HttpResponseRedirect(instance.get_absolute_url())
     else:
-        form = ProjectEditForm(instance=project,
-                               user=request.user.get_profile())
+        form = FormClass(instance=project, user=request.user.get_profile())
     context = {
         'form': form,
         'project': project,
@@ -119,6 +137,7 @@ def user_project_delete(request, project):
 
 @login_required
 @valid_user_project
+@is_popcorn_project
 def user_project_fork(request, project):
     if not project.is_forkable:
         raise Http404
@@ -128,6 +147,12 @@ def user_project_fork(request, project):
         return HttpResponseRedirect(project.get_absolute_url())
     context = {'project': project}
     return render(request, 'project/fork.html', context)
+
+
+@valid_user_project
+def user_project_summary(request, project):
+    context = {'project': project}
+    return render(request, 'project/summary.html', context)
 
 
 def project_list(request, slug=None):
@@ -146,6 +171,21 @@ def project_list(request, slug=None):
         'category_list': category_list,
         }
     return render(request, 'project/object_list.html', context)
+
+
+@login_required
+def project_submission(request):
+    """Handles project submissions"""
+    if request.method == 'POST':
+        form = ProjectSubmissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.author = request.user
+            instance.save()
+    else:
+        form = ProjectSubmissionForm()
+    context = {'form': form}
+    return render(request, 'project/submission.html', context)
 
 
 @login_required

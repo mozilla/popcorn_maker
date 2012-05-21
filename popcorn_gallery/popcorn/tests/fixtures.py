@@ -40,6 +40,19 @@ def create_project(**kwargs):
     return Project.objects.create(**defaults)
 
 
+def create_external_project(**kwargs):
+    defaults = {
+        "name": 'Popcorn Project',
+        "url": 'http://mozillapopcorn.org',
+        }
+    if not 'author' in kwargs:
+        defaults['author'] = create_user('bob')
+    if kwargs:
+        defaults.update(kwargs)
+    return Project.objects.create(**defaults)
+
+
+
 def create_template_category(**kwargs):
     defaults = {'name': 'Special'}
     if kwargs:

@@ -93,7 +93,7 @@ class Project(models.Model):
     description = models.TextField(blank=True)
     author = models.ForeignKey('auth.User')
     url = models.URLField(blank=True)
-    template = models.ForeignKey('popcorn.Template')
+    template = models.ForeignKey('popcorn.Template', blank=True, null=True)
     metadata = models.TextField()
     html = models.TextField()
     status = models.IntegerField(choices=STATUS_CHOICES, default=HIDDEN)
@@ -117,6 +117,8 @@ class Project(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
+        if self.url:
+            return ('user_project_summary', [self.author.username, self.shortcode])
         return ('user_project', [self.author.username, self.shortcode])
 
     @property
@@ -138,6 +140,10 @@ class Project(models.Model):
     @property
     def shortcode(self):
         return base62.from_decimal(self.pk)
+
+    @property
+    def is_external(self):
+        return all([self.url])
 
 
 class ProjectCategory(models.Model):

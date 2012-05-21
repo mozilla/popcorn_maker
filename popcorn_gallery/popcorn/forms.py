@@ -30,7 +30,22 @@ class ProjectEditForm(forms.ModelForm):
                                                          })
 
     class Meta:
+        model = Project
         fields = ('name', 'description', 'is_shared', 'is_forkable', 'status',
                   'categories')
-        model = Project
 
+
+class ExternalProjectEditForm(ProjectEditForm):
+    class Meta:
+        model = Project
+        fields = ('name', 'description', 'is_shared', 'status', 'categories')
+
+
+class ProjectSubmissionForm(forms.ModelForm):
+    name = forms.CharField()
+    url = forms.URLField()
+    thumbnail = forms.ImageField(required=False)
+
+    class Meta:
+        model = Project
+        fields = ('name', 'description', 'url', 'thumbnail')

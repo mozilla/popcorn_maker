@@ -9,7 +9,9 @@ from test_utils import TestCase
 from mock import patch
 
 from .fixtures import (create_user, create_project, create_project_category,
-                       create_template, create_template_category)
+                       create_template, create_template_category,
+                       create_external_project)
+from ..forms import ProjectEditForm, ExternalProjectEditForm
 from ..models import (Project, Template, TemplateCategory, ProjectCategory,
                       ProjectCategoryMembership)
 
@@ -184,6 +186,7 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         context = response.context
         self.assertEqual(context['project'], project)
         self.assertEqual(context['form'].instance, project)
+        self.assertTrue(isinstance(context['form'], ProjectEditForm))
         self.client.logout()
 
     @suppress_locale_middleware
@@ -618,3 +621,78 @@ class TestCategoryMembershipIntegrationTest(TestCase):
                                                  project_category=self.category)
         response = self.client.post(self.url, {}, follow=True)
         self.assertContextMessage(response.context, 'error')
+
+
+class TestExternalProjectIntegrationTest(PopcornIntegrationTestCase):
+
+    def setUp(self):
+        super(TestExternalProjectIntegrationTest, self).setUp()
+        self.project = create_external_project(author=self.user,
+                                               status=Project.LIVE)
+        self.client.login(username=self.user.username, password='bob')
+
+    def tearDown(self):
+        super(TestExternalProjectIntegrationTest, self).tearDown()
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_detail_user_project(self):
+        url = self.get_url('user_project', self.user, self.project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_detail_user_project_config(self):
+        url = self.get_url('user_project_config', self.user, self.project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_detail_user_project_meta(self):
+        url = self.get_url('user_project_meta', self.user, self.project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_detail_user_data(self):
+        url = self.get_url('user_project_data', self.user, self.project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_detail_user_project_fork(self):
+        url = self.get_url('user_project_fork', self.user, self.project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_detail_user_project_fork_post(self):
+        url = self.get_url('user_project_fork', self.user, self.project)
+        response = self.client.post(url, {})
+        self.assertEqual(response.status_code, 404)
+
+    @suppress_locale_middleware
+    def test_edit_project_owner(self):
+        url = self.get_url('user_project_edit', self.user, self.project)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        context = response.context
+        self.assertEqual(context['project'], self.project)
+        self.assertEqual(context['form'].instance, self.project)
+        self.assertTrue(isinstance(context['form'], ExternalProjectEditForm))
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_edit_project_owner_post(self):
+        data = {
+            'is_shared': False,
+            'name': 'Changed!',
+            'status': Project.HIDDEN,
+            'description': 'Description of the project',
+        }
+        url = self.get_url('user_project_edit', self.user, self.project)
+        response = self.client.post(url, data)
+        self.assertRedirects(response, self.project.get_absolute_url())
+        project = Project.objects.get()
+        self.assertEqual(project.name, 'Changed!')
+

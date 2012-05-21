@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from .fixtures import (create_user, create_template, create_project,
-                       create_project_category)
+                       create_project_category, create_external_project)
 from ..models import (Project, Template, ProjectCategory, TemplateCategory,
                       ProjectCategoryMembership)
 
@@ -28,6 +29,39 @@ class PopcornTest(TestCase):
         self.assertFalse(project.is_shared)
         self.assertFalse(project.is_removed)
         self.assertFalse(project.is_published)
+        self.assertFalse(project.is_external)
+
+    def test_external_project_creation(self):
+        data = {
+            'author': create_user('bob'),
+            'name': 'Hello World!',
+            'url': 'http://mozillapopcorn.org',
+            }
+        project = Project.objects.create(**data)
+        assert project.id, "Project couldn't be created"
+        assert project.uuid, "Project UUID missing"
+        self.assertEqual(project.status, Project.HIDDEN)
+        self.assertTrue(project.is_forkable)
+        self.assertFalse(project.is_shared)
+        self.assertFalse(project.is_removed)
+        self.assertFalse(project.is_published)
+        self.assertTrue(project.is_external)
+
+    def test_absolute_url(self):
+        project = create_project()
+        url = reverse('user_project', args=[project.author.username,
+                                                    project.shortcode])
+        self.assertEqual(project.get_absolute_url(), url)
+
+    def test_absolute_url_external(self):
+        project = create_external_project()
+        url = reverse('user_project_summary', args=[project.author.username,
+                                                    project.shortcode])
+        self.assertEqual(project.get_absolute_url(), url)
+
+    def test_project_published(self):
+        project = create_project(status=Project.LIVE)
+        self.assertTrue(project.is_published)
 
     def test_hidden_project(self):
         project = create_project(status=Project.HIDDEN)

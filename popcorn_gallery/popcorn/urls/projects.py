@@ -4,9 +4,11 @@ from django.conf.urls.defaults import patterns, url
 project_pattern = '(?P<username>[\w]+)/(?P<shortcode>[-\w]+)'
 
 
+# base urls
 urlpatterns = patterns(
     'popcorn_gallery.popcorn.views.projects',
     url(r'^projects/$', 'project_list', name='project_list'),
+    url(r'^project/submit/$', 'project_submission', name='project_submission'),
     url(r'^projects/category/(?P<slug>[\w-]+)/$', 'project_list',
         name='project_list_category'),
     url(r'^projects/category/(?P<slug>[\w-]+)/$', 'project_list',
@@ -15,6 +17,7 @@ urlpatterns = patterns(
         name='project_category_join'),
     )
 
+# templates urls
 urlpatterns += patterns(
     'popcorn_gallery.popcorn.views.projects',
     url(r'^templates/$', 'template_list', name='template_list'),
@@ -28,7 +31,7 @@ urlpatterns += patterns(
         name='template_summary'),
     )
 
-
+# user_project urls
 urlpatterns += patterns(
     'popcorn_gallery.popcorn.views.projects',
     url(r'^%s/$' % project_pattern, 'user_project', name='user_project'),
@@ -44,4 +47,6 @@ urlpatterns += patterns(
         name='user_project_delete'),
     url(r'^%s/fork/$' % project_pattern, 'user_project_fork',
         name='user_project_fork'),
+    url(r'^%s/summary/$' % project_pattern, 'user_project_summary',
+        name='user_project_summary'),
     )

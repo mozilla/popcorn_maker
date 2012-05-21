@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Project: {{ project.name }} - {{ super() }}{% endblock title %}
+
+{% block content %}
+<h1>Project: {{ project.name }}</h1>
+
+<p>{{ project.description }}</p>
+
+{% if project.url %}
+<a href="{{ project.url }}">{{ project.url }}</a>
+{% endif %}
+
+{% if project.thumbnail %}
+<img src="{{ project.thumbnail.url }}" alt="" />
+{% endif %}
+
+{% if request.user == project.author %}
+<p><a href="{{ url('user_project_edit', username=project.author.username, shortcode=project.shortcode) }}">Edit</a></p>
+{% endif %}
+
+{% endblock content %}
