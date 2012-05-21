@@ -22,10 +22,13 @@ urlpatterns = patterns(
 
 # static pages
 urlpatterns += patterns(
-    'popcorn_gallery.base.views',
-    url('^about/$', 'about', name='about'),
-    url('^help/$', 'help_page', name='help'),
-    url('^legal/$', 'legal', name='legal'),
+    'django.views.generic.simple',
+    url('^about/$', 'direct_to_template', {'template': 'about.html'},
+        name='about'),
+    url('^help/$', 'direct_to_template', {'template': 'help.html'},
+        name='help'),
+    url('^legal/$', 'direct_to_template', {'template': 'legal.html'},
+        name='legal'),
     )
 
 urlpatterns += patterns(
