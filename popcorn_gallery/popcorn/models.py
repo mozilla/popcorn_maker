@@ -9,7 +9,7 @@ from taggit.managers import TaggableManager
 from tower import ugettext_lazy as _
 
 
-from .managers import ProjectManager, TemplateManager
+from .managers import ProjectManager, ProjectLiveManager, TemplateManager
 from .baseconv import base62
 
 
@@ -96,8 +96,8 @@ class Project(models.Model):
     template = models.ForeignKey('popcorn.Template')
     metadata = models.TextField()
     html = models.TextField()
-    status = models.IntegerField(choices=STATUS_CHOICES, default=LIVE)
-    is_shared = models.BooleanField(default=True)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=HIDDEN)
+    is_shared = models.BooleanField(default=False)
     is_forkable = models.BooleanField(default=True)
     is_removed = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
@@ -106,8 +106,8 @@ class Project(models.Model):
     categories = models.ManyToManyField('popcorn.ProjectCategory', blank=True)
 
     # managers
-    objects = models.Manager()
-    live = ProjectManager()
+    objects = ProjectManager()
+    live = ProjectLiveManager()
 
     class Meta:
         ordering = ('is_featured', '-modified', )

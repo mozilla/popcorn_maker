@@ -52,7 +52,8 @@ class ProjectIntegrationTest(PopcornIntegrationTestCase):
 
     @suppress_locale_middleware
     def test_project_list(self):
-        project = create_project(author=self.user)
+        project = create_project(author=self.user, status=Project.LIVE,
+                                 is_shared=True)
         project.categories.add(self.category)
         response = self.client.get(reverse('project_list'))
         context = response.context
@@ -62,7 +63,8 @@ class ProjectIntegrationTest(PopcornIntegrationTestCase):
 
     @suppress_locale_middleware
     def test_project_list_category(self):
-        project = create_project(author=self.user)
+        project = create_project(author=self.user, status=Project.LIVE,
+                                 is_shared=True)
         project.categories.add(self.category)
         response = self.client.get(reverse('project_list_category',
                                            args=[self.category.slug]))
@@ -143,14 +145,14 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         project = create_project(author=self.user)
         url = self.get_url('user_project_edit', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 302)
 
     @suppress_locale_middleware
     def test_edited_project_anon_post(self):
         project = create_project(author=self.user)
         url = self.get_url('user_project_edit', self.user, project)
         response = self.client.post(url, self.valid_data)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 302)
 
     @suppress_locale_middleware
     def test_edited_project_user(self):
@@ -415,13 +417,14 @@ class DeleteIntegrationTest(PopcornIntegrationTestCase):
     def test_delete_anon_get(self):
         url = self.get_url('user_project_delete', self.user, self.project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        # Redirects to login
+        self.assertEqual(response.status_code, 302)
 
     @suppress_locale_middleware
     def test_delete_anon_post(self):
         url = self.get_url('user_project_delete', self.user, self.project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 302)
 
 
 class CategoryIntegrationTest(TestCase):
@@ -436,7 +439,8 @@ class CategoryIntegrationTest(TestCase):
 
     @suppress_locale_middleware
     def test_project_category_detail(self):
-        project = create_project(author=self.user)
+        project = create_project(author=self.user, status=Project.LIVE,
+                                 is_shared=True)
         project.categories.add(self.category)
         response = self.client.get(self.category.get_absolute_url())
         context = response.context

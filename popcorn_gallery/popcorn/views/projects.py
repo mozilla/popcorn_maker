@@ -51,6 +51,7 @@ def user_project(request, project):
     context = {'project': project, 'template': project.template}
     return render(request, project.template.template, context)
 
+
 @valid_user_project
 def user_project_config(request, project):
     context = {'project': project }
@@ -82,7 +83,7 @@ def user_project_data(request, project):
     return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder),
                         mimetype='application/json')
 
-
+@login_required
 @valid_user_project
 def user_project_edit(request, project):
     if not request.user == project.author:
@@ -103,6 +104,7 @@ def user_project_edit(request, project):
     return render(request, 'project/edit.html', context)
 
 
+@login_required
 @valid_user_project
 def user_project_delete(request, project):
     if not request.user == project.author:
@@ -113,6 +115,19 @@ def user_project_delete(request, project):
         return HttpResponseRedirect(reverse('users_dashboard'))
     context = {'project': project}
     return render(request, 'project/delete.html', context)
+
+
+@login_required
+@valid_user_project
+def user_project_fork(request, project):
+    if not project.is_forkable:
+        raise Http404
+    if request.method == 'POST':
+        messages.success(request, _('Project forked successfully'))
+        project = Project.objects.fork(project, request.user)
+        return HttpResponseRedirect(project.get_absolute_url())
+    context = {'project': project}
+    return render(request, 'project/fork.html', context)
 
 
 def project_list(request, slug=None):

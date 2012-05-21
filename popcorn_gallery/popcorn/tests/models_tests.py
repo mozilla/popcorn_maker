@@ -23,11 +23,11 @@ class PopcornTest(TestCase):
         project = Project.objects.create(**data)
         assert project.id, "Project couldn't be created"
         assert project.uuid, "Project UUID missing"
-        self.assertEqual(project.status, Project.LIVE)
+        self.assertEqual(project.status, Project.HIDDEN)
         self.assertTrue(project.is_forkable)
-        self.assertTrue(project.is_shared)
+        self.assertFalse(project.is_shared)
         self.assertFalse(project.is_removed)
-        self.assertTrue(project.is_published)
+        self.assertFalse(project.is_published)
 
     def test_hidden_project(self):
         project = create_project(status=Project.HIDDEN)
@@ -35,7 +35,7 @@ class PopcornTest(TestCase):
         self.assertFalse(project.is_published)
 
     def test_removed_project(self):
-        project = create_project(is_removed=True)
+        project = create_project(is_removed=True, status=Project.LIVE)
         self.assertEqual(project.status, project.LIVE)
         self.assertFalse(project.is_published)
 
@@ -43,25 +43,6 @@ class PopcornTest(TestCase):
         project = create_project()
         for attr in ['_id', 'name', 'template', 'data', 'created', 'modified']:
             self.assertTrue(attr in project.butter_data)
-
-    def test_project_live_manager(self):
-        create_project(status=Project.LIVE)
-        self.assertEqual(Project.live.all().count(), 1)
-
-    def test_project_live_manager_hidden(self):
-        create_project(status=Project.HIDDEN)
-        self.assertEqual(Project.live.all().count(), 0)
-        self.assertEqual(Project.objects.all().count(), 1)
-
-    def test_project_live_manager_removed(self):
-        create_project(status=Project.LIVE, is_removed=True)
-        self.assertEqual(Project.live.all().count(), 0)
-        self.assertEqual(Project.objects.all().count(), 1)
-
-    def test_project_live_manager_not_shared(self):
-        create_project(status=Project.LIVE, is_shared=False)
-        self.assertEqual(Project.live.all().count(), 0)
-        self.assertEqual(Project.objects.all().count(), 1)
 
 
 class TemplateTest(TestCase):

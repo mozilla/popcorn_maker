@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Fork {{ project.name}} confirmation - {{ super() }}{% endblock title %}
+
+{% block content %}
+<h1>You are about to fork "{{ project.name }}"</h1>
+<form method="post" id="form-project-delete-id" action=".">
+  <a href="{{ project.get_absolute_url() }}">Cancel</a>
+  <button type="submit">Fork!</button>
+  {{ csrf() }}
+</form>
+{% endblock content %}

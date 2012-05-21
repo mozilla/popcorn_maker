@@ -235,9 +235,11 @@ class TestProfileProjects(TestCase):
         self.client.login(username='bob', password='bob')
         template = create_template()
         self.project = create_project(name='Bob project', author=self.user,
-                                      template=template)
+                                      template=template, status=Project.LIVE,
+                                      is_shared=True)
         self.alex = create_user('alex')
-        create_project(name='Alex project', author=self.alex, template=template)
+        create_project(name='Alex project', author=self.alex, template=template,
+                       status=Project.LIVE, is_shared=True)
 
     def tearDown(self):
         self.client.logout()

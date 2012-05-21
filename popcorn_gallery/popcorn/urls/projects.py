@@ -42,4 +42,6 @@ urlpatterns += patterns(
         name='user_project_data'),
     url(r'^%s/delete/$' % project_pattern, 'user_project_delete',
         name='user_project_delete'),
+    url(r'^%s/fork/$' % project_pattern, 'user_project_fork',
+        name='user_project_fork'),
     )

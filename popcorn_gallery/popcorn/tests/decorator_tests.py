@@ -38,7 +38,7 @@ class TestValidProjectDecorator(TestCase):
         self.assertEqual(project.shortcode, shortcode)
 
     def test_published_project(self):
-        project = create_project(author=self.user)
+        project = create_project(author=self.user, status=Project.LIVE)
         mock = valid_user_project(view_mock)
         request = self.factory.get('/')
         request.user = anon_user

@@ -18,7 +18,7 @@ class ActivitySignalTest(TestCase):
             model.objects.all().delete()
 
     def test_project_signal_created(self):
-        create_project(author=self.user)
+        create_project(author=self.user, status=Project.LIVE)
         eq_(Activity.objects.get_for_user(self.user).count(), 1)
 
     def test_project_signal_published(self):
