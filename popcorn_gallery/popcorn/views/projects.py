@@ -235,21 +235,24 @@ def template_list(request, slug=None):
     return render(request, 'template/object_list.html', context)
 
 
-def template_detail(request, slug):
+def get_template_or_404(slug):
+    """Returns a template if avaliable, else 404"""
     try:
         template = Template.live.get(slug=slug)
     except Template.DoesNotExist:
         raise Http404
+    return template
+
+
+def template_detail(request, slug):
+    template = get_template_or_404(slug)
     context = {'template': template,
                'project': None}
     return render(request, template.template, context)
 
 
 def template_summary(request, slug):
-    try:
-        template = Template.live.get(slug=slug)
-    except Template.DoesNotExist:
-        raise Http404
+    template = get_template_or_404(slug)
     category_list = TemplateCategory.objects.filter(is_featured=True)
     project_list = Project.live.filter(template=template)[:5]
     tag_list = template.tags.all()
@@ -264,10 +267,7 @@ def template_summary(request, slug):
 
 
 def template_config(request, slug):
-    try:
-        template = Template.live.get(slug=slug)
-    except Template.DoesNotExist:
-        raise Http404
+    template = get_template_or_404(slug)
     context = {'template': template,
                'object': None}
     return render(request, template.config, context)
