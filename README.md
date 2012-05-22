@@ -13,6 +13,7 @@ Clone the repository and its dependencies:
 
     git clone --recursive git@github.com:alfredo/popcorn_gallery.git
 
+This will take a few minutes.
 
 Setup the application
 =====================
@@ -30,7 +31,9 @@ Once you've installed vagrant, from the root of the repository copy the local va
 
 Edit ``vagrantconfig_local.yaml`` if you want to change any of the defaults.
 
-If you are on an NFS capable OS I recommend that you change ``nfs`` to ``true``, VirtualBox has know issues sharing files natively, more about this: http://vagrantup.com/docs/nfs.html
+If you are on an NFS capable OS I recommend that you change ``nfs`` to ``true``.
+
+VirtualBox has know issues sharing files natively, more about this: http://vagrantup.com/docs/nfs.html
 
 Now we are ready to provision the machine run.
 
@@ -73,7 +76,7 @@ Add a host alias
 
 This is done so you can access the application via: http://local.mozillapopcorn.org and perform the browserid assertion.
 
-If you are on OSX or *NIX add an alias by running the following command in your local machine:
+If you are on OSX or *NIX add an alias for the site by running the following command in your local machine:
 
     echo "33.33.33.11 local.mozillapopcorn.org" | sudo tee -a /etc/hosts
 
@@ -82,6 +85,7 @@ Or if you prefer a GUI try http://code.google.com/p/gmask/
 Now the application should be available at:
 
     http://local.mozillapopcorn.org
+
 
 Runing the test suite
 =====================
