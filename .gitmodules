@@ -4,3 +4,6 @@
 [submodule "butter"]
 	path = butter
 	url = git://github.com/alfredo/butter.git
+[submodule "vendor-local/src/django_mailer_2"]
+	path = vendor-local/src/django_mailer_2
+	url = https://github.com/SmileyChris/django-mailer-2.git
