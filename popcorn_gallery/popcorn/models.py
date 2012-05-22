@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from django.db import models
+from django.core.cache import cache
 from django_extensions.db.fields import (CreationDateTimeField,
                                          ModificationDateTimeField, UUIDField,
                                          AutoSlugField)
@@ -13,8 +14,13 @@ from .managers import ProjectManager, ProjectLiveManager, TemplateManager
 from .baseconv import base62
 
 
-def get_templates(prefix='butter', extension=None):
+def get_templates(prefix='butter', extension=''):
     """List the files with the given extension"""
+    key = '%s%s%s' % (settings.CACHE_MIDDLEWARE_KEY_PREFIX, prefix, extension)
+    template_choices_cached = cache.get(key)
+    if template_choices_cached:
+        print template_choices_cached
+        return template_choices_cached
     template_choices = []
     if extension:
         extension = '.%s' % extension
@@ -26,6 +32,7 @@ def get_templates(prefix='butter', extension=None):
             template_full_path = '%s%s' % (prefix, template_path)
             if extension and template_path.endswith(extension):
                 template_choices.append((template_full_path, template_path))
+    cache.set(key, template_choices, 60*10) # cached by 10 minutes
     return template_choices
 
 

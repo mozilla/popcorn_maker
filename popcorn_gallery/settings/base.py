@@ -142,3 +142,5 @@ POPCORN_VALID_DOMAINS = (
 
 EMAIL_BACKEND = 'django_mailer.smtp_queue.EmailBackend'
 EMAIL_SUBJECT_PREFIX = '[Popcorn] '
+
+CACHE_MIDDLEWARE_KEY_PREFIX = 'popcorn'
