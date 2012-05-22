@@ -19,7 +19,6 @@ def get_templates(prefix='butter', extension=''):
     key = '%s%s%s' % (settings.CACHE_MIDDLEWARE_KEY_PREFIX, prefix, extension)
     template_choices_cached = cache.get(key)
     if template_choices_cached:
-        print template_choices_cached
         return template_choices_cached
     template_choices = []
     if extension:
