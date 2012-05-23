@@ -29,9 +29,9 @@ def login_required_ajax(func):
 
     @functools.wraps(func)
     def wrapper(request, *args, **kwargs):
-        if request.is_ajax and not request.user.is_authenticated():
-            return HttpResponseForbidden()
-        return func(request, *args, **kwargs)
+        if request.is_ajax() and request.user.is_authenticated():
+            return func(request, *args, **kwargs)
+        return HttpResponseForbidden()
     return wrapper
 
 

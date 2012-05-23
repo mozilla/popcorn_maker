@@ -2,7 +2,6 @@ import json
 
 from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
-from django.shortcuts import render
 from django.test import TestCase
 from django.test.client import RequestFactory
 
@@ -108,3 +107,19 @@ class TestLoginRequredAjaxDecorator(TestCase):
         request.user = AuthedUser()
         response = mock(request)
         self.assertEqual(response.method, 'GET')
+
+    def test_post_anon(self):
+        mock = login_required_ajax(view_mock)
+        request = self.factory.post('/', {},
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.user = AnonymousUser()
+        response = mock(request)
+        self.assertRaises(isinstance(response, HttpResponseForbidden))
+
+    def test_post(self):
+        mock = login_required_ajax(view_mock)
+        request = self.factory.post('/', {},
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        request.user = AuthedUser()
+        response = mock(request)
+        self.assertEqual(response.method, 'POST')

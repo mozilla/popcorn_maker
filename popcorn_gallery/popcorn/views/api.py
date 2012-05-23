@@ -13,7 +13,6 @@ from ...base.decorators import json_handler, login_required_ajax
 
 @require_GET
 @login_required_ajax
-@login_required
 def project_list(request):
     """List of the projects that belong to a User"""
     queryset = Project.objects.filter(author=request.user)
@@ -49,7 +48,6 @@ def save_project(json_data, user):
 @require_POST
 @json_handler
 @login_required_ajax
-@login_required
 def project_add(request):
     """End point for adding a ``Project``"""
     response = save_project(request.JSON, request.user)
@@ -59,7 +57,6 @@ def project_add(request):
 
 @json_handler
 @login_required_ajax
-@login_required
 def project_detail(request, uuid):
     """Handles the data for the Project"""
     if request.method == 'POST' and request.JSON:
@@ -83,7 +80,6 @@ def project_detail(request, uuid):
 
 @json_handler
 @login_required_ajax
-@login_required
 def project_publish(request, uuid):
     if request.method == 'POST':
         try:
@@ -98,3 +94,14 @@ def project_publish(request, uuid):
         return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
                             mimetype='application/json')
     raise Http404
+
+
+@login_required_ajax
+def user_details(request):
+    response = {
+        'name': request.user.profile.display_name,
+        'username': request.user.username,
+        'email': request.user.email,
+        }
+    return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
+                        mimetype='application/json')
