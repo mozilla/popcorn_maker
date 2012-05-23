@@ -145,25 +145,3 @@ EMAIL_SUBJECT_PREFIX = '[Popcorn] '
 
 CACHE_MIDDLEWARE_KEY_PREFIX = 'popcorn'
 
-
-import logging
-
-debug = {
-    'level': logging.DEBUG,
-    'handlers': ['mail_admins_debug'],
-    'propagate': True,
-    }
-
-
-LOGGING = {
-    'loggers': {
-        'django_browserid': debug,
-    },
-    'handlers': {
-        'mail_admins_debug': {
-            'level': logging.DEBUG,
-            'class': 'django.utils.log.AdminEmailHandler',
-            },
-    }
-}
-
