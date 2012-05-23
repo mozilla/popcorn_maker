@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Login - {{ super() }}{% endblock title %}
+
+{% block user_status %}{% endblock user_status %}
+
+
+{% block content %}
+<h1>Authenticate with BrowserID</h1>
+
+<a id="browserid" href="{{ url('login') }}">Sign In</a>
+<form method="POST" action="{{ url('browserid_verify') }}">
+  {{ csrf() }}
+  {{ browserid_form.as_p() }}
+</form>
+
+{% endblock content %}

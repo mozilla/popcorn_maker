@@ -3,7 +3,7 @@ import json
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 
 import jingo
 
@@ -36,11 +36,11 @@ class AjaxVerify(Verify):
     def login_failure(self):
         """Handle a failed login. Use this to perform complex redirects
         post-login."""
-        result = super(AjaxVerify, self).login_failure()
+        super(AjaxVerify, self).login_failure()
         if self.request.is_ajax():
             return HttpResponse(json.dumps({'status': 'failed'}),
                                 mimetype='application/json')
-        return result
+        return redirect('login_failed')
 
 
 @login_required
@@ -127,3 +127,11 @@ def delete_profile(request, template='users/profile_confirm_delete.html'):
         return redirect(reverse('homepage'))
     context = {'profile': profile}
     return jingo.render(request, template, context)
+
+
+def login(request, failed=False):
+    """Error message when the authentication failed"""
+    if request.user.is_authenticated():
+        return redirect('users_dashboard')
+    context = {'failed': failed}
+    return render(request, 'login.html', context)

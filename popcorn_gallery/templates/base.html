@@ -24,8 +24,9 @@
     <header>
       {{ navigation.navigation(request.user) }}
 
+      {% block user_status %}
       {% if not request.user.is_authenticated() %}
-      <a id="browserid" href="#TODO">Sign In</a>
+      <a id="browserid" href="{{ url('login') }}">Sign In</a>
       <form method="POST" action="{{ url('browserid_verify') }}">
         {{ csrf() }}
         {{ browserid_form.as_p() }}
@@ -34,6 +35,9 @@
       Logged in as <a href="{{ url('users_dashboard') }}">{{ request.user.profile.display_name }}</a>.
       <a href="{{ url('logout') }}">Logout</a>
       {% endif %}
+      {% endblock user_status %}
+
+
     </header>
     {% block content %}{% endblock content %}
     <aside>
