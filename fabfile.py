@@ -39,10 +39,17 @@ def import_butter_templates():
         local('python manage.py popcorn_import_butter')
 
 
+def copy_butter_style():
+    print yellow('Coping Butter styling')
+    with lcd(settings.PROJECT_ROOT):
+        local('cp butter/css/butter.ui.css assets/css/')
+
+
 def update():
     print yellow('Updating the site:')
     syncdb()
     prepare_butter()
+    copy_butter_style()
     import_butter_templates()
 
 
