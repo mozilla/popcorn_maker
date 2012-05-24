@@ -5,8 +5,8 @@
     <li><a href="{{ url('project_list') }}">Made with Popcorn</a></li>
     {% if not user.is_authenticated() %}
     <li>
-      <a id="browserid" href="{{ url('login') }}">Sign In</a>
-      <form method="POST" action="{{ url('browserid_verify') }}">
+      <a class="browserid" id="browserid" href="{{ url('login') }}">Sign In</a>
+      <form method="POST" action="{{ browserid_target }}">
         {{ csrf() }}
         {{ browserid_form.as_p() }}
       </form>
@@ -18,6 +18,5 @@
     {% endif %}
   </ul>
 </nav>
-
 
 

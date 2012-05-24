@@ -78,6 +78,7 @@ AUTHENTICATION_BACKENDS = (
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.static',
     'django_browserid.context_processors.browserid_form',
+    'popcorn_gallery.users.context_processors.browserid_target_processor',
     'popcorn_gallery.base.context_processors.common',
     'popcorn_gallery.notifications.context_processors.notifications',
     )
