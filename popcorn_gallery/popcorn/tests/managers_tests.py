@@ -45,6 +45,8 @@ class ProjectsManagerTest(TestCase):
         eq_(project.author, alex)
         for attr in ['name', 'description', 'template', 'metadata', 'html']:
             eq_(getattr(project, attr), getattr(project_original, attr))
+        eq_(project.source, project_original)
+        eq_(project.status, Project.LIVE)
 
     def test_project_own_fork(self):
         project_original = create_project(status=Project.LIVE, is_shared=False,
@@ -52,5 +54,6 @@ class ProjectsManagerTest(TestCase):
         project = Project.objects.fork(project_original, self.user)
         self.assertFalse(project_original.id == project.id)
         eq_(project.author, self.user)
-        for attr in ['name', 'description', 'template', 'metadata', 'html']:
+        for attr in ['name', 'description', 'template', 'metadata', 'html',
+                     'status']:
             eq_(getattr(project, attr), getattr(project_original, attr))

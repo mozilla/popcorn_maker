@@ -108,7 +108,7 @@ def user_project_edit(request, project):
         raise Http404
     FormClass = ExternalProjectEditForm if project.is_external else ProjectEditForm
     if request.method == 'POST':
-        form = FormClass(request.POST, instance=project,
+        form = FormClass(request.POST, request.FILES, instance=project,
                          user=request.user.get_profile())
         if form.is_valid():
             instance = form.save()

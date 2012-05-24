@@ -31,8 +31,8 @@ class ProjectEditForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        fields = ('name', 'description', 'is_shared', 'is_forkable', 'status',
-                  'categories')
+        fields = ('name', 'description', 'thumbnail','is_shared', 'is_forkable',
+                  'status', 'categories')
 
 
 class ExternalProjectEditForm(ProjectEditForm):

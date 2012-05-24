@@ -31,9 +31,13 @@ class Activity(models.Model):
 @receiver(post_save, sender=Project, dispatch_uid='activity_project_create')
 def created_project(sender, *args, **kwargs):
     instance = kwargs.pop('instance')
+    message = None
     if kwargs['created'] and instance.is_published:
-        Activity.objects.create(user=instance.author,
-                                body=_('has published a project'),
+        message = _('has created a project')
+    if kwargs['created'] and instance.source:
+        message = _('has forked a project')
+    if message:
+        Activity.objects.create(user=instance.author, body=message,
                                 url=instance.get_absolute_url())
     return
 

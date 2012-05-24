@@ -5,8 +5,12 @@ class ProjectManager(models.Manager):
 
     def fork(self, project, user):
         """Duplicate the ``Project`` data fields and create a new one"""
-        initial = {'author': user}
-        for attr in ['name', 'description', 'template', 'metadata', 'html']:
+        initial = {
+            'author': user,
+            'source': project,
+            }
+        for attr in ['name', 'description', 'template', 'metadata', 'html',
+                     'status']:
             initial[attr] = getattr(project, attr)
         return self.create(**initial)
 

@@ -41,7 +41,8 @@ def save_project(json_data, user):
             'project': project.butter_data,
             }
     else:
-        response = {'error': 'error'}
+        response = {'error': 'error',
+                    'form_errors': form.errors}
     return response
 
 

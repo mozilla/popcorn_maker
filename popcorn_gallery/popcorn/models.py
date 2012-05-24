@@ -111,6 +111,8 @@ class Project(models.Model):
     created = CreationDateTimeField()
     modified = ModificationDateTimeField()
     categories = models.ManyToManyField('popcorn.ProjectCategory', blank=True)
+    source = models.ForeignKey('popcorn.Project', blank=True, null=True,
+                               on_delete=models.SET_NULL)
 
     # managers
     objects = ProjectManager()
