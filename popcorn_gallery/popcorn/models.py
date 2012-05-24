@@ -67,6 +67,10 @@ class Template(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
+        return ('template_summary', [self.slug])
+
+    @models.permalink
+    def get_template_url(self):
         return ('template_detail', [self.slug])
 
 

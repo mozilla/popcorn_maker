@@ -1,5 +1,5 @@
+{% macro project_list(project_list, user, with_author=False) -%}
 {% if project_list  %}
-<h2 class="wimper">{{ _('Projects') }}</h2>
 <ul class="columns submissions">
   {% for project in project_list %}
   <li class="col box">
@@ -14,10 +14,15 @@
           {{ project.name }}
         </h3>
       </a>
+      <p>{{ project.description }}</p>
+      {% if with_author %}
+      <address>
+        <p>Created by <a class="fn url" href="{{ url('users_profile', username=project.author.username) }}">{{ project.author.get_profile().display_name }}</a></p>
+      </address>
+    {% endif %}
     </article>
     {# User is the owner and the project is not published #}
-    {{ project.is_unpublished }}
-    {% if request.user == project.author and not project.is_published %}
+    {% if user == project.author and not project.is_published %}
     <div class="alerts inline">
       <p><strong>Unpublished project</strong></p>
       <p>Only you can see this until you publish your project</p>
@@ -28,3 +33,4 @@
   {% endfor %}
 </ul>
 {% endif %}
+{%- endmacro %}

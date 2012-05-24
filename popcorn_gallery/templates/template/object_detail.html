@@ -1,27 +1,25 @@
 {% extends "base.html" %}
 {% import "includes/tags.html" as tags %}
+{% import "includes/project_list.html" as project_macro %}
+
 {% block title %}Template: {{ template.name }} - {{ super() }}{% endblock title %}
 
-{% block content %}
-<h1>Template: {{ template.name }}</h1>
-{{ template.description }}
-<a href="{{ template.get_absolute_url() }}">Make something with this Template</a>
-{% if template.thumbnail  %}
-<img src="{{ template.thumbnail.url }}"  />
-{% endif %}
 
+{% block header %}
+<header class="busta">
+  <h1 class="shout">{{ template.name }}</h1>
+  <div class="meta">
+    <a class="cta" href="{{ template.get_absolute_url() }}">{{ _('Make something with this template') }}</a>
+  </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<p>{{ template.description }}</p>
+{% if template.thumbnail  %}<img src="{{ template.thumbnail.url }}"  />{% endif %}
 {{ tags.tag_list(tag_list) }}
 
-{% if project_list %}
-<section>
-  <h1>Related Projects</h1>
-  {% for project in project_list %}
-  <div>
-    <a href="{{ project.get_absolute_url() }}">{{ project.name }}</a> by 
-    <a href="{{ project.author.get_absolute_url() }}">{{ project.author.profile.display_name }}</a>
-  </div>
-  {% endfor%}
-</section>
-{% endif %}
+<h1>Related Projects</h1>
+{{ project_macro.project_list(project_list, request.user, with_author=True) }}
 
 {% endblock content %}

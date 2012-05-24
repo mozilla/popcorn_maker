@@ -1,0 +1,29 @@
+{% macro template_list(template_list, user, with_author=False) -%}
+{% if template_list %}
+<ul class="columns submissions">
+  {% for template in template_list %}
+  <li class="col box">
+    <article>
+      <a class="title" href="{{ template.get_absolute_url() }}">
+        <h3 class="title wimper">
+          <div class="frame box">
+            {% if template.thumbnail %}
+            <img src="{{ template.thumbnail.url }}" alt="" />
+            {% endif %}
+          </div>
+          {{ template.name }}
+        </h3>
+      </a>
+      <p>{{ template.description }}</p>
+      {% if with_author %}
+      <address>
+        <p>Created by <a class="fn url" href="{{ url('users_profile', username=template.author.username) }}">{{ template.author.get_profile().display_name }}</a></p>
+      </address>
+    {% endif %}
+    </article>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{%- endmacro %}
+

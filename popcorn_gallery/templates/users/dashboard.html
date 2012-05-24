@@ -1,5 +1,6 @@
 {% extends "users/profile.html" %}
 {% import "includes/activity.html" as activity %}
+{% import "includes/project_list.html" as project_macro %}
 
 {% block title -%}{{ _('Dashboard') }}: {{ profile.display_name }} - {{ super() }}{% endblock title -%}
 
@@ -14,7 +15,9 @@
 {% endif %}
 
 {% include "includes/project_dashboard.html" %}
-{% include "includes/project_list.html" %}
+
+<h2 class="wimper">{{ _('Projects') }}</h2>
+{{ project_macro.project_list(project_list, request.user) }}
 
 {{ activity.activity(activity_list) }}
 

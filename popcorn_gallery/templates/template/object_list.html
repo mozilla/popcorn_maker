@@ -1,26 +1,38 @@
 {% extends "base.html" %}
+{% import "includes/template_list.html" as template_macro %}
+
+{% block title -%}{{ _('Get Started') }} - {{ super() }}{% endblock title -%}
+
+{% block header %}
+<header class="busta">
+  <h1 class="shout">Get started</h1>
+</header>
+{% endblock %}
+
 {% block content %}
-
-{% block content_title %}
-<h1>Get started</h1>
-<p>Get started with one of these ready-to-go templates!</p>
-{% endblock content_title %}
-
-{% if category %}
-<h2>{{ category.name }}</h2>
-{% endif %}
-
-{% for object in template_list %}
-<div>
-  {% if object.is_featured %}Featured:{% endif %} <a href="{{ url('template_summary', object.slug) }}">{{ object.name }}</a>
+<div class="content_columns columns with_nav">
+  <nav class="col box nav">
+    <ul>
+      <li><a{% if not category %} class="current wimper"{% endif %} href="{{ url('template_list') }}">All templates</a></li>
+      {% if category_list %}
+      {% for cat in category_list %}
+      <li>
+        <a{% if category == cat %} class="current wimper"{% endif %} href="{{ cat.get_absolute_url() }}">{{ cat.name }}</a><br>
+      </li>
+      {% endfor %}
+      {% endif %}
+    </ul>
+  </nav>
+  <div class="highlight col box main">
+    {% if category %}
+    <h2 class="{{category.slug }}">{{ category.name }}</h2>
+    {% else %}
+    <h2 class="all">All templates</h2>
+    {% endif %}
+    {{ template_macro.template_list(template_list, request.user) }}
+  </div>
 </div>
-{% endfor %}
-
-<h2>Categories</h2>
-{% for category in category_list %}
-<div>
-  <a href="{{ category.get_absolute_url() }}">{{ category }}</a>
-</div>
-{% endfor%}
-
 {% endblock content %}
+
+
+{% if category %}<a class="cta" href="{{ url('project_category_join', slug=category.slug) }}">Join this Category</a>{% endif %}
