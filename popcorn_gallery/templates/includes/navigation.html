@@ -1,12 +1,8 @@
 <nav>
   <ul>
     <li><a href="{{ url('homepage') }}">Home</a></li>
-    <li><a href="{{ url('about') }}">About</a></li>
     <li><a href="{{ url('template_list') }}">Get started</a></li>
     <li><a href="{{ url('project_list') }}">Made with Popcorn</a></li>
-    <li><a href="#TODO">Blog</a></li>
-    <li><a href="{{ url('help') }}">Help</a></li>
-    <li><a href="{{ url('legal') }}">Legal</a></li>
     {% if not user.is_authenticated() %}
     <li>
       <a id="browserid" href="{{ url('login') }}">Sign In</a>
