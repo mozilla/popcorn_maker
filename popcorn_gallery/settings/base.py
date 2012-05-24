@@ -139,6 +139,7 @@ POPCORN_VALID_DOMAINS = (
     'twitter.com',
     'vimeo.com',
     'local.mozillapopcorn.org',
+    'popcornmaker-dev.allizom.org',
     )
 
 EMAIL_BACKEND = 'django_mailer.smtp_queue.EmailBackend'
