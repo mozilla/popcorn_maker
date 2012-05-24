@@ -14,6 +14,9 @@ class ProjectManager(models.Manager):
             initial[attr] = getattr(project, attr)
         return self.create(**initial)
 
+    def get_for_user(self, user):
+        return self.filter(author=user, is_removed=False)
+
 
 class ProjectLiveManager(ProjectManager):
 

@@ -1,0 +1,19 @@
+<header class="vcard">
+  <h1 class="fn">{{ profile.display_name }}</h1>
+  {% if profile.website %}
+  <a href="{{ profile.website }}" class="url">{{ profile.website }}</a>
+  {% endif %}
+  {% if profile.bio %}
+  <p>{{ profile.bio }}</p>
+  {% endif %}
+  {% if profile.user == request.user %}
+  <ul class="user_tools">
+    <li>
+      <a href="{{ url('users_edit') }}" class="cta do">{{ _('Edit your profile') }}</a>
+    </li>
+  </ul>
+  {% endif %}
+  <div class="frame box">
+    <img class="photo" src="{{ profile.gravatar_url }}" alt="" width="80" height="80" />
+  </div>
+</header>

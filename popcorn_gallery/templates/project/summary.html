@@ -4,19 +4,24 @@
 
 {% block content %}
 <h1>Project: {{ project.name }}</h1>
-
 <p>{{ project.description }}</p>
 
+<p>
 {% if project.url %}
 <a href="{{ project.url }}">{{ project.url }}</a>
+{% else %}
+<a href="{{ project.get_project_url() }}">{{ SITE_URL }}{{ project.get_project_url() }}</a>
 {% endif %}
 
+</p>
+
 {% if project.thumbnail %}
-<img src="{{ project.thumbnail.url }}" alt="" />
+<p><img src="{{ project.thumbnail.url }}" alt="" /></p>
 {% endif %}
 
 {% if request.user == project.author %}
-<p><a href="{{ url('user_project_edit', username=project.author.username, shortcode=project.shortcode) }}">Edit</a></p>
+<p><a href="{{ project.get_edit_url() }}" class="cta">{{ _('Edit your project') }}</a></p>
 {% endif %}
+
 
 {% endblock content %}

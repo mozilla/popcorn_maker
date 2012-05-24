@@ -1,33 +1,18 @@
 {% extends "base.html" %}
 {% import "includes/activity.html" as activity %}
 
-{% block page_title -%}
-Profile: {{ profile.display_name }} - {{ super() }}
-{% endblock -%}
+{% block title -%}{{ profile.display_name }} - Users - {{ super() }}{% endblock -%}
+
+{% block body_attributes %}id="user_profile" class="profile"{% endblock body_attributes %}
 
 {% block content -%}
+<div class="content_columns columns">
+  <div class="col main box">
+    {% include "includes/user_bio.html" %}
+    <a href="{{ url('template_list') }}" class="cta">{{ _('Create an project') }}</a>
+  </div>
+</div>
 
-<h1>Profile: {{ profile.display_name }}</h1>
-<img src="{{ profile.gravatar_url }}" alt="" />
-{% if profile.website %}
-<a href="{{ profile.website }}">{{ profile.website }}</a>
-{% endif %}
-{% if profile.bio  %}
-{{ profile.bio }}
-{% endif %}
+{% include "includes/project_list.html" %}
 
-<section>
-  <h1>{{ _('Projects') }}</h1>
-  <ul>
-    {% for project in project_list %}
-    <li>
-      <a href="{{ project.get_absolute_url() }}">{{ project.name }}</a>
-      {{ project.description }}
-    </li>
-    {% endfor%}
-  </ul>
-</section>
-
-{{ activity.activity(activity_list) }}
-
-{% endblock -%}
+{% endblock content -%}

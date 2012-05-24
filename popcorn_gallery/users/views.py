@@ -47,8 +47,7 @@ class AjaxVerify(Verify):
 def dashboard(request):
     """Display first page of activities for a users dashboard."""
     user_profile = request.user.get_profile()
-    project_list = Project.objects.filter(author=request.user,
-                                          is_removed=False)
+    project_list = Project.objects.get_for_user(request.user)
     activity_list = Activity.objects.get_for_user(request.user)[:5]
     context = {
         'profile': user_profile,
@@ -74,7 +73,10 @@ def profile(request, username):
     # accepted the Terms and Conditions
     if not profile.has_chosen_identifier:
         raise Http404
-    project_list = Project.live.filter(author=profile.user)
+    if request.user == profile.user:
+        project_list = Project.objects.get_for_user(request.user)
+    else:
+        project_list = Project.live.filter(author=profile.user)
     activity_list = Activity.objects.get_for_user(profile.user)[:5]
     context = {
         'profile': profile,

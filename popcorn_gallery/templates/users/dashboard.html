@@ -1,21 +1,10 @@
 {% extends "users/profile.html" %}
 {% import "includes/activity.html" as activity %}
 
-{% block title -%}
-{{ _('Dashboard') }} : {{ profile.display_name }} - {{ super() }}
-{% endblock title -%}
+{% block title -%}{{ _('Dashboard') }}: {{ profile.display_name }} - {{ super() }}{% endblock title -%}
 
 {% block content -%}
-<h1>{{ _('Your Dashboard') }}</h1>
-<img src="{{ profile.gravatar_url }}" alt="" />
-<a href="{{ url('users_edit') }}">Edit your profile</a>
-{% if profile.website %}
-<a href="{{ profile.website }}">{{ profile.website }}</a>
-{% endif %}
-{% if profile.bio  %}
-{{ profile.bio }}
-{% endif %}
-
+{% include "includes/user_bio.html" %}
 {% if messages %}
 <ul class="messages">
   {% for message in messages %}
@@ -24,29 +13,8 @@
 </ul>
 {% endif %}
 
-<section>
-  <h1>{{ _('Your Projects') }}</h1>
-  <table>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th>URL</th>
-      <th>Status</th>
-      <th>Is shared?</th>
-      <th>Can be forked?</th>
-    </tr>
-    {% for project in project_list %}
-    <tr>
-      <td><a href="{{ url('user_project_edit', username=request.user.username, shortcode=project.shortcode) }}">{{ project.name }}</a></td>
-      <td>{{ project.description }}</td>
-      <td><a href="{{ SITE_URL }}{{ project.get_absolute_url() }}">{{ SITE_URL }}{{ project.get_absolute_url() }}</a></td>
-      <td>{{ project.get_status_display() }}</td>
-      <td>{% if project.is_shared %}Yes{% else %}No{% endif %}</td>
-      <td>{% if project.is_forkable %}Yes{% else %}No{% endif %}</td>
-    </tr>
-    {% endfor%}
-  </table>
-</section>
+{% include "includes/project_dashboard.html" %}
+{% include "includes/project_list.html" %}
 
 {{ activity.activity(activity_list) }}
 

@@ -49,15 +49,21 @@ class PopcornTest(TestCase):
 
     def test_absolute_url(self):
         project = create_project()
-        url = reverse('user_project', args=[project.author.username,
-                                                    project.shortcode])
-        self.assertEqual(project.get_absolute_url(), url)
-
-    def test_absolute_url_external(self):
-        project = create_external_project()
         url = reverse('user_project_summary', args=[project.author.username,
                                                     project.shortcode])
         self.assertEqual(project.get_absolute_url(), url)
+
+    def test_project_url(self):
+        project = create_external_project()
+        url = reverse('user_project', args=[project.author.username,
+                                            project.shortcode])
+        self.assertEqual(project.get_project_url(), url)
+
+    def test_edit_url(self):
+        project = create_external_project()
+        url = reverse('user_project_edit', args=[project.author.username,
+                                                 project.shortcode])
+        self.assertEqual(project.get_edit_url(), url)
 
     def test_project_published(self):
         project = create_project(status=Project.LIVE)

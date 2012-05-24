@@ -125,10 +125,17 @@ class Project(models.Model):
         return u'Project %s from %s' % (self.name, self.author)
 
     @models.permalink
+    def get_permalink_for(self, name):
+        return (name, [self.author.username, self.shortcode])
+
     def get_absolute_url(self):
-        if self.url:
-            return ('user_project_summary', [self.author.username, self.shortcode])
-        return ('user_project', [self.author.username, self.shortcode])
+        return self.get_permalink_for('user_project_summary')
+
+    def get_project_url(self):
+        return self.get_permalink_for('user_project')
+
+    def get_edit_url(self):
+        return self.get_permalink_for('user_project_edit')
 
     @property
     def butter_data(self):

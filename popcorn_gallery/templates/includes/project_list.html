@@ -1,0 +1,30 @@
+{% if project_list  %}
+<h2 class="wimper">{{ _('Projects') }}</h2>
+<ul class="columns submissions">
+  {% for project in project_list %}
+  <li class="col box">
+    <article>
+      <a class="title" href="{{ project.get_absolute_url() }}">
+        <h3 class="title wimper">
+          <div class="frame box">
+            {% if project.thumbnail %}
+            <img src="{{ project.thumbnail.url }}" alt="" />
+            {% endif %}
+          </div>
+          {{ project.name }}
+        </h3>
+      </a>
+    </article>
+    {# User is the owner and the project is not published #}
+    {{ project.is_unpublished }}
+    {% if request.user == project.author and not project.is_published %}
+    <div class="alerts inline">
+      <p><strong>Unpublished project</strong></p>
+      <p>Only you can see this until you publish your project</p>
+      <a href="{{ project.get_edit_url() }}" class="cta do">Edit your project</a>
+    </div>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}

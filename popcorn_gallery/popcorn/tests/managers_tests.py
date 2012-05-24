@@ -57,3 +57,12 @@ class ProjectsManagerTest(TestCase):
         for attr in ['name', 'description', 'template', 'metadata', 'html',
                      'status']:
             eq_(getattr(project, attr), getattr(project_original, attr))
+
+    def test_projects_for_user(self):
+        create_project(status=Project.HIDDEN, is_shared=False, author=self.user)
+        eq_(Project.objects.get_for_user(self.user).count(), 1)
+
+    def test_projects_for_user_removed(self):
+        create_project(status=Project.LIVE, is_shared=True, author=self.user,
+                       is_removed=True)
+        eq_(Project.objects.get_for_user(self.user).count(), 0)
