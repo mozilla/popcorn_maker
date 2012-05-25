@@ -152,7 +152,7 @@ class ThottleDecoratorTest(TestCase):
         mocked = throttle_view(view_mock, methods=['GET'], duration=30)
         response = mocked(self.request)
         cache_get.assert_called_with(self.key)
-        eq_(cache_get.called, False)
+        eq_(cache_set.called, False)
         eq_(response.status_code, 403)
         ok_(isinstance(response, HttpResponseForbidden))
 

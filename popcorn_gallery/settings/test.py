@@ -66,3 +66,4 @@ LOGGING = {
     },
 }
 
+SITE_URL = 'http://test.mozillapopcorn.org'
