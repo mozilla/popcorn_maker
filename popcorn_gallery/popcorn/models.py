@@ -141,6 +141,10 @@ class Project(models.Model):
     def get_edit_url(self):
         return self.get_permalink_for('user_project_edit')
 
+    @models.permalink
+    def get_api_url(self):
+        return ('api:project_detail', [self.uuid])
+
     @property
     def butter_data(self):
         """Returns the Project data for ``Butter``"""

@@ -9,7 +9,7 @@
 <header class="busta">
   <h1 class="shout">{{ template.name }}</h1>
   <div class="meta">
-    <a class="cta" href="{{ template.get_absolute_url() }}">{{ _('Make something with this template') }}</a>
+    <a class="cta" href="{{ template.get_template_url() }}">{{ _('Make something with this template') }}</a>
   </div>
 </header>
 {% endblock %}
