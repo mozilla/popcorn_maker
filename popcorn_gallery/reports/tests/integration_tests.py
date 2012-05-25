@@ -57,7 +57,7 @@ class ReportIntegrationTestCase(TestCase):
     def test_report_form_post_valid(self):
         self.create_user()
         data = {
-            'url': 'http://mozillapopcorn.org',
+            'url': 'http://test.mozillapopcorn.org/outrageous/',
             'description': 'Description of the report',
             }
         response = self.client.post(self.url, data, follow=True)
