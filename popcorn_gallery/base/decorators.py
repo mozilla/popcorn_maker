@@ -1,7 +1,9 @@
 import functools
+import hashlib
 
-from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.core.serializers.json import simplejson as json
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.core.cache import cache
 
 
 def json_handler(func):
@@ -101,3 +103,20 @@ class cached_property(object):
             value = self.func(obj)
             obj.__dict__[self.__name__] = value
         return value
+
+
+def throttle_view(func, methods=None, duration=15):
+    def inner(request, *args, **kwargs):
+        throttled_methods = methods if methods else ['POST', 'GET']
+        if request.method in throttled_methods:
+            remote_addr = request.META.get('HTTP_X_FORWARDED_FOR') or \
+                          request.META.get('REMOTE_ADDR')
+            m = hashlib.md5()
+            m.update('%s.%s' % (remote_addr, request.path_info))
+            key = m.hexdigest()
+            if cache.get(key):
+                return HttpResponseForbidden('Please try again later.')
+            else:
+                cache.set(key, True, duration)
+        return func(request, *args, **kwargs)
+    return inner

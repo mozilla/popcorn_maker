@@ -1,11 +1,11 @@
 from django.contrib.auth.models import User
-from django.utils.unittest import TestCase
+from django.test import TestCase
 
 from .fixtures import create_user
 from ..models import Profile
 
 
-class UserProfile(TestCase):
+class UserProfileTest(TestCase):
 
     def tearDown(self):
         for model in [Profile, User]:

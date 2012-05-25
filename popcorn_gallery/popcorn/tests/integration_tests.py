@@ -11,8 +11,7 @@ from mock import patch
 from .fixtures import (create_user, create_project, create_project_category,
                        create_template, create_template_category,
                        create_external_project)
-from ..forms import (ProjectEditForm, ExternalProjectEditForm,
-                     ProjectSubmissionForm)
+from ..forms import ProjectEditForm, ExternalProjectEditForm
 from ..models import (Project, Template, TemplateCategory, ProjectCategory,
                       ProjectCategoryMembership)
 
