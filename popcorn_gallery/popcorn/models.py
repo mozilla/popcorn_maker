@@ -141,6 +141,9 @@ class Project(models.Model):
     def get_edit_url(self):
         return self.get_permalink_for('user_project_edit')
 
+    def get_delete_url(self):
+        return self.get_permalink_for('user_project_delete')
+
     @models.permalink
     def get_api_url(self):
         return ('api:project_detail', [self.uuid])

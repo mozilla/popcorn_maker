@@ -2,26 +2,89 @@
 
 {% block title %}Project: {{ project.name }} - {{ super() }}{% endblock title %}
 
+{% block body_attributes %}id="show_submission" class="entries"{% endblock body_attributes %}
+
+
 {% block content %}
-<h1>Project: {{ project.name }}</h1>
-<p>{{ project.description }}</p>
+<a href="{{ url('project_list') }}" class="back wimper">{{ _('See all projects') }}</a>
+<article>
+  <h1 class="shout">{{ project.name }}</h1>
+  {% if request.user == project.author %}
+  <ul class="user_tools">
+    <li><a href="{{ project.get_edit_url() }}" class="cta do">Edit your Project</a></li>
+    <li><a href="{{ project.get_delete_url() }}" class="cta do">Delete your Project</a></li>
+  </ul>
+  {% endif %}
 
-<p>
-{% if project.url %}
-<a href="{{ project.url }}">{{ project.url }}</a>
-{% else %}
-<a href="{{ project.get_project_url() }}">{{ SITE_URL }}{{ project.get_project_url() }}</a>
-{% endif %}
+  {% if not project.is_published and request.user == project.author %}
+  <div class="alerts inline">
+    <p><strong>Project is not published</strong></p>
+    <p>This project is not yet published.</p>
+  </div>
+  {% endif %}
 
-</p>
+  <div class="columns">
+    <div class="col box">
+      <div class="widgets">
+        <p>Created on {{ project.created.strftime('%B %d, %Y') }}</p>
+        <ul class="popularity">
+          <li class="comment"><a href="#TODO" data-disqus-identifier="#TODO">View comments</a></li>
+          <li>Votes: <span class="total_votes">{{ votes.score }}</span></li>
+        </ul>
+      </div>
+      <div class="links">
+        <h2 class="point">View it in action</h2>
+        <p>
+          {% if project.url %}
+          <a href="{{ project.url }}">{{ project.url }}</a>
+          {% else %}
+          <a href="{{ project.get_project_url() }}">{{ SITE_URL }}{{ project.get_project_url() }}</a>
+          {% endif %}
+        </p>
+      </div>
+      <div class="description">
+        <h2 class="point">Description</h2>
+        <p>{{ project.description }}</p>
+      </div>
 
-{% if project.thumbnail %}
-<p><img src="{{ project.thumbnail.url }}" alt="" /></p>
-{% endif %}
 
-{% if request.user == project.author %}
-<p><a href="{{ project.get_edit_url() }}" class="cta">{{ _('Edit your project') }}</a></p>
-{% endif %}
+      <address class="vcard">
+        <p class="wimper"><a class="fn url" href="{{ url('users_profile', username=project.author.username) }}">{{ project.author.get_profile().display_name }}</a></p>
+        <p>{{ project.author.bio }}</p>
+        <div class="frame box">
+          <img class="photo" src="{{ project.author.get_profile().gravatar_url }}" width="80" height="80" alt="" />
+        </div>
+      </address>
 
+      {% if project.thumbnail %}
+      <p><img src="{{ project.thumbnail.url }}" alt="" /></p>
+      {% endif %}
+    </div>
+
+    <aside class="col box">
+      <section class="widgets">
+        <h2 class="wimper">Vote</h2>
+        {% if user.is_authenticated() %}
+
+        {% if user_vote and user_vote.is_upvote %}
+        <form action="{{ url('vote', model='project', object_id=project.pk, direction='clear') }}" method="POST" id="user_vote">
+          {{ csrf() }}
+          <input type="submit" class="cancel cta do" value="{{ _('Clear my vote') }}" />
+        </form>
+        {% else %}
+        <form action="{{ url('vote', model='project', object_id=project.pk, direction='up') }}" method="POST" id="user_vote">
+          {{ csrf()|safe }}
+          <input type="submit" class="thumb cta do" value="{{ _('Give this a thumbs up') }}" />
+        </form>
+        {% endif %}
+        {% else %}
+        <p>To upvote this submission, please login or register for Mozilla Ignite.</p>
+        {% endif %}
+      </section>
+    </aside>
+
+  </div>
+  <!-- END .columns -->
+</article>
 
 {% endblock content %}

@@ -35,6 +35,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'south',
     'taggit',
     'django_mailer',
+    'voting',
     # Application base, containing global templates.
     'popcorn_gallery.base',
     'popcorn_gallery.popcorn',
@@ -95,7 +96,8 @@ ABSOLUTE_URL_OVERRIDES = {
 }
 
 # funfactory locale middleware shouldn't change these urls.
-SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid']
+SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid',
+                        'vote']
 
 STATIC_URL = '/static/'
 

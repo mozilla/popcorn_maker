@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 
 from funfactory.urlresolvers import reverse
 from tower import ugettext as _
+from voting.models import Vote
 
 from ..baseconv import base62
 from ..forms import (ProjectEditForm, ExternalProjectEditForm,
@@ -151,7 +152,13 @@ def user_project_fork(request, project):
 
 @valid_user_project
 def user_project_summary(request, project):
-    context = {'project': project}
+    user_vote = Vote.objects.get_for_user(project, request.user)
+    votes = Vote.objects.get_score(project)
+    context = {
+        'project': project,
+        'votes': votes,
+        'user_vote': user_vote,
+        }
     return render(request, 'project/summary.html', context)
 
 
