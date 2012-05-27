@@ -12,6 +12,8 @@ def homepage(request):
 
 def vote(request, model, object_id, direction):
     """Thin wrapper around ``django-voting`` to pass our custom params"""
+    if not request.method == 'POST':
+        raise Http404
     model_list = {
         'project': Project,
         'template': Template,
