@@ -36,6 +36,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'taggit',
     'django_mailer',
     'voting',
+    'haystack',
     # Application base, containing global templates.
     'popcorn_gallery.base',
     'popcorn_gallery.popcorn',
@@ -43,6 +44,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'popcorn_gallery.notifications',
     'popcorn_gallery.activity',
     'popcorn_gallery.reports',
+    'popcorn_gallery.search',
 ]
 
 
@@ -151,3 +153,10 @@ EMAIL_SUBJECT_PREFIX = '[Popcorn] '
 
 CACHE_MIDDLEWARE_KEY_PREFIX = 'popcorn'
 
+# haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': path('whoosh_index'),
+        },
+}

@@ -56,6 +56,7 @@ def update_site(env, debug):
         (EXEC, 'python manage.py migrate --noinput'),
         (EXEC, 'python manage.py collectstatic --noinput'),
         (EXEC, 'python manage.py popcorn_import_butter'),
+        (EXEC, 'python manage.py update_index'),
         ]
     for cmd, cmd_args in commands:
         if CHDIR == cmd:

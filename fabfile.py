@@ -45,12 +45,19 @@ def copy_butter_style():
         local('cp butter/css/butter.ui.css assets/css/')
 
 
+def update_index():
+    print yellow('Updating search index')
+    with lcd(settings.PROJECT_ROOT):
+        local('python manage.py update_index')
+
+
 def update():
     print yellow('Updating the site:')
     syncdb()
     prepare_butter()
     copy_butter_style()
     import_butter_templates()
+    update_index()
 
 
 def collectstatic():

@@ -21,3 +21,4 @@ vagrantconfig_local.yaml
 .vagrant
 /static/
 /media/
+whoosh_index
