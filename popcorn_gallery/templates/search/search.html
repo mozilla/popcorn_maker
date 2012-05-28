@@ -1,41 +1,51 @@
 {% extends "base.html" %}
 
+
+{% block header %}
+<header class="busta">
+  <h1 class="shout">Search</h1>
+  <form method="get" action=".">
+    {{ form.as_p() }}
+    <p><button type="submit">Search</button></p>
+  </form>
+</header>
+{% endblock %}
+
 {% block content %}
-<h2>Search</h2>
-
-<form method="get" action=".">
-  <table>
-    {{ form.as_table() }}
-    <tr>
-      <td>&nbsp;</td>
-      <td>
-        <input type="submit" value="Search">
-      </td>
-    </tr>
-  </table>
-
-  {% if query %}
-  <h3>Results</h3>
-
+{% if query %}
+<ul class="columns submissions">
   {% for result in page.object_list %}
   {% if result %}
-  <p>
-    <a href="{{ result.object.get_absolute_url() }}">{{ result.object.name }}</a>
-  </p>
+  <li class="col box">
+    <article>
+      <a class="title" href="{{ result.object.get_absolute_url() }}">
+        <h3 class="title wimper">
+          <div class="frame box">
+            {% if result.object.thumbnail %}
+            <img src="{{ result.object.thumbnail.url }}" alt="" />
+            {% endif %}
+          </div>
+          {{ result.object.name }}
+        </h3>
+      </a>
+      <p>{{ result.object.description }}</p>
+    </article>
+  </li>
   {% endif %}
   {% endfor %}
+</ul>
+{% endif %}
 
-  {% if page.has_previous() or page.has_next() %}
-  <div>
-    {% if page.has_previous() %}
-    <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
-      {% endif %}&laquo; Previous{% if page.has_previous() %}</a>{% endif %}
-    |
-    {% if page.has_next() %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next() %}</a>{% endif %}
-  </div>
-  {% endif %}
-  {% else %}
-  
-  {% endif %}
-</form>
+
+{% if page.has_previous() or page.has_next() %}
+<div>
+  {% if page.has_previous() %}
+  <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
+    {% endif %}&laquo; Previous{% if page.has_previous() %}</a>{% endif %}
+  |
+  {% if page.has_next() %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next() %}</a>{% endif %}
+</div>
+{% endif%}
+
+
 {% endblock %}
