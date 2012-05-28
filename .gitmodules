@@ -7,3 +7,6 @@
 [submodule "vendor-local/src/django_mailer_2"]
 	path = vendor-local/src/django_mailer_2
 	url = https://github.com/SmileyChris/django-mailer-2.git
+[submodule "vendor-local/src/django-haystack"]
+	path = vendor-local/src/django-haystack
+	url = https://github.com/toastdriven/django-haystack.git
