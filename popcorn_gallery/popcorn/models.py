@@ -42,6 +42,7 @@ class Template(models.Model):
         (LIVE, _('Published')),
         (HIDDEN, _('Unpublished')),
         )
+    MODEL_NAME = 'template'
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
@@ -98,6 +99,7 @@ class Project(models.Model):
         (LIVE, _('Published')),
         (HIDDEN, _('Unpublished')),
         )
+    MODEL_NAME = 'project'
     uuid = UUIDField(unique=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)

@@ -25,7 +25,7 @@
             <img src="{{ result.object.thumbnail.url }}" alt="" />
             {% endif %}
           </div>
-          {{ result.object.name }}
+          {{ result.object.MODEL_NAME.title() }}: {{ result.object.name }}
         </h3>
       </a>
       <p>{{ result.object.description }}</p>
