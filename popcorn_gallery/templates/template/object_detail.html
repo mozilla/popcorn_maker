@@ -2,22 +2,58 @@
 {% import "includes/tags.html" as tags %}
 {% import "includes/project_list.html" as project_macro %}
 
-{% block title %}Template: {{ template.name }} - {{ super() }}{% endblock title %}
+{% block title %}{{ template.name }} - {{ super() }}{% endblock title %}
 
-
-{% block header %}
-<header class="busta">
-  <h1 class="shout">{{ template.name }}</h1>
-  <div class="meta">
-    <a class="cta" href="{{ template.get_template_url() }}">{{ _('Make something with this template') }}</a>
-  </div>
-</header>
-{% endblock %}
+{% block body_attributes %}id="show_submission" class="entries"{% endblock body_attributes %}
 
 {% block content %}
-<p>{{ template.description }}</p>
-{% if template.thumbnail  %}<img src="{{ template.thumbnail.url }}"  />{% endif %}
-{{ tags.tag_list(tag_list) }}
+<a href="{{ url('template_list') }}" class="back wimper">{{ _('See all templates') }}</a>
+<article>
+  <h1 class="shout">{{ template.name }}</h1>
+  <ul class="user_tools">
+    <li><a href="{{ template.get_template_url() }}" class="cta do">{{ _('Make something with this template') }}</a></li>
+  </ul>
+  <div class="columns">
+    <div class="col box">
+      <div class="widgets">
+        <ul class="popularity">
+          <li>Votes: <span class="total_votes">{{ votes.score }}</span></li>
+        </ul>
+      </div>
+      <div class="description">
+        <h2 class="point">Description</h2>
+        <p>{{ template.description }}</p>
+        {% if template.thumbnail  %}
+        <p><img src="{{ template.thumbnail.url }}"  /></p>
+        {% endif %}
+      </div>
+      <div class="tags">
+        {{ tags.tag_list(tag_list) }}
+      </div>
+    </div>
+    <aside class="col box">
+      <section class="widgets">
+        <h2 class="wimper">Vote</h2>
+        {% if user.is_authenticated() %}
+        {% if user_vote and user_vote.is_upvote %}
+        <form action="{{ url('vote', model='template', object_id=template.pk, direction='clear') }}" method="POST" id="user_vote">
+          {{ csrf() }}
+          <input type="submit" class="cancel cta do" value="{{ _('Clear my vote') }}" />
+        </form>
+        {% else %}
+        <form action="{{ url('vote', model='template', object_id=template.pk, direction='up') }}" method="POST" id="user_vote">
+          {{ csrf()|safe }}
+          <input type="submit" class="thumb cta do" value="{{ _('Give this a thumbs up') }}" />
+        </form>
+        {% endif %}
+        {% else %}
+        <p>To upvote this submission, please login or register for Mozilla Ignite.</p>
+        {% endif %}
+      </section>
+    </aside>
+  </div>
+  <!-- END .columns -->
+</article>
 
 <h1>Related Projects</h1>
 {{ project_macro.project_list(project_list, request.user, with_author=True) }}

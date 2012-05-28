@@ -259,16 +259,21 @@ def template_detail(request, slug):
 
 
 def template_summary(request, slug):
+    """Summary of a ``Template`` agregates metadata for the template"""
     template = get_template_or_404(slug)
     category_list = TemplateCategory.objects.filter(is_featured=True)
     project_list = Project.live.filter(template=template)[:5]
     tag_list = template.tags.all()
+    user_vote = Vote.objects.get_for_user(template, request.user)
+    votes = Vote.objects.get_score(template)
     context = {
         'template': template,
         'object': None,
         'category_list': category_list,
         'project_list': project_list,
         'tag_list': tag_list,
+        'votes': votes,
+        'user_vote': user_vote,
         }
     return render(request, 'template/object_detail.html', context)
 

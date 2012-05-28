@@ -38,7 +38,7 @@ urlpatterns += patterns(
     (r'^api/', include('popcorn_gallery.popcorn.urls.api', namespace='api')),
     (r'', include('popcorn_gallery.popcorn.urls.projects')),
     url(r'^browserid/verify$', AjaxVerify.as_view(), name='browserid_verify'),
-    url(r'^vote/(?P<model>project)/(?P<object_id>\d+)/(?P<direction>up|clear)/$',
+    url(r'^vote/(?P<model>project|template)/(?P<object_id>\d+)/(?P<direction>up|clear)/$',
         'popcorn_gallery.base.views.vote', name='vote'),
     url(r'^$', 'popcorn_gallery.base.views.homepage', name='homepage'),
     )
