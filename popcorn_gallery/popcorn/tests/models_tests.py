@@ -25,7 +25,7 @@ class PopcornTest(TestCase):
         assert project.id, "Project couldn't be created"
         assert project.uuid, "Project UUID missing"
         self.assertEqual(project.status, Project.HIDDEN)
-        self.assertTrue(project.is_forkable)
+        self.assertFalse(project.is_forkable)
         self.assertFalse(project.is_shared)
         self.assertFalse(project.is_removed)
         self.assertFalse(project.is_published)
@@ -41,7 +41,7 @@ class PopcornTest(TestCase):
         assert project.id, "Project couldn't be created"
         assert project.uuid, "Project UUID missing"
         self.assertEqual(project.status, Project.HIDDEN)
-        self.assertTrue(project.is_forkable)
+        self.assertFalse(project.is_forkable)
         self.assertFalse(project.is_shared)
         self.assertFalse(project.is_removed)
         self.assertFalse(project.is_published)

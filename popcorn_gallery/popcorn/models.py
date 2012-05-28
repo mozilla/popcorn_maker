@@ -111,7 +111,7 @@ class Project(models.Model):
     html = models.TextField()
     status = models.IntegerField(choices=STATUS_CHOICES, default=HIDDEN)
     is_shared = models.BooleanField(default=False)
-    is_forkable = models.BooleanField(default=True)
+    is_forkable = models.BooleanField(default=False)
     is_removed = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
     created = CreationDateTimeField()
