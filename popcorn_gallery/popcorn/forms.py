@@ -56,6 +56,7 @@ class OrderingForm(forms.Form):
     ORDERING_CHOICES = (
         ('default', _('Featured')),
         ('views', _('Most views')),
-        ('created', _('Most Recent')),
+        ('created', _('Most recent')),
+        ('votes', _('Most voted')),
         )
     order = forms.ChoiceField(choices=ORDERING_CHOICES)

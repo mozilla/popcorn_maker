@@ -3,8 +3,10 @@ import datetime
 import hashlib
 
 from django.core.cache import cache
+from django.conf import settings
 
 from dateutil.relativedelta import relativedelta
+from voting.models import Vote
 from .models import Template
 
 
@@ -49,7 +51,7 @@ def update_views_count(item):
     else:
         views_count = item.views_count + 1
     cache.set(key, views_count)
-    cache_expiration = item.modified + relativedelta(minutes=10)
+    cache_expiration = item.modified + relativedelta(minutes=settings.CACHE_OBJECT_METADATA)
     if datetime.datetime.utcnow() > cache_expiration:
         item.views_count = views_count
         item.save()
@@ -62,7 +64,8 @@ def get_order_fields(request_get, **kwargs):
     available_order = {
         'views': ['-views_count', '-created'],
         'created': ['-created'],
-        'default': ['-is_featured','-created'],
+        'votes': ['-votes_count', '-created'],
+        'default': ['-is_featured', '-created'],
         }
     if kwargs:
         available_order.update(kwargs)
@@ -70,3 +73,14 @@ def get_order_fields(request_get, **kwargs):
     if order and order in available_order:
         return available_order[order]
     return available_order['default']
+
+
+def update_vote_score(item):
+    """Caches the ``vote_score`` for ordering"""
+    votes = Vote.objects.get_score(item)
+    cache_expiration = item.modified + relativedelta(minutes=settings.CACHE_OBJECT_METADATA)
+    if datetime.datetime.utcnow() > cache_expiration \
+        and votes['score'] > item.votes_count:
+        item.votes_count = votes['score']
+        item.save()
+    return votes

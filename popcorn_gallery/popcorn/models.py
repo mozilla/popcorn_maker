@@ -58,6 +58,7 @@ class Template(models.Model):
     created = CreationDateTimeField()
     modified = ModificationDateTimeField()
     views_count = models.IntegerField(default=0)
+    votes_count = models.IntegerField(default=0)
 
     # managers
     objects = models.Manager()
@@ -123,6 +124,7 @@ class Project(models.Model):
     source = models.ForeignKey('popcorn.Project', blank=True, null=True,
                                on_delete=models.SET_NULL)
     views_count = models.IntegerField(default=0)
+    votes_count = models.IntegerField(default=0)
 
     # managers
     objects = ProjectManager()

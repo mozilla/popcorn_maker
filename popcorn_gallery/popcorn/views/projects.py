@@ -18,7 +18,7 @@ from ..forms import (ProjectEditForm, ExternalProjectEditForm,
                      ProjectSubmissionForm, OrderingForm)
 from ..models import (Project, ProjectCategory, Template, TemplateCategory,
                       ProjectCategoryMembership)
-from ..utils import update_views_count, get_order_fields
+from ..utils import update_views_count, get_order_fields, update_vote_score
 from ...base.utils import notify_admins
 
 
@@ -155,7 +155,7 @@ def user_project_fork(request, project):
 def user_project_summary(request, project):
     update_views_count(project)
     user_vote = Vote.objects.get_for_user(project, request.user)
-    votes = Vote.objects.get_score(project)
+    votes = update_vote_score(project)
     context = {
         'project': project,
         'votes': votes,
@@ -273,7 +273,7 @@ def template_summary(request, slug):
     project_list = Project.live.filter(template=template)[:5]
     tag_list = template.tags.all()
     user_vote = Vote.objects.get_for_user(template, request.user)
-    votes = Vote.objects.get_score(template)
+    votes = update_vote_score(template)
     context = {
         'template': template,
         'object': None,

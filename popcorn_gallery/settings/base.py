@@ -152,6 +152,8 @@ EMAIL_BACKEND = 'django_mailer.smtp_queue.EmailBackend'
 EMAIL_SUBJECT_PREFIX = '[Popcorn] '
 
 CACHE_MIDDLEWARE_KEY_PREFIX = 'popcorn'
+# in minutes
+CACHE_OBJECT_METADATA = 10
 
 # haystack
 HAYSTACK_CONNECTIONS = {
@@ -160,3 +162,4 @@ HAYSTACK_CONNECTIONS = {
         'PATH': path('whoosh_index'),
         },
 }
+
