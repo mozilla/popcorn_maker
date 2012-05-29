@@ -1,8 +1,6 @@
 {% extends "base.html" %}
-{% import "includes/project_list.html" as project_macro %}
 
 {% block title %}Made with Popcorn - {{ super() }}{% endblock title %}
-
 
 {% block header %}
 <header class="busta">
@@ -37,7 +35,8 @@
 
     {% include "includes/order_form.html" %}
 
-    {{ project_macro.project_list(project_list, request.user, with_author=True) }}
+    {% set with_author = True %}
+    {% include "includes/project_list.html" %}
 
   </div>
   {% if category %}<a class="cta" href="{{ url('project_category_join', slug=category.slug) }}">Join this Category</a>{% endif %}

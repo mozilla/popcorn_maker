@@ -1,4 +1,3 @@
-{% macro project_list(project_list, user, with_author=False) -%}
 {% if project_list  %}
 <ul class="columns submissions">
   {% for project in project_list %}
@@ -9,6 +8,8 @@
           <div class="frame box">
             {% if project.thumbnail %}
             <img src="{{ project.thumbnail.url }}" alt="" />
+            {% else %}
+            <img src="{{ STATIC_URL }}images/popcorn-placeholder.png" alt="" />
             {% endif %}
           </div>
           {{ project.name }}
@@ -22,7 +23,7 @@
     {% endif %}
     </article>
     {# User is the owner and the project is not published #}
-    {% if user == project.author and not project.is_published %}
+    {% if request.user == project.author and not project.is_published %}
     <div class="alerts inline">
       <p><strong>Unpublished project</strong></p>
       <p>Only you can see this until you publish your project</p>
@@ -33,4 +34,4 @@
   {% endfor %}
 </ul>
 {% endif %}
-{%- endmacro %}
+

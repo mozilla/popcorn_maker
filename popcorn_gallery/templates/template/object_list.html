@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% import "includes/template_list.html" as template_macro %}
 
 {% block title -%}{{ _('Get Started') }} - {{ super() }}{% endblock title -%}
 
@@ -32,7 +31,7 @@
 
     {% include "includes/order_form.html" %}
 
-    {{ template_macro.template_list(template_list, request.user) }}
+    {% include "includes/template_list.html" %}
 
   </div>
 </div>

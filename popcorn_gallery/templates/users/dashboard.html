@@ -17,7 +17,7 @@
 {% include "includes/project_dashboard.html" %}
 
 <h2 class="wimper">{{ _('Projects') }}</h2>
-{{ project_macro.project_list(project_list, request.user) }}
+{% include "includes/project_list.html" %}
 
 {{ activity.activity(activity_list) }}
 

@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% import "includes/activity.html" as activity %}
-{% import "includes/project_list.html" as project_macro %}
 
 {% block title -%}{{ profile.display_name }} - Users - {{ super() }}{% endblock -%}
 
@@ -15,6 +14,6 @@
 </div>
 
 <h2 class="wimper">{{ _('Projects') }}</h2>
-{{ project_macro.project_list(project_list, request.user) }}
+{% include "includes/project_list.html" %}
 
 {% endblock content -%}

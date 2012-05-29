@@ -49,6 +49,6 @@
       <p>Area 2</p>
     </div>
     <div id="target-div"></div>
-    <input type="hidden" value="{{ csrf_token }}" name="csrfmiddlewaretoken" id="csrf_token_id">
+    <script type="text/javascript">window.CSRF_TOKEN = "{{ csrf_token }}";</script>
   </body>
 </html>
