@@ -54,3 +54,19 @@ def update_views_count(item):
         item.views_count = views_count
         item.save()
     return views_count
+
+
+def get_order_fields(request_get, **kwargs):
+    """Determines the ordering of the fields by inspecting the
+    ``order`` passed in the request GET"""
+    available_order = {
+        'views': ['-views_count', '-created'],
+        'created': ['-created'],
+        'default': ['-is_featured','-created'],
+        }
+    if kwargs:
+        available_order.update(kwargs)
+    order = request_get.get('order')
+    if order and order in available_order:
+        return available_order[order]
+    return available_order['default']

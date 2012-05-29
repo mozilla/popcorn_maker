@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.widgets import CheckboxSelectMultiple
 
+from tower import ugettext_lazy as _
 from .models import Project, Template, ProjectCategory, ProjectCategoryMembership
 from .fields import PopcornJSONField
 
@@ -49,3 +50,12 @@ class ProjectSubmissionForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ('name', 'description', 'url', 'thumbnail')
+
+
+class OrderingForm(forms.Form):
+    ORDERING_CHOICES = (
+        ('default', _('Featured')),
+        ('views', _('Most views')),
+        ('created', _('Most Recent')),
+        )
+    order = forms.ChoiceField(choices=ORDERING_CHOICES)

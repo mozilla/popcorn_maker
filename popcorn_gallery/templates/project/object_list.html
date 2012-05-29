@@ -35,6 +35,8 @@
     <h2 class="all">All ideas</h2>
     {% endif %}
 
+    {% include "includes/order_form.html" %}
+
     {{ project_macro.project_list(project_list, request.user, with_author=True) }}
 
   </div>

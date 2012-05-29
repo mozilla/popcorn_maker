@@ -15,10 +15,10 @@ from voting.models import Vote
 
 from ..baseconv import base62
 from ..forms import (ProjectEditForm, ExternalProjectEditForm,
-                     ProjectSubmissionForm)
+                     ProjectSubmissionForm, OrderingForm)
 from ..models import (Project, ProjectCategory, Template, TemplateCategory,
                       ProjectCategoryMembership)
-from ..utils import update_views_count
+from ..utils import update_views_count, get_order_fields
 from ...base.utils import notify_admins
 
 
@@ -163,7 +163,6 @@ def user_project_summary(request, project):
         }
     return render(request, 'project/summary.html', context)
 
-
 def project_list(request, slug=None):
     if slug:
         category = get_object_or_404(ProjectCategory, slug=slug)
@@ -171,13 +170,16 @@ def project_list(request, slug=None):
     else:
         category = None
         kwargs = {}
+    order_fields = get_order_fields(request.GET)
     object_list = (Project.live.filter(**kwargs)
-                   .order_by('-is_featured','-created'))
+                   .order_by(*order_fields))
     category_list = ProjectCategory.objects.filter(is_featured=True)
+    order_form = OrderingForm()
     context = {
         'category': category,
         'project_list': object_list,
         'category_list': category_list,
+        'order_form': order_form
         }
     return render(request, 'project/object_list.html', context)
 
@@ -233,13 +235,16 @@ def template_list(request, slug=None):
     else:
         category = None
         kwargs = {}
+    order_fields = get_order_fields(request.GET)
     object_list = (Template.live.filter(**kwargs)
-                   .order_by('-is_featured', 'name'))
+                   .order_by(*order_fields))
     category_list = TemplateCategory.objects.filter(is_featured=True)
+    order_form = OrderingForm()
     context = {
         'template_list': object_list,
         'category': category,
         'category_list': category_list,
+        'order_form': order_form,
         }
     return render(request, 'template/object_list.html', context)
 

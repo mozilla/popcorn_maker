@@ -29,7 +29,11 @@
     {% else %}
     <h2 class="all">All templates</h2>
     {% endif %}
+
+    {% include "includes/order_form.html" %}
+
     {{ template_macro.template_list(template_list, request.user) }}
+
   </div>
 </div>
 {% endblock content %}

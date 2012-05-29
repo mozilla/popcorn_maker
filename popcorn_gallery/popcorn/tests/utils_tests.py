@@ -6,7 +6,7 @@ from django.test import TestCase
 
 from dateutil.relativedelta import relativedelta
 from nose.tools import eq_, ok_
-from ..utils import update_views_count
+from ..utils import update_views_count, get_order_fields
 
 
 class _ModelMock(mock.MagicMock):
@@ -52,3 +52,25 @@ class UpdateViewsCounterTest(TestCase):
         eq_(count, 2)
         eq_(self.item.save.called, True)
 
+
+class OrderFieldsTest(TestCase):
+
+    def test_order_default(self):
+        order = get_order_fields({})
+        eq_(order, ['-is_featured','-created'])
+
+    def test_order_override(self):
+        order = {'order': 'default'}
+        new_default = {'default': ['test']}
+        order = get_order_fields(order, **new_default)
+        eq_(order, ['test'])
+
+    def test_order_invalid(self):
+        order = {'order': 'something-malicious'}
+        order = get_order_fields(order)
+        eq_(order, ['-is_featured','-created'])
+
+    def test_order_requested(self):
+        order = {'order': 'created'}
+        order = get_order_fields(order)
+        eq_(order, ['-created'])
