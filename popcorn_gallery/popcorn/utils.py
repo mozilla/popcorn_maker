@@ -1,6 +1,12 @@
 import os
+import datetime
+import hashlib
 
+from django.core.cache import cache
+
+from dateutil.relativedelta import relativedelta
 from .models import Template
+
 
 def import_popcorn_templates(popcorn_path, prefix):
     """Import the templates from the path provided with the following conventions:
@@ -28,3 +34,23 @@ def import_popcorn_templates(popcorn_path, prefix):
         data['name'] = candidate
         Template.objects.create(**data)
     return
+
+
+def update_views_count(item):
+    """Updates the visitor count on a given ``object`` updates the count
+    in the object after 10 minutes
+    The object must have
+     - ``views_count`` field
+    """
+    key = 'views%s' % (hashlib.md5('%s%s' % (item.id, type(item)))
+                       .hexdigest())
+    if cache.get(key):
+        views_count = cache.get(key) + 1
+    else:
+        views_count = item.views_count + 1
+    cache.set(key, views_count)
+    cache_expiration = item.modified + relativedelta(minutes=10)
+    if datetime.datetime.utcnow() > cache_expiration:
+        item.views_count = views_count
+        item.save()
+    return views_count

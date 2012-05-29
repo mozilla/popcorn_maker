@@ -111,9 +111,8 @@ def throttle_view(func, methods=None, duration=15):
         if request.method in throttled_methods:
             remote_addr = request.META.get('HTTP_X_FORWARDED_FOR') or \
                           request.META.get('REMOTE_ADDR')
-            m = hashlib.md5()
-            m.update('%s.%s' % (remote_addr, request.path_info))
-            key = m.hexdigest()
+            key = (hashlib.md5('%s.%s' % (remote_addr, request.path_info))
+                   .hexdigest())
             if cache.get(key):
                 return HttpResponseForbidden('Please try again later.')
             else:

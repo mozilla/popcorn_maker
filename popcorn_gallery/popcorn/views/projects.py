@@ -18,6 +18,7 @@ from ..forms import (ProjectEditForm, ExternalProjectEditForm,
                      ProjectSubmissionForm)
 from ..models import (Project, ProjectCategory, Template, TemplateCategory,
                       ProjectCategoryMembership)
+from ..utils import update_views_count
 from ...base.utils import notify_admins
 
 
@@ -152,6 +153,7 @@ def user_project_fork(request, project):
 
 @valid_user_project
 def user_project_summary(request, project):
+    update_views_count(project)
     user_vote = Vote.objects.get_for_user(project, request.user)
     votes = Vote.objects.get_score(project)
     context = {
@@ -261,6 +263,7 @@ def template_detail(request, slug):
 def template_summary(request, slug):
     """Summary of a ``Template`` agregates metadata for the template"""
     template = get_template_or_404(slug)
+    update_views_count(template)
     category_list = TemplateCategory.objects.filter(is_featured=True)
     project_list = Project.live.filter(template=template)[:5]
     tag_list = template.tags.all()

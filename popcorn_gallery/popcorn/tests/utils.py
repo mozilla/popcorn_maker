@@ -1,3 +1,5 @@
+import mock
+
 from django.test.client import Client
 from django.utils import simplejson as json
 
@@ -44,3 +46,4 @@ class CustomClient(Client):
         data = json.dumps(data)
         return super(CustomClient, self).post(path, data=data,
                                               content_type=content_type, **extra)
+

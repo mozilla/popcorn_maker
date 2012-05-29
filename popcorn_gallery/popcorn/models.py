@@ -55,6 +55,9 @@ class Template(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=LIVE)
     categories = models.ManyToManyField('popcorn.TemplateCategory', blank=True)
     tags = TaggableManager()
+    created = CreationDateTimeField()
+    modified = ModificationDateTimeField()
+    views_count = models.IntegerField(default=0)
 
     # managers
     objects = models.Manager()
@@ -119,6 +122,7 @@ class Project(models.Model):
     categories = models.ManyToManyField('popcorn.ProjectCategory', blank=True)
     source = models.ForeignKey('popcorn.Project', blank=True, null=True,
                                on_delete=models.SET_NULL)
+    views_count = models.IntegerField(default=0)
 
     # managers
     objects = ProjectManager()

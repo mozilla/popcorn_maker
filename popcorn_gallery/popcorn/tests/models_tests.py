@@ -5,6 +5,7 @@ from .fixtures import (create_user, create_template, create_project,
                        create_project_category, create_external_project)
 from ..models import (Project, Template, ProjectCategory, TemplateCategory,
                       ProjectCategoryMembership)
+from nose.tools import eq_, ok_
 
 
 class PopcornTest(TestCase):
@@ -22,14 +23,16 @@ class PopcornTest(TestCase):
             'html': '<!DOCTYPE html>',
             }
         project = Project.objects.create(**data)
-        assert project.id, "Project couldn't be created"
-        assert project.uuid, "Project UUID missing"
-        self.assertEqual(project.status, Project.HIDDEN)
-        self.assertFalse(project.is_forkable)
-        self.assertFalse(project.is_shared)
-        self.assertFalse(project.is_removed)
-        self.assertFalse(project.is_published)
-        self.assertFalse(project.is_external)
+        ok_(project.id, "Project couldn't be created")
+        ok_(project.uuid, "Project UUID missing")
+        eq_(project.status, Project.HIDDEN)
+        eq_(project.is_forkable, False)
+        eq_(project.is_shared, False)
+        eq_(project.is_removed, False)
+        eq_(project.is_published, False)
+        eq_(project.is_external, False)
+        eq_(project.views_count, 0)
+
 
     def test_external_project_creation(self):
         data = {
@@ -38,51 +41,52 @@ class PopcornTest(TestCase):
             'url': 'http://mozillapopcorn.org',
             }
         project = Project.objects.create(**data)
-        assert project.id, "Project couldn't be created"
-        assert project.uuid, "Project UUID missing"
-        self.assertEqual(project.status, Project.HIDDEN)
-        self.assertFalse(project.is_forkable)
-        self.assertFalse(project.is_shared)
-        self.assertFalse(project.is_removed)
-        self.assertFalse(project.is_published)
-        self.assertTrue(project.is_external)
+        ok_(project.id, "Project couldn't be created")
+        ok_(project.uuid, "Project UUID missing")
+        eq_(project.status, Project.HIDDEN)
+        eq_(project.is_forkable, False)
+        eq_(project.is_shared, False)
+        eq_(project.is_removed, False)
+        eq_(project.is_published, False)
+        eq_(project.is_external, True)
+        eq_(project.views_count, 0)
 
     def test_absolute_url(self):
         project = create_project()
         url = reverse('user_project_summary', args=[project.author.username,
                                                     project.shortcode])
-        self.assertEqual(project.get_absolute_url(), url)
+        eq_(project.get_absolute_url(), url)
 
     def test_project_url(self):
         project = create_external_project()
         url = reverse('user_project', args=[project.author.username,
                                             project.shortcode])
-        self.assertEqual(project.get_project_url(), url)
+        eq_(project.get_project_url(), url)
 
     def test_edit_url(self):
         project = create_external_project()
         url = reverse('user_project_edit', args=[project.author.username,
                                                  project.shortcode])
-        self.assertEqual(project.get_edit_url(), url)
+        eq_(project.get_edit_url(), url)
 
     def test_project_published(self):
         project = create_project(status=Project.LIVE)
-        self.assertTrue(project.is_published)
+        ok_(project.is_published)
 
     def test_hidden_project(self):
         project = create_project(status=Project.HIDDEN)
-        self.assertFalse(project.is_removed)
-        self.assertFalse(project.is_published)
+        eq_(project.is_removed, False)
+        eq_(project.is_published, False)
 
     def test_removed_project(self):
         project = create_project(is_removed=True, status=Project.LIVE)
-        self.assertEqual(project.status, project.LIVE)
-        self.assertFalse(project.is_published)
+        eq_(project.status, project.LIVE)
+        eq_(project.is_published, False)
 
     def test_butter_data(self):
         project = create_project()
         for attr in ['_id', 'name', 'template', 'data', 'created', 'modified']:
-            self.assertTrue(attr in project.butter_data)
+            ok_(attr in project.butter_data)
 
 
 class TemplateTest(TestCase):
@@ -95,18 +99,21 @@ class TemplateTest(TestCase):
         config = 'popcorn/templates/test/config.cfg'
         template = Template.objects.create(name='basic', slug='basic',
                                            template=template, config=config)
-        assert template.id, "Template couldn't be created"
-        self.assertEqual(template.status, Template.LIVE)
-        self.assertEqual(template.is_featured, False)
+        ok_(template.id, "Template couldn't be created")
+        eq_(template.status, Template.LIVE)
+        eq_(template.is_featured, False)
+        eq_(template.views_count, 0)
+        ok_(template.created)
+        ok_(template.modified)
 
     def test_template_live_manager(self):
         create_template(name='basic')
-        self.assertEqual(Template.live.all().count(), 1)
+        eq_(Template.live.all().count(), 1)
 
     def test_template_live_manager_hidden(self):
         create_template(status=Template.HIDDEN)
-        self.assertEqual(Template.live.all().count(), 0)
-        self.assertEqual(Template.objects.all().count(), 1)
+        eq_(Template.live.all().count(), 0)
+        eq_(Template.objects.all().count(), 1)
 
 
 class ProjectCategoryTest(TestCase):
@@ -117,7 +124,7 @@ class ProjectCategoryTest(TestCase):
     def test_category_creation(self):
         data = {'name': 'Special'}
         category = ProjectCategory.objects.create(**data)
-        assert category.id, 'Failed to create Category'
+        ok_(category.id, 'Failed to create Category')
 
 
 class TemplateCategoryTest(TestCase):
@@ -128,7 +135,7 @@ class TemplateCategoryTest(TestCase):
     def test_category_creation(self):
         data = {'name': 'Special'}
         category = TemplateCategory.objects.create(**data)
-        assert category.id, 'Failed to create Category'
+        ok_(category.id, 'Failed to create Category')
 
 
 class ProjectCategoryMembershipTest(TestCase):
@@ -144,5 +151,5 @@ class ProjectCategoryMembershipTest(TestCase):
             'project_category': create_project_category(),
             }
         membership = ProjectCategoryMembership.objects.create(**data)
-        self.assertEqual(ProjectCategoryMembership.PENDING, membership.status)
-        assert membership.created, "Missing created date"
+        eq_(ProjectCategoryMembership.PENDING, membership.status)
+        ok_(membership.created, "Missing created date")
