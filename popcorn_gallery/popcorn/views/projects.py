@@ -291,3 +291,7 @@ def template_config(request, slug):
     context = {'template': template,
                'object': None}
     return render(request, template.config, context)
+
+def template_metadata(request, slug):
+    template = get_template_or_404(slug)
+    return HttpResponse(template.metadata ,mimetype='application/json')

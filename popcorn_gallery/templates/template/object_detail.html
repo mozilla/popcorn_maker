@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% import "includes/tags.html" as tags %}
-{% import "includes/project_list.html" as project_macro %}
 
 {% block title %}{{ template.name }} - {{ super() }}{% endblock title %}
 
@@ -56,6 +55,7 @@
 </article>
 
 <h1>Related Projects</h1>
-{{ project_macro.project_list(project_list, request.user, with_author=True) }}
+{% set with_author = True %}
+{% include "includes/project_list.html" %}
 
 {% endblock content %}

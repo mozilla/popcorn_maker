@@ -50,6 +50,7 @@ class Template(models.Model):
                                 choices=get_templates(extension='html'))
     config = models.CharField(max_length=255,
                               choices=get_templates(extension='cfg'))
+    metadata = models.TextField(blank=True)
     thumbnail = models.ImageField(upload_to="templates", blank=True)
     is_featured = models.BooleanField(default=False)
     status = models.IntegerField(choices=STATUS_CHOICES, default=LIVE)
@@ -112,7 +113,7 @@ class Project(models.Model):
     thumbnail = models.ImageField(upload_to="projects", blank=True)
     template = models.ForeignKey('popcorn.Template', blank=True, null=True)
     metadata = models.TextField()
-    html = models.TextField()
+    html = models.TextField(blank=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=HIDDEN)
     is_shared = models.BooleanField(default=False)
     is_forkable = models.BooleanField(default=False)

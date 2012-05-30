@@ -26,6 +26,8 @@ urlpatterns += patterns(
         name='template_detail'),
     url(r'^template/(?P<slug>[\w-]+)/config$', 'template_config',
         name='template_config'),
+    url(r'^template/(?P<slug>[\w-]+)/data$', 'template_metadata',
+        name='template_metadata'),
     url(r'^template/(?P<slug>[\w-]+)/summary/$', 'template_summary',
         name='template_summary'),
     )

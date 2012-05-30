@@ -23,6 +23,17 @@ class nginx($server_name, $project_path){
         content => template("nginx/nginx.conf"),
       }
 
+      file { "/etc/nginx/mime.types":
+        path => "/etc/nginx/mime.types",
+        mode => 0644,
+        owner => root,
+        group => root,
+        ensure => file,
+        require => Package["nginx"],
+        notify => Service["nginx"],
+        content => template("nginx/mime.types"),
+      }
+
       exec {"restart-nginx":
         command => "/etc/init.d/nginx restart",
         refreshonly => true,

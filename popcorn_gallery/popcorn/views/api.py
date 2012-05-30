@@ -2,7 +2,7 @@ import json
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.http import HttpResponse, Http404
 
@@ -24,26 +24,13 @@ def project_list(request):
                         mimetype='application/json')
 
 
-def save_project(json_data, user):
-    """Helper to save the project"""
-    form = ProjectForm(json_data)
-    if form.is_valid():
-        data = {
-            'name': form.cleaned_data['name'],
-            'metadata': form.cleaned_data['data'],
-            'html': '',
-            'author': user,
-            'template': form.cleaned_data['template'],
-            }
-        project = Project.objects.create(**data)
-        response = {
-            'error': 'okay',
-            'project': project.butter_data,
-            }
-    else:
-        response = {'error': 'error',
-                    'form_errors': form.errors}
-    return response
+def get_project_data(cleaned_data):
+    return {
+        'name': cleaned_data['name'],
+        'metadata': cleaned_data['data'],
+        'html': '',
+        'template': cleaned_data['template'],
+        }
 
 
 @require_POST
@@ -51,7 +38,21 @@ def save_project(json_data, user):
 @login_required_ajax
 def project_add(request):
     """End point for adding a ``Project``"""
-    response = save_project(request.JSON, request.user)
+    form = ProjectForm(request.JSON)
+    if form.is_valid():
+        data = get_project_data(form.cleaned_data)
+        data['author'] = request.user
+        project = Project.objects.create(**data)
+        response = {
+            'error': 'okay',
+            'project': project.butter_data,
+            'url': project.get_absolute_url(),
+            }
+    else:
+        response = {
+            'error': 'error',
+            'form_errors': form.errors
+            }
     return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
                         mimetype='application/json')
 
@@ -60,14 +61,25 @@ def project_add(request):
 @login_required_ajax
 def project_detail(request, uuid):
     """Handles the data for the Project"""
+    project = get_object_or_404(Project, uuid=uuid, author=request.user)
     if request.method == 'POST' and request.JSON:
-        response = save_project(request.JSON, request.user)
+        form = ProjectForm(request.JSON)
+        if form.is_valid():
+            project.name = form.cleaned_data['name']
+            project.metadata = form.cleaned_data['data']
+            project.save()
+            response = {
+                'error': 'okay',
+                'project': project.butter_data,
+                'url': project.get_absolute_url(),
+            }
+        else:
+            response = {
+                'error': 'error',
+                'form_errors': form.errors
+                }
         return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
                             mimetype='application/json')
-    try:
-        project = Project.objects.get(uuid=uuid, author=request.user)
-    except Project.DoesNotExist:
-        return Http404()
     response = {
         'error': 'okay',
         # Butter needs the project metadata as a string that can be
