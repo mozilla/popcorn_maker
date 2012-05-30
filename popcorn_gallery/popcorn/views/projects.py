@@ -93,14 +93,7 @@ def user_project_meta(request, project):
 @valid_user_project
 @is_popcorn_project
 def user_project_data(request, project):
-    context = {
-        'error': 'okay',
-        # Butter needs the project metadata as a string that can be
-        # parsed to JSON
-        'project': project.metadata,
-        }
-    return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder),
-                        mimetype='application/json')
+    return HttpResponse(project.metadata, mimetype='application/json')
 
 
 @login_required

@@ -72,7 +72,7 @@ def project_detail(request, uuid):
                 'error': 'okay',
                 'project': project.butter_data,
                 'url': project.get_absolute_url(),
-            }
+                }
         else:
             response = {
                 'error': 'error',

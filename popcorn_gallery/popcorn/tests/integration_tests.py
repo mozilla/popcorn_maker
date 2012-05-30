@@ -328,8 +328,7 @@ class DataIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_data', self.user, project)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertEqual(data['project'], '{"data": "foo"}')
+        self.assertEqual(response.content, '{"data": "foo"}')
 
     @suppress_locale_middleware
     def test_unpublished_project_anon(self):
@@ -355,8 +354,7 @@ class DataIntegrationTest(PopcornIntegrationTestCase):
         self.client.login(username=self.user.username, password='bob')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.content)
-        self.assertEqual(data['project'], '{"data": "foo"}')
+        self.assertEqual(response.content, '{"data": "foo"}')
         self.client.logout()
 
     @suppress_locale_middleware
