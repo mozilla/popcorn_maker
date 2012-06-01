@@ -183,13 +183,13 @@ class ButterIntegrationTestCaseAnon(TestCase):
         project = create_project(author=self.user, status=Project.REMOVED)
         url = '/api/project/%s' % project.uuid
         response = self.client.get(url)
-        eq_(response.status_code, 404)
+        eq_(response.status_code, 403)
 
     def test_publish_project(self):
         project = create_project(author=self.user)
         url = '/api/publish/%s' % project.uuid
         response = self.client.post(url, {})
-        eq_(response.status_code, 404)
+        eq_(response.status_code, 403)
 
 
 class ButterIntegrationTestCaseNotOwner(TestCase):

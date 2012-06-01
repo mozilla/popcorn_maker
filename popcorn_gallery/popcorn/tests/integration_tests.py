@@ -199,6 +199,15 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         eq_(project.name, 'Changed!')
 
 
+    @suppress_locale_middleware
+    def test_edited_project_owner_post_removed(self):
+        project = create_project(author=self.user, status=Project.REMOVED)
+        url = self.get_url('user_project_edit', self.user, project)
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.post(url, self.valid_data)
+        eq_(response.status_code, 404)
+
+
 class EditProjectCategoryIntegrationTest(PopcornIntegrationTestCase):
 
     def setUp(self):

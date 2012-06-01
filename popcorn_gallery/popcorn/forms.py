@@ -16,6 +16,11 @@ class ProjectForm(forms.Form):
 
 
 class ProjectEditForm(forms.ModelForm):
+    STATUS_CHOICES = (
+        (Project.LIVE, _('Published')),
+        (Project.HIDDEN, _('Unpublished')),
+        )
+    status = forms.ChoiceField(choices=STATUS_CHOICES)
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
