@@ -57,6 +57,7 @@ def update_site(env, debug):
         (EXEC, 'python manage.py collectstatic --noinput'),
         (EXEC, 'python manage.py popcorn_import_butter'),
         (EXEC, 'python manage.py update_index'),
+        (EXEC, 'find . -iname \*pyc -delete'),
         ]
     for cmd, cmd_args in commands:
         if CHDIR == cmd:
