@@ -2,10 +2,12 @@ import json
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseForbidden
 
+from ..decorators import valid_user_project
 from ..forms import ProjectForm
 from ..models import Project
 from ...base.decorators import json_handler, login_required_ajax
@@ -15,7 +17,8 @@ from ...base.decorators import json_handler, login_required_ajax
 @login_required_ajax
 def project_list(request):
     """List of the projects that belong to a User"""
-    queryset = Project.objects.filter(author=request.user)
+    queryset = Project.objects.filter(~Q(status=Project.REMOVED),
+                                      author=request.user)
     response = {
         'error': 'okay',
         'projects': [{'name': p.name, 'id': p.uuid} for p in queryset],
@@ -59,10 +62,15 @@ def project_add(request):
 
 @json_handler
 @login_required_ajax
-def project_detail(request, uuid):
+@valid_user_project(['uuid'])
+def project_detail(request, project):
     """Handles the data for the Project"""
-    project = get_object_or_404(Project, uuid=uuid, author=request.user)
     if request.method == 'POST' and request.JSON:
+        if project.author != request.user:
+            if project.is_forkable:
+                project = Project.objects.fork(project, request.user)
+            else:
+                return HttpResponseForbidden()
         form = ProjectForm(request.JSON)
         if form.is_valid():
             project.name = form.cleaned_data['name']
@@ -71,7 +79,7 @@ def project_detail(request, uuid):
             response = {
                 'error': 'okay',
                 'project': project.butter_data,
-                'url': project.get_absolute_url(),
+                'url': project.get_project_url(),
                 }
         else:
             response = {
@@ -84,7 +92,7 @@ def project_detail(request, uuid):
         'error': 'okay',
         # Butter needs the project metadata as a string that can be
         # parsed to JSON
-        'url': project.get_absolute_url(),
+        'url': project.get_project_url(),
         'project': project.metadata,
         }
     return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
@@ -96,9 +104,10 @@ def project_detail(request, uuid):
 def project_publish(request, uuid):
     if request.method == 'POST':
         try:
-            project = Project.objects.get(uuid=uuid, author=request.user)
+            project = Project.objects.get(~Q(status=Project.REMOVED),
+                                          uuid=uuid, author=request.user)
         except Project.DoesNotExist:
-            return Http404()
+            return HttpResponseForbidden()
         project.is_shared = True
         response = {
             'error': 'okay',

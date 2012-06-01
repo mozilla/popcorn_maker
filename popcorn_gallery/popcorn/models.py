@@ -38,9 +38,11 @@ def get_templates(prefix='butter', extension=''):
 class Template(models.Model):
     LIVE = 1
     HIDDEN = 2
+    REMOVED = 3
     STATUS_CHOICES = (
         (LIVE, _('Published')),
         (HIDDEN, _('Unpublished')),
+        (REMOVED, _('Removed')),
         )
     MODEL_NAME = 'template'
     name = models.CharField(max_length=255)
@@ -100,9 +102,11 @@ class Project(models.Model):
     """Popcorn projects"""
     LIVE = 1
     HIDDEN = 2
+    REMOVED = 3
     STATUS_CHOICES = (
         (LIVE, _('Published')),
         (HIDDEN, _('Unpublished')),
+        (REMOVED, _('Removed')),
         )
     MODEL_NAME = 'project'
     uuid = UUIDField(unique=True)
@@ -117,7 +121,6 @@ class Project(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=HIDDEN)
     is_shared = models.BooleanField(default=False)
     is_forkable = models.BooleanField(default=False)
-    is_removed = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
     created = CreationDateTimeField()
     modified = ModificationDateTimeField()
@@ -171,7 +174,7 @@ class Project(models.Model):
 
     @property
     def is_published(self):
-        return (self.status == self.LIVE) and not self.is_removed
+        return self.status == self.LIVE
 
     @property
     def shortcode(self):
@@ -180,6 +183,18 @@ class Project(models.Model):
     @property
     def is_external(self):
         return all([self.url])
+
+    @property
+    def is_removed(self):
+        return self.status == self.REMOVED
+
+    def available_for(self, user):
+        """Determines if the ``Project`` is available for the given ``User``"""
+        if self.status == self.REMOVED:
+            return False
+        if user == self.author or self.status == self.LIVE:
+            return True
+        return False
 
 
 class ProjectCategory(models.Model):

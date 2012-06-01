@@ -282,7 +282,7 @@ class TestProfileProjects(TestCase):
 
     @suppress_locale_middleware
     def test_remove_projects_dashboard(self):
-        self.project.is_removed = True
+        self.project.status = Project.REMOVED
         self.project.save()
         url = reverse('users_dashboard')
         response = self.client.get(url)
@@ -315,7 +315,7 @@ class TestProfileProjects(TestCase):
 
     @suppress_locale_middleware
     def test_removed_projects_profile_owner(self):
-        self.project.is_removed = True
+        self.project.status = Project.REMOVED
         self.project.save()
         url = reverse('users_profile', args=['bob'])
         response = self.client.get(url)
@@ -326,7 +326,7 @@ class TestProfileProjects(TestCase):
 
     @suppress_locale_middleware
     def test_removed_projects_profile(self):
-        self.alex_project.is_removed = True
+        self.alex_project.status = Project.REMOVED
         self.alex_project.save()
         url = reverse('users_profile', args=['alex'])
         response = self.client.get(url)

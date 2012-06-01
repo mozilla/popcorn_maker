@@ -6,6 +6,7 @@ from django.utils import simplejson as json
 from funfactory.middleware import LocaleURLMiddleware
 from test_utils import TestCase
 from mock import patch
+from nose.tools import ok_, eq_
 
 from .fixtures import (create_user, create_project, create_project_category,
                        create_template, create_template_category,
@@ -36,9 +37,9 @@ class PopcornIntegrationTestCase(TestCase):
         return reverse(name, kwargs=kwargs)
 
     def assertContextMessage(self, context, message_status):
-        self.assertTrue('messages' in context)
+        ok_('messages' in context)
         for item in list(context['messages']):
-            self.assertEqual(item.tags, message_status)
+            eq_(item.tags, message_status)
 
 
 class ProjectIntegrationTest(PopcornIntegrationTestCase):
@@ -58,9 +59,9 @@ class ProjectIntegrationTest(PopcornIntegrationTestCase):
         project.categories.add(self.category)
         response = self.client.get(reverse('project_list'))
         context = response.context
-        self.assertEqual(len(context['project_list']), 1)
-        self.assertEqual(len(context['category_list']), 1)
-        self.assertFalse(context['category'])
+        eq_(len(context['project_list']), 1)
+        eq_(len(context['category_list']), 1)
+        eq_(context['category'], None)
 
     @suppress_locale_middleware
     def test_project_list_category(self):
@@ -70,16 +71,16 @@ class ProjectIntegrationTest(PopcornIntegrationTestCase):
         response = self.client.get(reverse('project_list_category',
                                            args=[self.category.slug]))
         context = response.context
-        self.assertEqual(len(context['project_list']), 1)
-        self.assertEqual(len(context['category_list']), 1)
-        self.assertEqual(context['category'], self.category)
+        eq_(len(context['project_list']), 1)
+        eq_(len(context['category_list']), 1)
+        eq_(context['category'], self.category)
 
     @suppress_locale_middleware
     def test_project_list_invalid_category(self):
         project = create_project(author=self.user)
         response = self.client.get(reverse('project_list_category',
                                            args=['invalid']))
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
 
 class DetailIntegrationTest(PopcornIntegrationTestCase):
@@ -89,17 +90,17 @@ class DetailIntegrationTest(PopcornIntegrationTestCase):
         project = create_project(author=self.user, status=Project.LIVE)
         url = self.get_url('user_project', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        eq_(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['project'], project)
-        self.assertEqual(context['template'], project.template)
+        eq_(context['project'], project)
+        eq_(context['template'], project.template)
 
     @suppress_locale_middleware
     def test_unpublished_project_anon(self):
         project = create_project(author=self.user, status=Project.HIDDEN)
         url = self.get_url('user_project', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_unpublished_project_user(self):
@@ -108,7 +109,7 @@ class DetailIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project', self.user, project)
         self.client.login(username=alex.username, password='alex')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
         self.client.logout()
 
     @suppress_locale_middleware
@@ -117,18 +118,17 @@ class DetailIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project', self.user, project)
         self.client.login(username=self.user.username, password='bob')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        eq_(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['project'], project)
+        eq_(context['project'], project)
         self.client.logout()
 
     @suppress_locale_middleware
     def test_removed_project(self):
-        project = create_project(author=self.user, status=Project.LIVE,
-                                 is_removed=True)
+        project = create_project(author=self.user, status=Project.REMOVED)
         url = self.get_url('user_project', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
 
 class EditIntegrationTest(PopcornIntegrationTestCase):
@@ -146,14 +146,14 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         project = create_project(author=self.user)
         url = self.get_url('user_project_edit', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
+        eq_(response.status_code, 302)
 
     @suppress_locale_middleware
     def test_edited_project_anon_post(self):
         project = create_project(author=self.user)
         url = self.get_url('user_project_edit', self.user, project)
         response = self.client.post(url, self.valid_data)
-        self.assertEqual(response.status_code, 302)
+        eq_(response.status_code, 302)
 
     @suppress_locale_middleware
     def test_edited_project_user(self):
@@ -162,7 +162,7 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_edit', self.user, project)
         self.client.login(username=alex.username, password='alex')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
         self.client.logout()
 
     @suppress_locale_middleware
@@ -172,7 +172,7 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_edit', self.user, project)
         self.client.login(username=alex.username, password='alex')
         response = self.client.post(url, self.valid_data)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
         self.client.logout()
 
     @suppress_locale_middleware
@@ -181,11 +181,11 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_edit', self.user, project)
         self.client.login(username=self.user.username, password='bob')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        eq_(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['project'], project)
-        self.assertEqual(context['form'].instance, project)
-        self.assertTrue(isinstance(context['form'], ProjectEditForm))
+        eq_(context['project'], project)
+        eq_(context['form'].instance, project)
+        ok_(isinstance(context['form'], ProjectEditForm))
         self.client.logout()
 
     @suppress_locale_middleware
@@ -196,7 +196,7 @@ class EditIntegrationTest(PopcornIntegrationTestCase):
         response = self.client.post(url, self.valid_data)
         self.assertRedirects(response, project.get_absolute_url())
         project = Project.objects.get()
-        self.assertEqual(project.name, 'Changed!')
+        eq_(project.name, 'Changed!')
 
 
 class EditProjectCategoryIntegrationTest(PopcornIntegrationTestCase):
@@ -234,22 +234,22 @@ class EditProjectCategoryIntegrationTest(PopcornIntegrationTestCase):
     def test_edit_project_category_get(self):
         self.add_membership('APPROVED')
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context['form'].has_categories)
+        eq_(response.status_code, 200)
+        ok_(response.context['form'].has_categories)
 
     @suppress_locale_middleware
     def test_edit_project_category_denied_get(self):
         self.add_membership('DENIED')
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.context['form'].has_categories)
+        eq_(response.status_code, 200)
+        eq_(response.context['form'].has_categories, False)
 
     @suppress_locale_middleware
     def test_edit_project_category_pending_get(self):
         self.add_membership('PENDING')
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.context['form'].has_categories)
+        eq_(response.status_code, 200)
+        eq_(response.context['form'].has_categories, False)
 
     @suppress_locale_middleware
     def test_edit_project_category_post(self):
@@ -261,15 +261,15 @@ class EditProjectCategoryIntegrationTest(PopcornIntegrationTestCase):
     def test_edit_project_category_denied_post(self):
         self.add_membership('DENIED')
         response = self.client.post(self.url, self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context['form'].errors)
+        eq_(response.status_code, 200)
+        ok_(response.context['form'].errors)
 
     @suppress_locale_middleware
     def test_edit_project_category_pending_post(self):
         self.add_membership('PENDING')
         response = self.client.post(self.url, self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context['form'].errors)
+        eq_(response.status_code, 200)
+        ok_(response.context['form'].errors)
 
 
 class MetadataIntegrationTest(PopcornIntegrationTestCase):
@@ -279,16 +279,16 @@ class MetadataIntegrationTest(PopcornIntegrationTestCase):
         project = create_project(author=self.user, status=Project.LIVE)
         url = self.get_url('user_project_meta', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        eq_(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEqual(data['project'], project.name)
+        eq_(data['project'], project.name)
 
     @suppress_locale_middleware
     def test_unpublished_project_anon(self):
         project = create_project(author=self.user, status=Project.HIDDEN)
         url = self.get_url('user_project_meta', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_unpublished_project_user(self):
@@ -297,7 +297,7 @@ class MetadataIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_meta', self.user, project)
         self.client.login(username=alex.username, password='alex')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
         self.client.logout()
 
     @suppress_locale_middleware
@@ -306,18 +306,17 @@ class MetadataIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_meta', self.user, project)
         self.client.login(username=self.user.username, password='bob')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        eq_(response.status_code, 200)
         data = json.loads(response.content)
-        self.assertEqual(data['project'], project.name)
+        eq_(data['project'], project.name)
         self.client.logout()
 
     @suppress_locale_middleware
     def test_removed_project(self):
-        project = create_project(author=self.user, status=Project.LIVE,
-                                 is_removed=True)
+        project = create_project(author=self.user, status=Project.REMOVED)
         url = self.get_url('user_project_meta', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
 
 class DataIntegrationTest(PopcornIntegrationTestCase):
@@ -327,15 +326,15 @@ class DataIntegrationTest(PopcornIntegrationTestCase):
         project = create_project(author=self.user, status=Project.LIVE)
         url = self.get_url('user_project_data', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"data": "foo"}')
+        eq_(response.status_code, 200)
+        eq_(response.content, '{"data": "foo"}')
 
     @suppress_locale_middleware
     def test_unpublished_project_anon(self):
         project = create_project(author=self.user, status=Project.HIDDEN)
         url = self.get_url('user_project_data', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_unpublished_project_user(self):
@@ -344,7 +343,7 @@ class DataIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_data', self.user, project)
         self.client.login(username=alex.username, password='alex')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
         self.client.logout()
 
     @suppress_locale_middleware
@@ -353,17 +352,17 @@ class DataIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_data', self.user, project)
         self.client.login(username=self.user.username, password='bob')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '{"data": "foo"}')
+        eq_(response.status_code, 200)
+        eq_(response.content, '{"data": "foo"}')
         self.client.logout()
 
     @suppress_locale_middleware
     def test_removed_project(self):
-        project = create_project(author=self.user, status=Project.LIVE,
-                                 is_removed=True)
+        project = create_project(author=self.user, status=Project.REMOVED)
         url = self.get_url('user_project_data', self.user, project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
+
 
 class DeleteIntegrationTest(PopcornIntegrationTestCase):
 
@@ -383,19 +382,19 @@ class DeleteIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_delete', self.user, self.project)
         self.client.login(username=self.user.username, password='bob')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['project'], self.project)
+        eq_(response.status_code, 200)
+        eq_(response.context['project'], self.project)
 
     @suppress_locale_middleware
     def test_delete_post(self):
         url = self.get_url('user_project_delete', self.user, self.project)
         self.client.login(username=self.user.username, password='bob')
         response = self.client.post(url, {})
-        self.assertEqual(response.status_code, 302)
-        self.assertTrue(reverse('users_dashboard'), response['Location'])
-        self.assertEqual(Project.objects.all().count(), 0)
-        self.assertEqual(ProjectCategory.objects.all().count(), 1)
-        self.assertEqual(User.objects.all().count(), 1)
+        eq_(response.status_code, 302)
+        ok_(reverse('users_dashboard'), response['Location'])
+        eq_(Project.objects.all().count(), 0)
+        eq_(ProjectCategory.objects.all().count(), 1)
+        eq_(User.objects.all().count(), 1)
 
     @suppress_locale_middleware
     def test_delete_not_owner_get(self):
@@ -403,7 +402,7 @@ class DeleteIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_delete', self.user, self.project)
         self.client.login(username=alex.username, password='alex')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_delete_not_owner_post(self):
@@ -411,20 +410,20 @@ class DeleteIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_delete', self.user, self.project)
         self.client.login(username=alex.username, password='alex')
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_delete_anon_get(self):
         url = self.get_url('user_project_delete', self.user, self.project)
         response = self.client.get(url)
         # Redirects to login
-        self.assertEqual(response.status_code, 302)
+        eq_(response.status_code, 302)
 
     @suppress_locale_middleware
     def test_delete_anon_post(self):
         url = self.get_url('user_project_delete', self.user, self.project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
+        eq_(response.status_code, 302)
 
 
 class CategoryIntegrationTest(TestCase):
@@ -444,9 +443,9 @@ class CategoryIntegrationTest(TestCase):
         project.categories.add(self.category)
         response = self.client.get(self.category.get_absolute_url())
         context = response.context
-        self.assertEqual(context['category'], self.category)
-        self.assertEqual(len(context['project_list']), 1)
-        self.assertEqual(len(context['category_list']), 1)
+        eq_(context['category'], self.category)
+        eq_(len(context['project_list']), 1)
+        eq_(len(context['category_list']), 1)
 
     @suppress_locale_middleware
     def test_project_category_detail_non_shared(self):
@@ -454,17 +453,17 @@ class CategoryIntegrationTest(TestCase):
         project.categories.add(self.category)
         response = self.client.get(self.category.get_absolute_url())
         context = response.context
-        self.assertEqual(context['category'], self.category)
-        self.assertEqual(len(context['project_list']), 0)
+        eq_(context['category'], self.category)
+        eq_(len(context['project_list']), 0)
 
     @suppress_locale_middleware
     def test_category_detail_removed(self):
-        project = create_project(author=self.user, is_removed=True)
+        project = create_project(author=self.user, status=Project.REMOVED)
         project.categories.add(self.category)
         response = self.client.get(self.category.get_absolute_url())
         context = response.context
-        self.assertEqual(context['category'], self.category)
-        self.assertEqual(len(context['project_list']), 0)
+        eq_(context['category'], self.category)
+        eq_(len(context['project_list']), 0)
 
 
 class TemplateIntegrationTest(TestCase):
@@ -481,8 +480,8 @@ class TemplateIntegrationTest(TestCase):
         template = create_template(is_featured=True)
         response = self.client.get(reverse('template_list'))
         context = response.context
-        self.assertEqual(len(context['template_list']), 1)
-        self.assertEqual(len(context['category_list']), 1)
+        eq_(len(context['template_list']), 1)
+        eq_(len(context['category_list']), 1)
 
     @suppress_locale_middleware
     def test_template_list_category(self):
@@ -492,17 +491,17 @@ class TemplateIntegrationTest(TestCase):
         response = self.client.get(reverse('template_list_category',
                                            args=[category.slug]))
         context = response.context
-        self.assertEqual(len(context['template_list']), 1)
-        self.assertEqual(len(context['category_list']), 1)
-        self.assertEqual(context['category'], category)
+        eq_(len(context['template_list']), 1)
+        eq_(len(context['category_list']), 1)
+        eq_(context['category'], category)
 
     @suppress_locale_middleware
     def test_template_list_hidden(self):
         template = create_template(status=Template.HIDDEN)
         response = self.client.get(reverse('template_list'))
         context = response.context
-        self.assertEqual(len(context['template_list']), 0)
-        self.assertEqual(len(context['category_list']), 1)
+        eq_(len(context['template_list']), 0)
+        eq_(len(context['category_list']), 1)
 
     @suppress_locale_middleware
     def test_template_list_category_hidden(self):
@@ -512,42 +511,42 @@ class TemplateIntegrationTest(TestCase):
         response = self.client.get(reverse('template_list_category',
                                            args=[category.slug]))
         context = response.context
-        self.assertEqual(len(context['template_list']), 0)
-        self.assertEqual(len(context['category_list']), 1)
-        self.assertEqual(context['category'], category)
+        eq_(len(context['template_list']), 0)
+        eq_(len(context['category_list']), 1)
+        eq_(context['category'], category)
 
     @suppress_locale_middleware
     def test_template_detail_hidden(self):
         template = create_template(status=Template.HIDDEN)
         response = self.client.get(reverse('template_detail',
                                            args=[template.slug]))
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_template_detail(self):
         template = create_template()
         response = self.client.get(reverse('template_detail',
                                            args=[template.slug]))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['template'], template)
+        eq_(response.status_code, 200)
+        eq_(response.context['template'], template)
 
     @suppress_locale_middleware
     def test_template_summary_hidden(self):
         template = create_template(status=Template.HIDDEN)
         response = self.client.get(reverse('template_summary',
                                            args=[template.slug]))
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_template_summary(self):
         template = create_template()
         response = self.client.get(reverse('template_summary',
                                            args=[template.slug]))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['template'], template)
-        self.assertTrue('object' in response.context)
-        self.assertTrue('project_list' in response.context)
-        self.assertTrue('tag_list' in response.context)
+        eq_(response.status_code, 200)
+        eq_(response.context['template'], template)
+        ok_('object' in response.context)
+        ok_('project_list' in response.context)
+        ok_('tag_list' in response.context)
 
 
     @suppress_locale_middleware
@@ -555,15 +554,15 @@ class TemplateIntegrationTest(TestCase):
         template = create_template(status=Template.HIDDEN)
         response = self.client.get(reverse('template_summary',
                                            args=[template.slug]))
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_template_config(self):
         template = create_template()
         response = self.client.get(reverse('template_summary',
                                            args=[template.slug]))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['template'], template)
+        eq_(response.status_code, 200)
+        eq_(response.context['template'], template)
 
 
 class TestCategoryMembershipIntegrationTest(TestCase):
@@ -580,15 +579,15 @@ class TestCategoryMembershipIntegrationTest(TestCase):
         self.client.logout()
 
     def assertContextMessage(self, context, message_status):
-        self.assertTrue('messages' in context)
+        ok_('messages' in context)
         for item in list(context['messages']):
-            self.assertEqual(item.tags, message_status)
+            eq_(item.tags, message_status)
 
     @suppress_locale_middleware
     def test_membership_request_get(self):
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['category'], self.category)
+        eq_(response.status_code, 200)
+        eq_(response.context['category'], self.category)
 
     @suppress_locale_middleware
     def test_membership_request_post(self):
@@ -603,7 +602,7 @@ class TestCategoryMembershipIntegrationTest(TestCase):
         admin.save()
         response = self.client.post(self.url, {}, follow=True)
         self.assertContextMessage(response.context, 'success')
-        self.assertEqual(len(mail.outbox), 1)
+        eq_(len(mail.outbox), 1)
 
     @suppress_locale_middleware
     def test_duplicate_membership_request_get(self):
@@ -636,47 +635,47 @@ class TestExternalProjectIntegrationTest(PopcornIntegrationTestCase):
     def test_detail_user_project(self):
         url = self.get_url('user_project', self.user, self.project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_detail_user_project_config(self):
         url = self.get_url('user_project_config', self.user, self.project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_detail_user_project_meta(self):
         url = self.get_url('user_project_meta', self.user, self.project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_detail_user_data(self):
         url = self.get_url('user_project_data', self.user, self.project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_detail_user_project_fork(self):
         url = self.get_url('user_project_fork', self.user, self.project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_detail_user_project_fork_post(self):
         url = self.get_url('user_project_fork', self.user, self.project)
         response = self.client.post(url, {})
-        self.assertEqual(response.status_code, 404)
+        eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_edit_project_owner(self):
         url = self.get_url('user_project_edit', self.user, self.project)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        eq_(response.status_code, 200)
         context = response.context
-        self.assertEqual(context['project'], self.project)
-        self.assertEqual(context['form'].instance, self.project)
-        self.assertTrue(isinstance(context['form'], ExternalProjectEditForm))
+        eq_(context['project'], self.project)
+        eq_(context['form'].instance, self.project)
+        ok_(isinstance(context['form'], ExternalProjectEditForm))
         self.client.logout()
 
     @suppress_locale_middleware
@@ -691,5 +690,5 @@ class TestExternalProjectIntegrationTest(PopcornIntegrationTestCase):
         response = self.client.post(url, data)
         self.assertRedirects(response, self.project.get_absolute_url())
         project = Project.objects.get()
-        self.assertEqual(project.name, 'Changed!')
+        eq_(project.name, 'Changed!')
 

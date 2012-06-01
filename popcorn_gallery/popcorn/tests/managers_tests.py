@@ -6,7 +6,6 @@ from .fixtures import create_user, create_project
 from ..models import Project, Template
 
 
-
 class ProjectsManagerTest(TestCase):
 
     def setUp(self):
@@ -26,7 +25,7 @@ class ProjectsManagerTest(TestCase):
         self.assertEqual(Project.objects.all().count(), 1)
 
     def test_project_live_manager_removed(self):
-        create_project(status=Project.LIVE, is_removed=True, is_shared=True,
+        create_project(status=Project.REMOVED, is_shared=True,
                        author=self.user)
         self.assertEqual(Project.live.all().count(), 0)
         self.assertEqual(Project.objects.all().count(), 1)
@@ -63,6 +62,5 @@ class ProjectsManagerTest(TestCase):
         eq_(Project.objects.get_for_user(self.user).count(), 1)
 
     def test_projects_for_user_removed(self):
-        create_project(status=Project.LIVE, is_shared=True, author=self.user,
-                       is_removed=True)
+        create_project(status=Project.REMOVED, is_shared=True, author=self.user)
         eq_(Project.objects.get_for_user(self.user).count(), 0)

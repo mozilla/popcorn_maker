@@ -1,5 +1,6 @@
-import functools
 import json
+
+from functools import partial
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
@@ -13,7 +14,7 @@ from funfactory.urlresolvers import reverse
 from tower import ugettext as _
 from voting.models import Vote
 
-from ..baseconv import base62
+from ..decorators import valid_user_project, is_popcorn_project
 from ..forms import (ProjectEditForm, ExternalProjectEditForm,
                      ProjectSubmissionForm, OrderingForm)
 from ..models import (Project, ProjectCategory, Template, TemplateCategory,
@@ -22,60 +23,24 @@ from ..utils import update_views_count, get_order_fields, update_vote_score
 from ...base.utils import notify_admins
 
 
-def valid_user_project(func):
-    """Decorator that makes sure the project is active and valid"""
-    @functools.wraps(func)
-    def wrapper(request, *args, **kwargs):
-        username = kwargs.pop('username')
-        shortcode = kwargs.pop('shortcode')
-        try:
-            pk = base62.to_decimal(shortcode)
-        except Exception:
-            raise Http404
-        params = {
-            'author__username': username,
-            'pk': pk,
-            'is_removed': False,
-            }
-        if not request.user.is_authenticated() or \
-            not request.user.username == username:
-            params['status'] = Project.LIVE
-        try:
-            project = (Project.objects.select_related('author', 'template')
-                       .get(**params))
-        except Project.DoesNotExist:
-            raise Http404
-        return func(request, project=project, *args, **kwargs)
-    return wrapper
+# default arguments for the project view
+project_view = partial(valid_user_project(['username', 'shortcode']))
 
-
-def is_popcorn_project(func):
-    """Decorator that makes sure that project was made with a
-    popcorn ``Template`` """
-    @functools.wraps(func)
-    def wrapper(request, *args, **kwargs):
-        project = kwargs.pop('project')
-        if not project.template:
-            raise Http404
-        return func(request, project, *args, **kwargs)
-    return wrapper
-
-
-@valid_user_project
+@project_view
 @is_popcorn_project
 def user_project(request, project):
     context = {'project': project, 'template': project.template}
     return render(request, project.template.template, context)
 
 
-@valid_user_project
+@project_view
 @is_popcorn_project
 def user_project_config(request, project):
     context = {'project': project }
     return render(request, project.template.config, context)
 
 
-@valid_user_project
+@project_view
 @is_popcorn_project
 def user_project_meta(request, project):
     profile = project.author.get_profile()
@@ -90,14 +55,14 @@ def user_project_meta(request, project):
                         mimetype='application/json')
 
 
-@valid_user_project
+@project_view
 @is_popcorn_project
 def user_project_data(request, project):
     return HttpResponse(project.metadata, mimetype='application/json')
 
 
 @login_required
-@valid_user_project
+@project_view
 def user_project_edit(request, project):
     if not request.user == project.author:
         raise Http404
@@ -118,7 +83,7 @@ def user_project_edit(request, project):
 
 
 @login_required
-@valid_user_project
+@project_view
 def user_project_delete(request, project):
     if not request.user == project.author:
         raise Http404
@@ -131,7 +96,7 @@ def user_project_delete(request, project):
 
 
 @login_required
-@valid_user_project
+@project_view
 @is_popcorn_project
 def user_project_fork(request, project):
     if not project.is_forkable:
@@ -144,7 +109,7 @@ def user_project_fork(request, project):
     return render(request, 'project/fork.html', context)
 
 
-@valid_user_project
+@project_view
 def user_project_summary(request, project):
     update_views_count(project)
     user_vote = Vote.objects.get_for_user(project, request.user)

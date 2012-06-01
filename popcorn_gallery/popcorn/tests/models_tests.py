@@ -28,7 +28,6 @@ class PopcornTest(TestCase):
         eq_(project.status, Project.HIDDEN)
         eq_(project.is_forkable, False)
         eq_(project.is_shared, False)
-        eq_(project.is_removed, False)
         eq_(project.is_published, False)
         eq_(project.is_external, False)
         eq_(project.views_count, 0)
@@ -46,7 +45,6 @@ class PopcornTest(TestCase):
         eq_(project.status, Project.HIDDEN)
         eq_(project.is_forkable, False)
         eq_(project.is_shared, False)
-        eq_(project.is_removed, False)
         eq_(project.is_published, False)
         eq_(project.is_external, True)
         eq_(project.views_count, 0)
@@ -75,13 +73,13 @@ class PopcornTest(TestCase):
 
     def test_hidden_project(self):
         project = create_project(status=Project.HIDDEN)
-        eq_(project.is_removed, False)
         eq_(project.is_published, False)
 
     def test_removed_project(self):
-        project = create_project(is_removed=True, status=Project.LIVE)
-        eq_(project.status, project.LIVE)
+        project = create_project(status=Project.REMOVED)
+        eq_(project.status, project.REMOVED)
         eq_(project.is_published, False)
+        eq_(project.is_removed, True)
 
     def test_butter_data(self):
         project = create_project()
