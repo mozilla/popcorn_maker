@@ -1,4 +1,5 @@
 import json
+import re
 
 from functools import partial
 
@@ -9,12 +10,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
+from django.utils.encoding import smart_unicode
 
 from funfactory.urlresolvers import reverse
 from tower import ugettext as _
 from voting.models import Vote
 
-from ..decorators import valid_user_project, is_popcorn_project
+from ..decorators import (valid_user_project, is_popcorn_project,
+                          add_csrf_token)
 from ..forms import (ProjectEditForm, ExternalProjectEditForm,
                      ProjectSubmissionForm, OrderingForm)
 from ..models import (Project, ProjectCategory, Template, TemplateCategory,
@@ -25,6 +28,7 @@ from ...base.utils import notify_admins
 
 # default arguments for the project view
 project_view = partial(valid_user_project(['username', 'shortcode']))
+
 
 @project_view
 @is_popcorn_project
@@ -216,11 +220,10 @@ def get_template_or_404(slug):
     return template
 
 
+@add_csrf_token
 def template_detail(request, slug):
     template = get_template_or_404(slug)
-    context = {'template': template,
-               'project': None}
-    return render(request, template.template, context)
+    return HttpResponse(smart_unicode(template.template_content))
 
 
 def template_summary(request, slug):
@@ -245,11 +248,18 @@ def template_summary(request, slug):
 
 
 def template_config(request, slug):
+    """Initialization data ``Template`` specific"""
     template = get_template_or_404(slug)
-    context = {'template': template,
-               'object': None}
-    return render(request, template.config, context)
+    data = {
+        "savedDataUrl": "data",
+        "baseDir": settings.STATIC_URL,
+        "name": template.slug,
+        }
+    if template.config:
+        data.update(template.config)
+    return HttpResponse(json.dumps(data), mimetype='application/json')
 
 def template_metadata(request, slug):
     template = get_template_or_404(slug)
-    return HttpResponse(template.metadata ,mimetype='application/json')
+    response = template.metadata if template.metadata else "{}"
+    return HttpResponse(response, mimetype='application/json')

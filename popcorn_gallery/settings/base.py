@@ -45,6 +45,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'popcorn_gallery.activity',
     'popcorn_gallery.reports',
     'popcorn_gallery.search',
+    'popcorn_gallery.attachments',
 ]
 
 
@@ -113,6 +114,10 @@ STATICFILES_DIRS = (
     path('assets'),
     )
 
+
+# user assets
+TEMPLATE_MEDIA_ROOT = path('media', 'templates')
+TEMPLATE_MEDIA_URL = '/media/templates/'
 
 # contrib.messages
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'

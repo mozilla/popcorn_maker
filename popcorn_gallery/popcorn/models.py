@@ -1,41 +1,30 @@
-import os
-
 from django.conf import settings
 from django.db import models
-from django.core.cache import cache
+from django.utils.encoding import smart_unicode
+
 from django_extensions.db.fields import (CreationDateTimeField,
                                          ModificationDateTimeField, UUIDField,
                                          AutoSlugField)
+from django_extensions.db.fields.json import JSONField
 from taggit.managers import TaggableManager
 from tower import ugettext_lazy as _
 
-
-from .managers import ProjectManager, ProjectLiveManager, TemplateManager
 from .baseconv import base62
+from .managers import ProjectManager, ProjectLiveManager, TemplateManager
+from .storage import TemplateStorage
+from .templates import prepare_stream
 
 
-def get_templates(prefix='butter', extension=''):
-    """List the files with the given extension"""
-    key = '%s%s%s' % (settings.CACHE_MIDDLEWARE_KEY_PREFIX, prefix, extension)
-    template_choices_cached = cache.get(key)
-    if template_choices_cached:
-        return template_choices_cached
-    template_choices = []
-    if extension:
-        extension = '.%s' % extension
-    new_path = os.path.join(settings.POPCORN_TEMPLATES_ROOT, prefix)
-    for root, dir_list, file_list in os.walk(new_path):
-        for template in file_list:
-            full_path = os.path.join(root, template)
-            template_path = full_path.replace(new_path, '')
-            template_full_path = '%s%s' % (prefix, template_path)
-            if extension and template_path.endswith(extension):
-                template_choices.append((template_full_path, template_path))
-    cache.set(key, template_choices, 60*10) # cached by 10 minutes
-    return template_choices
+def template_path(instance, filename):
+    """Saves the template in a location determined by the ``author`` and
+    the ``slug`` of the project"""
+    return '/'.join([instance.author.username, instance.slug, filename])
 
 
 class Template(models.Model):
+    """Template is a group of assets which allows the user interact with Butter
+    They have an html start point which is ``template``
+    """
     LIVE = 1
     HIDDEN = 2
     REMOVED = 3
@@ -44,20 +33,20 @@ class Template(models.Model):
         (HIDDEN, _('Unpublished')),
         (REMOVED, _('Removed')),
         )
-    MODEL_NAME = 'template'
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
-    template = models.CharField(max_length=255,
-                                choices=get_templates(extension='html'))
-    config = models.CharField(max_length=255,
-                              choices=get_templates(extension='cfg'))
+    author = models.ForeignKey('auth.User')
+    config = JSONField(default={}, blank=True)
     metadata = models.TextField(blank=True)
-    thumbnail = models.ImageField(upload_to="templates", blank=True)
+    template = models.FileField(upload_to=template_path)
+    template_content = models.TextField(blank=True)
+    thumbnail = models.ImageField(upload_to=template_path, blank=True,
+                                  storage=TemplateStorage())
     is_featured = models.BooleanField(default=False)
     status = models.IntegerField(choices=STATUS_CHOICES, default=LIVE)
     categories = models.ManyToManyField('popcorn.TemplateCategory', blank=True)
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
     created = CreationDateTimeField()
     modified = ModificationDateTimeField()
     views_count = models.IntegerField(default=0)
@@ -80,6 +69,14 @@ class Template(models.Model):
     @models.permalink
     def get_template_url(self):
         return ('template_detail', [self.slug])
+
+    def save(self, *args, **kwargs):
+        if not self.template_content:
+            base_url = '%s%s' % (settings.TEMPLATE_MEDIA_URL,
+                                 template_path(self, ''))
+            stream = smart_unicode(self.template.read())
+            self.template_content = prepare_stream(stream, base_url)
+        return super(Template, self).save(*args, **kwargs)
 
 
 class TemplateCategory(models.Model):
@@ -108,7 +105,6 @@ class Project(models.Model):
         (HIDDEN, _('Unpublished')),
         (REMOVED, _('Removed')),
         )
-    MODEL_NAME = 'project'
     uuid = UUIDField(unique=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)

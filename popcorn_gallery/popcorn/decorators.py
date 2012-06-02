@@ -1,9 +1,11 @@
 import functools
+import re
 
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404
 
 from .baseconv import base62
 from .models import Project
+
 
 def valid_user_project(url_args):
     """Decorator that makes sure the project is active and valid.
@@ -59,3 +61,19 @@ def is_popcorn_project(func):
         return func(request, project, *args, **kwargs)
     return wrapper
 
+
+def add_csrf_token(func):
+    """Takes a response and adds a input tupe hidden token to the content"""
+    @functools.wraps(func)
+    def wrapper(request, *args, **kwargs):
+        response = func(request, *args, **kwargs)
+        tag = '</body>'
+        csrf_token = ('<input type="hidden" value="%s" '
+                      'name="csrfmiddlewaretoken" id="csrf_token_id">' %
+                      request.csrf_token)
+        replacement = re.compile(re.escape(tag), re.IGNORECASE)
+        response.content = replacement.sub(csrf_token + tag, response.content)
+        if response.get('Content-Length', None):
+            response['Content-Length'] = len(response.content)
+        return response
+    return wrapper
