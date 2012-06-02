@@ -1,0 +1,17 @@
+{% if result %}
+<li class="col box">
+  <article>
+    <a class="title" href="{{ result.object.get_absolute_url() }}">
+      <h3 class="title wimper">
+        <div class="frame box">
+          {% if result.object.thumbnail %}
+          <img src="{{ result.object.thumbnail.url }}" alt="" />
+          {% endif %}
+        </div>
+        {{ result.object.MODEL_NAME.title() }}: {{ result.object.name }}
+      </h3>
+    </a>
+    <p>{{ result.object.description }}</p>
+  </article>
+</li>
+{% endif %}

@@ -13,39 +13,19 @@
 
 {% block content %}
 {% if query %}
+<h3>Templates</h3>
 <ul class="columns submissions">
-  {% for result in page.object_list %}
-  {% if result %}
-  <li class="col box">
-    <article>
-      <a class="title" href="{{ result.object.get_absolute_url() }}">
-        <h3 class="title wimper">
-          <div class="frame box">
-            {% if result.object.thumbnail %}
-            <img src="{{ result.object.thumbnail.url }}" alt="" />
-            {% endif %}
-          </div>
-          {{ result.object.MODEL_NAME.title() }}: {{ result.object.name }}
-        </h3>
-      </a>
-      <p>{{ result.object.description }}</p>
-    </article>
-  </li>
-  {% endif %}
+  {% for result in template_results %}
+  {% include "includes/result_detail.html" %}
+  {% endfor %}
+</ul>
+
+<h3>Projects</h3>
+<ul class="columns submissions">
+  {% for result in project_results %}
+  {% include "includes/result_detail.html" %}
   {% endfor %}
 </ul>
 {% endif %}
-
-
-{% if page.has_previous() or page.has_next() %}
-<div>
-  {% if page.has_previous() %}
-  <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">
-    {% endif %}&laquo; Previous{% if page.has_previous() %}</a>{% endif %}
-  |
-  {% if page.has_next() %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next() %}</a>{% endif %}
-</div>
-{% endif%}
-
 
 {% endblock %}
