@@ -37,7 +37,10 @@ class Template(models.Model):
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
     author = models.ForeignKey('auth.User')
-    config = JSONField(default={}, blank=True)
+    config = JSONField(default={}, blank=True,
+                       help_text=_(u'Any extra data that the template requires '
+                                   'default values such as the baseDir and '
+                                   'template name are automatically added'))
     metadata = models.TextField(blank=True)
     template = models.FileField(upload_to=template_path)
     template_content = models.TextField(blank=True)

@@ -20,20 +20,14 @@ def import_popcorn_templates(popcorn_path, prefix):
         data = {'slug': candidate}
         candidate_path = os.path.join(popcorn_path, candidate)
         for item in os.listdir(candidate_path):
-            if item.endswith('.html'):
-                data['template'] = '%s/%s/%s' % (prefix, candidate, item)
-            if item.endswith('.cfg'):
-                data['config'] = '%s/%s/%s' % (prefix, candidate, item)
-        # all attributes mean a valid template
-        if not all(k in data for k in ('slug', 'template', 'config')):
-            continue
+            # TODO: get template data and import assets
+            assert False, (prefix, candidate, item)
         try:
             # Already imported
             Template.objects.get(slug=candidate)
             continue
         except Template.DoesNotExist:
             pass
-        data['name'] = candidate
         Template.objects.create(**data)
     return
 

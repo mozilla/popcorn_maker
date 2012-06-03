@@ -13,6 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         prefix = 'butter'
-        popcorn_path = os.path.join(settings.POPCORN_TEMPLATES_ROOT, prefix)
+        popcorn_path = os.path.join(settings.PROJECT_ROOT, 'templates',
+                                    prefix)
         import_popcorn_templates(popcorn_path, prefix)
         print "Import completed"

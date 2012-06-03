@@ -32,16 +32,16 @@ project_view = partial(valid_user_project(['username', 'shortcode']))
 
 @project_view
 @is_popcorn_project
+@add_csrf_token
 def user_project(request, project):
     context = {'project': project, 'template': project.template}
-    return render(request, project.template.template, context)
+    return HttpResponse(smart_unicode(project.template.template_content))
 
 
 @project_view
 @is_popcorn_project
 def user_project_config(request, project):
-    context = {'project': project }
-    return render(request, project.template.config, context)
+    return template_config_response(project.template)
 
 
 @project_view
@@ -62,7 +62,8 @@ def user_project_meta(request, project):
 @project_view
 @is_popcorn_project
 def user_project_data(request, project):
-    return HttpResponse(project.metadata, mimetype='application/json')
+    response = project.metadata if project.metadata else "{}"
+    return HttpResponse(response, mimetype='application/json')
 
 
 @login_required
@@ -178,7 +179,7 @@ def project_category_join(request, slug):
         pass
     if request.method == 'POST':
         membership = (ProjectCategoryMembership.objects.create(**membership_data))
-        messages.success(request, _('Your request has been sent'))
+        messages.success(request, _(u'Your request has been sent'))
         context = {'membership': membership, 'SITE_URL': settings.SITE_URL,}
         subject = render_to_string('project/email/join_subject.txt', context)
         subject = ''.join(subject.splitlines())
@@ -250,6 +251,11 @@ def template_summary(request, slug):
 def template_config(request, slug):
     """Initialization data ``Template`` specific"""
     template = get_template_or_404(slug)
+    return template_config_response(template)
+
+
+def template_config_response(template):
+    """Generates a valid response for a template config """
     data = {
         "savedDataUrl": "data",
         "baseDir": settings.STATIC_URL,
@@ -258,6 +264,7 @@ def template_config(request, slug):
     if template.config:
         data.update(template.config)
     return HttpResponse(json.dumps(data), mimetype='application/json')
+
 
 def template_metadata(request, slug):
     template = get_template_or_404(slug)

@@ -33,12 +33,6 @@ def syncdb():
         local('python manage.py migrate --noinput')
 
 
-def import_butter_templates():
-    print yellow('Importing Butter templates')
-    with lcd(settings.PROJECT_ROOT):
-        local('python manage.py popcorn_import_butter')
-
-
 def copy_butter_style():
     print yellow('Coping Butter styling')
     with lcd(settings.PROJECT_ROOT):
@@ -56,7 +50,6 @@ def update():
     syncdb()
     prepare_butter()
     copy_butter_style()
-    import_butter_templates()
     update_index()
 
 

@@ -136,12 +136,16 @@ AUTH_PROFILE_MODULE = 'users.Profile'
 
 MIDDLEWARE_CLASSES += ('popcorn_gallery.users.middleware.ProfileMiddleware',)
 
-POPCORN_TEMPLATES_ROOT = path('popcorn_gallery', 'templates')
 
-INVALID_USERNAMES = ()
+INVALID_USERNAMES = (
+    'mozilla',
+    'popcorn',
+    'popcornjs',
+    'admin',
+    'administrator',
+    )
 
 PROJECT_ROOT = path('')
-
 
 # Valid domains for popcorn, must be lowercase
 POPCORN_VALID_DOMAINS = (
