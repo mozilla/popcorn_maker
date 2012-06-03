@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from django.core import mail
 from django.core.urlresolvers import reverse
-from django.utils import simplejson as json
 
+from django_extensions.db.fields import json
 from funfactory.middleware import LocaleURLMiddleware
 from test_utils import TestCase
 from mock import patch

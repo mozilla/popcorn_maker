@@ -1,10 +1,8 @@
-import json
 import re
 
 from functools import partial
 
 from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -12,6 +10,7 @@ from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_unicode
 
+from django_extensions.db.fields import json
 from funfactory.urlresolvers import reverse
 from tower import ugettext as _
 from voting.models import Vote
@@ -55,8 +54,7 @@ def user_project_meta(request, project):
         'created': project.created,
         'modified': project.modified,
         }
-    return HttpResponse(json.dumps(context, cls=DjangoJSONEncoder),
-                        mimetype='application/json')
+    return HttpResponse(json.dumps(context), mimetype='application/json')
 
 
 @project_view
@@ -256,13 +254,14 @@ def template_config(request, slug):
 
 def template_config_response(template):
     """Generates a valid response for a template config """
-    data = {
+    data = {}
+    if template.config:
+        data.update(template.config)
+    data.update({
         "savedDataUrl": "data",
         "baseDir": settings.STATIC_URL,
         "name": template.slug,
-        }
-    if template.config:
-        data.update(template.config)
+        })
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 

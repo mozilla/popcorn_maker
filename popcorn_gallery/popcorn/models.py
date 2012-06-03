@@ -12,7 +12,9 @@ from tower import ugettext_lazy as _
 from .baseconv import base62
 from .managers import ProjectManager, ProjectLiveManager, TemplateManager
 from .storage import TemplateStorage
-from .templates import prepare_stream
+from .templates import prepare_template_stream, remove_default_values
+from ..attachments.models import Asset
+from ..base.decorators import cached_property
 
 
 def template_path(instance, filename):
@@ -37,12 +39,11 @@ class Template(models.Model):
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
     author = models.ForeignKey('auth.User')
-    config = JSONField(default={}, blank=True,
+    config = JSONField(blank=True,
                        help_text=_(u'Any extra data that the template requires '
                                    'default values such as the baseDir and '
                                    'template name are automatically added'))
     metadata = models.TextField(blank=True)
-    template = models.FileField(upload_to=template_path)
     template_content = models.TextField(blank=True)
     thumbnail = models.ImageField(upload_to=template_path, blank=True,
                                   storage=TemplateStorage())
@@ -65,6 +66,21 @@ class Template(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        base_url = '%s%s' % (settings.TEMPLATE_MEDIA_URL,
+                                 template_path(self, ''))
+        if self.template_asset and not self.template_content:
+            template_stream = smart_unicode(self.template.read())
+            self.template_content = prepare_template_stream(template_stream,
+                                                            base_url)
+        if self.config_asset and not self.config:
+            config_stream = smart_unicode(self.config_asset.read())
+            self.config = remove_default_values(config_stream, base_url)
+        if self.metadata_asset and not self.metadata:
+            metadata_stream = smart_unicode(self.metadata_asset.read())
+            self.metadata = remove_default_values(metadata_stream, base_url)
+        return super(Template, self).save(*args, **kwargs)
+
     @models.permalink
     def get_absolute_url(self):
         return ('template_summary', [self.slug])
@@ -73,13 +89,30 @@ class Template(models.Model):
     def get_template_url(self):
         return ('template_detail', [self.slug])
 
-    def save(self, *args, **kwargs):
-        if not self.template_content:
-            base_url = '%s%s' % (settings.TEMPLATE_MEDIA_URL,
-                                 template_path(self, ''))
-            stream = smart_unicode(self.template.read())
-            self.template_content = prepare_stream(stream, base_url)
-        return super(Template, self).save(*args, **kwargs)
+    @cached_property
+    def asset_list(self):
+        return self.asset_set.all()
+
+    @cached_property
+    def template_asset(self):
+        for asset in self.asset_list:
+            if asset.asset_type == Asset.TEMPLATE:
+                return asset.asset
+        return None
+
+    @cached_property
+    def config_asset(self):
+        for asset in self.asset_list:
+            if asset.asset_type == Asset.CONFIG:
+                return asset.asset
+        return None
+
+    @cached_property
+    def metadata_asset(self):
+        for asset in self.asset_list:
+            if asset.asset_type == Asset.DATA:
+                return asset.asset
+        return None
 
 
 class TemplateCategory(models.Model):

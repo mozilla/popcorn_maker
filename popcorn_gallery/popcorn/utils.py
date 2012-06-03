@@ -1,13 +1,17 @@
 import os
+import re
 import datetime
 import hashlib
 
+from zipfile import ZipFile
 from django.core.cache import cache
+from django.core.files.base import ContentFile
 from django.conf import settings
 
 from dateutil.relativedelta import relativedelta
 from voting.models import Vote
 from .models import Template
+from .storage import TemplateStorage
 
 
 def import_popcorn_templates(popcorn_path, prefix):
@@ -78,3 +82,23 @@ def update_vote_score(item):
         item.votes_count = votes['score']
         item.save()
     return votes
+
+
+def import_zipped_template(zipped_template, base_path, storage_class=TemplateStorage):
+    """Uncompress a zipped file and imports it using the given ``Storage``"""
+    valid_extensions = "|".join(['html', 'jpg', 'png', 'css', 'js', 'json',
+                                 'gif'])
+    regex = '([-\w]+\.(?:%s))' % valid_extensions
+    pattern = re.compile(regex)
+    template_files = ZipFile(zipped_template)
+    saved_files = []
+    for file_path in template_files.namelist():
+        file_bits = file_path.split('/')
+        file_name = file_bits[-1]
+        if pattern.match(file_name):
+            short_filename = '/'.join(file_bits[1:])
+            storage_filename = '%s%s' % (base_path, short_filename)
+            storage = storage_class()
+            content_file = ContentFile(template_files.read(file_path))
+            saved_files.append(storage.save(storage_filename, content_file))
+    return saved_files

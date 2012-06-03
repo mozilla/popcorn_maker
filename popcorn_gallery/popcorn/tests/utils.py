@@ -1,7 +1,7 @@
 import mock
 
 from django.test.client import Client
-from django.utils import simplejson as json
+from django_extensions.db.fields import json
 
 
 class CustomClient(Client):

@@ -1,12 +1,11 @@
-import json
+import jingo
 
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
-import jingo
-
+from django_extensions.db.fields import json
 from django_browserid.views import Verify
 from funfactory.urlresolvers import reverse
 from tower import ugettext as _

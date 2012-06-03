@@ -1,12 +1,9 @@
-import json
-
 from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 
+from django_extensions.db.fields import json
 from ..decorators import valid_user_project
 from ..forms import ProjectForm
 from ..models import Project
@@ -23,8 +20,7 @@ def project_list(request):
         'error': 'okay',
         'projects': [{'name': p.name, 'id': p.uuid} for p in queryset],
         }
-    return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                        mimetype='application/json')
+    return HttpResponse(json.dumps(response), mimetype='application/json')
 
 
 def get_project_data(cleaned_data):
@@ -56,8 +52,7 @@ def project_add(request):
             'error': 'error',
             'form_errors': form.errors
             }
-    return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                        mimetype='application/json')
+    return HttpResponse(json.dumps(response), mimetype='application/json')
 
 
 @json_handler
@@ -86,8 +81,7 @@ def project_detail(request, project):
                 'error': 'error',
                 'form_errors': form.errors
                 }
-        return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                            mimetype='application/json')
+        return HttpResponse(json.dumps(response), mimetype='application/json')
     response = {
         'error': 'okay',
         # Butter needs the project metadata as a string that can be
@@ -95,8 +89,7 @@ def project_detail(request, project):
         'url': project.get_project_url(),
         'project': project.metadata,
         }
-    return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                        mimetype='application/json')
+    return HttpResponse(json.dumps(response), mimetype='application/json')
 
 
 @json_handler
@@ -113,8 +106,7 @@ def project_publish(request, uuid):
             'error': 'okay',
             'url': '%s%s' % (settings.SITE_URL, project.get_absolute_url()),
             }
-        return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                            mimetype='application/json')
+        return HttpResponse(json.dumps(response), mimetype='application/json')
     raise Http404
 
 
@@ -125,5 +117,4 @@ def user_details(request):
         'username': request.user.username,
         'email': request.user.email,
         }
-    return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                        mimetype='application/json')
+    return HttpResponse(json.dumps(response), mimetype='application/json')

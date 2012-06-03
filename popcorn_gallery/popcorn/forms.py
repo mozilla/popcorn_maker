@@ -1,5 +1,6 @@
 from django import forms
 from django.forms.widgets import CheckboxSelectMultiple
+from django.template.defaultfilters import slugify
 
 from tower import ugettext_lazy as _
 from .models import Project, Template, ProjectCategory, ProjectCategoryMembership
@@ -65,3 +66,22 @@ class OrderingForm(forms.Form):
         ('votes', _('Most voted')),
         )
     order = forms.ChoiceField(choices=ORDERING_CHOICES)
+
+
+class UploadTemplateAdminForm(forms.Form):
+    template_zip = forms.FileField()
+
+    def clean_template_zip(self):
+        """Validates that the template filename slug doesn't exist"""
+        if not self.cleaned_data.get('template_zip'):
+            return None
+        try:
+            filename = self.cleaned_data['template_zip'].name.split('.')[-2]
+        except IndexError:
+            raise forms.ValidationError('File must be a zip file')
+        self.slug = slugify(filename)
+        try:
+            template = Template.objects.get(slug=self.slug)
+        except Template.DoesNotExist:
+            return self.cleaned_data['template_zip']
+        raise forms.ValidationError('Template with this slug already exists')

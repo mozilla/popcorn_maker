@@ -1,4 +1,3 @@
-import json
 import mock
 
 from django.contrib.auth.models import AnonymousUser
@@ -6,6 +5,7 @@ from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.test import TestCase
 from django.test.client import RequestFactory
 
+from django_extensions.db.fields import json
 from nose.tools import eq_, ok_
 from ..decorators import json_handler, login_required_ajax, throttle_view
 

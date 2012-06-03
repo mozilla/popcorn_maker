@@ -1,9 +1,10 @@
 import functools
 import hashlib
 
-from django.core.serializers.json import simplejson as json
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.core.cache import cache
+
+from django_extensions.db.fields import json
 
 
 def json_handler(func):

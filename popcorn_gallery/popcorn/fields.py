@@ -4,8 +4,8 @@ import urlparse
 
 from django import forms
 from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
-from django.utils import simplejson as json
+
+from django_extensions.db.fields import json
 
 
 def is_valid_url(value):
@@ -59,7 +59,7 @@ class PopcornJSONField(forms.CharField):
         if value:
             value = validate_metadata(value)
             try:
-                value = json.dumps(value, cls=DjangoJSONEncoder)
+                value = json.dumps(value)
             except TypeError:
                 raise forms.ValidationError('Invalid JSON value')
         return super(PopcornJSONField, self).clean(value)

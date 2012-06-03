@@ -3,6 +3,8 @@ from urlparse import urlparse
 from django.conf import settings
 from lxml import html
 
+from django_extensions.db.fields import json
+
 
 BUTTER_ASSETS = {
     'butter.js': 'src/',
@@ -25,7 +27,7 @@ def get_butter_library(src):
     return None
 
 
-def prepare_stream(stream, base_url):
+def prepare_template_stream(stream, base_url):
     """Prepares the stream to be stored in the DB"""
     document_tree = html.fromstring(stream, base_url=base_url)
     script_elements = document_tree.xpath('//script[@src]')
@@ -36,3 +38,11 @@ def prepare_stream(stream, base_url):
             script.set('src', butter_library)
     document_tree.make_links_absolute()
     return html.tostring(document_tree, pretty_print=True)
+
+
+def remove_default_values(stream, base_url):
+    data = json.loads(stream)
+    for attr in ['baseDir', 'name', 'savedDataUrl']:
+        if attr in data:
+            del data[attr]
+    return json.dumps(data)

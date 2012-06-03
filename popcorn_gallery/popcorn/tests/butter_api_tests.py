@@ -1,10 +1,9 @@
-import json
-
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 from django.utils.unittest import TestCase
 
+from django_extensions.db.fields import json
 from nose.tools import eq_, ok_
 from .fixtures import create_project, create_user, create_template
 from ..models import Project, Template
