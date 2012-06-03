@@ -22,6 +22,7 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
 
 
 class TemplateAdmin(admin.ModelAdmin):
+    change_list_template = 'admin/template/change_list_template.html'
     model = Template
     readonly_fields = ['views_count', 'votes_count']
     inlines = [AssetInline]
