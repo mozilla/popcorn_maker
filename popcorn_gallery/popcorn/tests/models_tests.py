@@ -3,6 +3,8 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from .fixtures import (create_user, create_template, create_project,
                        create_project_category, create_external_project)
+from ...attachments.tests.fixtures import create_asset
+from ...attachments.models import Asset
 from ..models import (Project, Template, ProjectCategory, TemplateCategory,
                       ProjectCategoryMembership)
 from nose.tools import eq_, ok_
@@ -155,3 +157,64 @@ class ProjectCategoryMembershipTest(TestCase):
         membership = ProjectCategoryMembership.objects.create(**data)
         eq_(ProjectCategoryMembership.PENDING, membership.status)
         ok_(membership.created, "Missing created date")
+
+
+class ProjectTemplateTests(TestCase):
+
+    def tearDown(self):
+        for model in [Asset, Template, User, Template]:
+            model.objects.all().delete()
+
+    def test_template_save_new_template(self):
+        template = create_template(template_content='')
+        content = '<!DOCTYPE html><html><head></head><body>HELLO WORLD</body></html>'
+        create_asset(asset_content=content, template=template,
+                     asset_type=Asset.TEMPLATE)
+        template = Template.objects.get(id=template.id)
+        template.save()
+        eq_(template.template_content, content)
+
+    def test_template_save_existing_template(self):
+        content = '<!DOCTYPE html5>'
+        template = create_template(template_content=content)
+        create_asset(asset_content='Updated content', template=template,
+                     asset_type=Asset.TEMPLATE)
+        template = Template.objects.get(id=template.id)
+        template.save()
+        eq_(template.template_content, content)
+
+    def test_template_save_new_config(self):
+        template = create_template(config='')
+        content = '{"foo": "foo"}'
+        create_asset(asset_content=content, template=template,
+                     asset_type=Asset.CONFIG)
+        template = Template.objects.get(id=template.id)
+        template.save()
+        eq_(template.config, {"foo": "foo"})
+
+    def test_template_save_existing_config(self):
+        content = '{"foo": "foo"}'
+        template = create_template(config=content)
+        create_asset(asset_content='{"updated": "updated"}', template=template,
+                     asset_type=Asset.CONFIG)
+        template = Template.objects.get(id=template.id)
+        template.save()
+        eq_(template.config, {"foo": "foo"})
+
+    def test_template_save_new_metadata(self):
+        template = create_template(metadata='')
+        content = '{"foo": "foo"}'
+        create_asset(asset_content=content, template=template,
+                     asset_type=Asset.DATA)
+        template = Template.objects.get(id=template.id)
+        template.save()
+        eq_(template.metadata, content)
+
+    def test_template_save_existing_metadata(self):
+        content = '{"foo": "foo"}'
+        template = create_template(metadata=content)
+        create_asset(asset_content='{"updated": "updated"}', template=template,
+                     asset_type=Asset.DATA)
+        template = Template.objects.get(id=template.id)
+        template.save()
+        eq_(template.metadata, content)

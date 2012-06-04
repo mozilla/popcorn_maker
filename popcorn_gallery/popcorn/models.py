@@ -70,7 +70,7 @@ class Template(models.Model):
         base_url = '%s%s' % (settings.TEMPLATE_MEDIA_URL,
                                  template_path(self, ''))
         if self.template_asset and not self.template_content:
-            template_stream = smart_unicode(self.template.read())
+            template_stream = smart_unicode(self.template_asset.read())
             self.template_content = prepare_template_stream(template_stream,
                                                             base_url)
         if self.config_asset and not self.config:

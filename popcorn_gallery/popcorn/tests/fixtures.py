@@ -22,7 +22,7 @@ def create_template(**kwargs):
     if kwargs:
         defaults.update(kwargs)
     if not 'author' in kwargs:
-        defaults['author'] = create_user('mozilla')
+        defaults['author'] = create_user('mozilla-test')
     return Template.objects.create(**defaults)
 
 
