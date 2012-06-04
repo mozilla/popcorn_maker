@@ -58,7 +58,8 @@ class ButterIntegrationTestCase(TestCase):
         json.loads(project.metadata)
 
     def test_get_detail_project_hidden(self):
-        project = create_project(author=self.user, status=Project.HIDDEN)
+        project = create_project(author=self.user, status=Project.HIDDEN,
+                                 template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.get(url)
         eq_(response.status_code, 200)
@@ -68,7 +69,8 @@ class ButterIntegrationTestCase(TestCase):
         json.loads(response_data['project'])
 
     def test_get_detail_project(self):
-        project = create_project(author=self.user, status=Project.LIVE)
+        project = create_project(author=self.user, status=Project.LIVE,
+                                 template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.get(url)
         eq_(response.status_code, 200)
@@ -78,13 +80,15 @@ class ButterIntegrationTestCase(TestCase):
         json.loads(response_data['project'])
 
     def test_get_detail_project_removed(self):
-        project = create_project(author=self.user, status=Project.REMOVED)
+        project = create_project(author=self.user, status=Project.REMOVED,
+                                 template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.get(url)
         eq_(response.status_code, 404)
 
     def test_post_detail_project(self):
-        project = create_project(author=self.user)
+        project = create_project(author=self.user,
+                                 template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.post(url, VALID_DATA)
         eq_(response.status_code, 200)
@@ -94,7 +98,7 @@ class ButterIntegrationTestCase(TestCase):
         ok_('data', response_data['project'])
 
     def test_post_detail_project_invalid(self):
-        project = create_project(author=self.user)
+        project = create_project(author=self.user, template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.post(url, {'template': 'invalid'})
         eq_(response.status_code, 200)
@@ -104,9 +108,8 @@ class ButterIntegrationTestCase(TestCase):
 
     def test_list_projects(self):
         alex = create_user('alex')
-        template = create_template()
-        create_project(author=alex, template=template)
-        create_project(author=self.user, template=template)
+        create_project(author=alex, template=self.template)
+        create_project(author=self.user, template=self.template)
         response = self.client.get('/api/projects')
         eq_(response.status_code, 200)
         response_data = json.loads(response.content)
@@ -114,7 +117,8 @@ class ButterIntegrationTestCase(TestCase):
         eq_(len(response_data['projects']), 1)
 
     def test_list_project_removed(self):
-        create_project(author=self.user, status=Project.REMOVED)
+        create_project(author=self.user, status=Project.REMOVED,
+                       template=self.template)
         response = self.client.get('/api/projects')
         eq_(response.status_code, 200)
         response_data = json.loads(response.content)
@@ -122,13 +126,14 @@ class ButterIntegrationTestCase(TestCase):
         eq_(len(response_data['projects']), 0)
 
     def test_publish_project_get(self):
-        project = create_project(author=self.user)
+        project = create_project(author=self.user,
+                                 template=self.template)
         url = '/api/publish/%s' % project.uuid
         response = self.client.get(url)
         eq_(response.status_code, 404)
 
     def test_publish_project(self):
-        project = create_project(author=self.user)
+        project = create_project(author=self.user, template=self.template)
         url = '/api/publish/%s' % project.uuid
         response = self.client.post(url, {})
         eq_(response.status_code, 200)
@@ -137,7 +142,8 @@ class ButterIntegrationTestCase(TestCase):
         ok_('url' in response_data)
 
     def test_publish_project_removed(self):
-        project = create_project(author=self.user, status=Project.REMOVED)
+        project = create_project(author=self.user, status=Project.REMOVED,
+                                 template=self.template)
         url = '/api/publish/%s' % project.uuid
         response = self.client.post(url, {})
         eq_(response.status_code, 403)
@@ -206,20 +212,22 @@ class ButterIntegrationTestCaseNotOwner(TestCase):
             model.objects.all().delete()
 
     def test_get_project_unpublished(self):
-        project = create_project(author=self.other, status=Project.HIDDEN)
+        project = create_project(author=self.other, status=Project.HIDDEN,
+                                 template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.get(url)
         eq_(response.status_code, 404)
 
     def test_post_project_unpublished(self):
-        project = create_project(author=self.other, status=Project.HIDDEN)
+        project = create_project(author=self.other, status=Project.HIDDEN,
+                                 template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.post(url, VALID_DATA)
         eq_(response.status_code, 404)
 
     def test_get_detail_project(self):
         project = create_project(author=self.other, status=Project.LIVE,
-                                 is_forkable=False)
+                                 is_forkable=False, template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.get(url)
         eq_(response.status_code, 200)
@@ -230,14 +238,14 @@ class ButterIntegrationTestCaseNotOwner(TestCase):
 
     def test_post_detail_project_not_forkable(self):
         project = create_project(author=self.other, status=Project.LIVE,
-                                 is_forkable=False)
+                                 is_forkable=False, template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.post(url, VALID_DATA)
         eq_(response.status_code, 403)
 
     def test_post_detail_project_forkable(self):
         project = create_project(author=self.other, status=Project.LIVE,
-                                 is_forkable=True)
+                                 is_forkable=True, template=self.template)
         url = '/api/project/%s' % project.uuid
         response = self.client.post(url, VALID_DATA)
         eq_(response.status_code, 200)

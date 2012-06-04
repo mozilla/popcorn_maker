@@ -91,9 +91,7 @@ class DetailIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project', self.user, project)
         response = self.client.get(url)
         eq_(response.status_code, 200)
-        context = response.context
-        eq_(context['project'], project)
-        eq_(context['template'], project.template)
+        ok_('<!DOCTYPE html5>' in response.content)
 
     @suppress_locale_middleware
     def test_unpublished_project_anon(self):
@@ -119,8 +117,7 @@ class DetailIntegrationTest(PopcornIntegrationTestCase):
         self.client.login(username=self.user.username, password='bob')
         response = self.client.get(url)
         eq_(response.status_code, 200)
-        context = response.context
-        eq_(context['project'], project)
+        ok_('<!DOCTYPE html5>' in response.content)
         self.client.logout()
 
     @suppress_locale_middleware
@@ -403,7 +400,7 @@ class DeleteIntegrationTest(PopcornIntegrationTestCase):
         ok_(reverse('users_dashboard'), response['Location'])
         eq_(Project.objects.all().count(), 0)
         eq_(ProjectCategory.objects.all().count(), 1)
-        eq_(User.objects.all().count(), 1)
+        eq_(User.objects.filter(id=self.user.id).count(), 1)
 
     @suppress_locale_middleware
     def test_delete_not_owner_get(self):
@@ -537,7 +534,7 @@ class TemplateIntegrationTest(TestCase):
         response = self.client.get(reverse('template_detail',
                                            args=[template.slug]))
         eq_(response.status_code, 200)
-        eq_(response.context['template'], template)
+        ok_('<!DOCTYPE html5>' in response.content)
 
     @suppress_locale_middleware
     def test_template_summary_hidden(self):

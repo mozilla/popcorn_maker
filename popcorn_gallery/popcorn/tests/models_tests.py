@@ -93,16 +93,20 @@ class TemplateTest(TestCase):
         Template.objects.all().delete()
 
     def test_template_creation(self):
-        template = 'popcorn/templates/test/base.html'
-        config = 'popcorn/templates/test/config.cfg'
+        mozilla = create_user('mozilla')
         template = Template.objects.create(name='basic', slug='basic',
-                                           template=template, config=config)
+                                           author=mozilla)
         ok_(template.id, "Template couldn't be created")
         eq_(template.status, Template.LIVE)
         eq_(template.is_featured, False)
         eq_(template.views_count, 0)
+        eq_(template.votes_count, 0)
         ok_(template.created)
         ok_(template.modified)
+        eq_(len(template.asset_list), 0)
+        eq_(template.template_asset, None)
+        eq_(template.config_asset, None)
+        eq_(template.metadata_asset, None)
 
     def test_template_live_manager(self):
         create_template(name='basic')

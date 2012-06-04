@@ -17,11 +17,12 @@ def create_template(**kwargs):
     defaults = {
         'name': 'basic',
         'slug': 'basic',
-        'template': 'butter/default-butter/base.html',
-        'config': 'butter/default-butter/config.cfg',
+        'template_content': '<!DOCTYPE html5>',
         }
     if kwargs:
         defaults.update(kwargs)
+    if not 'author' in kwargs:
+        defaults['author'] = create_user('mozilla')
     return Template.objects.create(**defaults)
 
 
@@ -33,10 +34,10 @@ def create_project(**kwargs):
         }
     if kwargs:
         defaults.update(kwargs)
-    if not 'author' in kwargs:
-        defaults['author'] = create_user('bob')
     if not 'template' in kwargs:
         defaults['template'] = create_template()
+    if not 'author' in kwargs:
+        defaults['author'] = defaults['template'].author
     return Project.objects.create(**defaults)
 
 
