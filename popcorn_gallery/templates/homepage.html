@@ -5,7 +5,68 @@ Welcome to Popcorn, understand it, make something cool, see what's happening
 {% endblock title %}
 
 {% block content %}
-<h1>Welcome to Popcorn, understand it, make something cool, see what's happening</h1>
+<div class="row-fluid">
+  <div class="hero-unit span 12">
+    <div class="span5">
+      <h1>Video that works like<br> <em>the web</em></h1>
+      <p><strong>Thanks for helping us beta test Popcorn!</strong></p>
+      <p>You're getting a sneak peak at some free software that's
+        launching in November 2012. So let's make some interactive
+        media together. We look forward to your feedback.</p>
+      <p><a class="btn btn-success btn-larger" href="#TODO">Get Started &gt;</a></p>
+    </div>
 
+    <div class="span7">
+      <div class="textcenter">
+        <video width="80%" class="video-js center" poster="http://mozillapopcorn.org/wp-content/themes/popcorn/images/poster.png" id="myVideo" preload="none" controls="controls">
+          <source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.webm" type="video/webm" />
+          <source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.mp4" type="video/mp4" />
+          <source src="http://mozillapopcorn.org/wp-content/themes/popcorn/video/popcornsite.ogv" type="video/ogg" />
+        </video>
 
+      </div><!--center-->
+    </div>
+  </div>
+</div>
+
+<div class="row-fluid">
+  <div class="span5 leftpad">
+    <h2>What's new?</h2>
+    <br>
+    <div class="textcenter"><img src="{{ STATIC_URL }}img/storycamp_logo.png" width="301px" class="toppad center"></div>
+    <p class="toppad">This summer, let's explore web-native storytelling together. <a href="#TODO">Learn more.</a></p>
+    <a class="btn" href="#TODO">learn more</a>
+  </div>
+
+  <div class="span7">
+    <h2>Recent projects</h2>
+
+    <div class="row-fluid toppad">
+      <div class="span4">
+        <div>
+          <a href="#TODO" class="thumbnail"> <img src="http://placehold.it/288x175" alt=""> </a>
+          <h5 class="toppad">Visions of Students Today</h5>
+          <p class="beta">created by <a href="#TODO">this guy</a></p>
+          <p class="project-desc">Collage video remix uses popcorn to popup video samples and provide links</p>
+        </div>
+      </div><!--/span-->
+
+      <div class="span4">
+        <div> <a href="#TODO" class="thumbnail"> <img src="http://placehold.it/288x175" alt=""> </a>
+          <h5 class="toppad">Visions of Students Today</h5>
+          <p class="beta">created by <a href="#TODO">this guy</a></p>
+          <p class="project-desc">Collage video remix uses popcorn to popup video samples and provide links</p>
+        </div>
+      </div><!--/span-->
+
+      <div class="span4">
+        <div> <a href="#TODO"  class="thumbnail"> <img src="http://placehold.it/288x175" alt=""> </a>
+          <h5 class="toppad">Visions of Students Today</h5>
+          <p class="beta">created by <a href="#TODO">this guy</a></p>
+          <p class="project-desc">Collage video remix uses popcorn to popup video samples and provide links</p>
+        </div>
+      </div><!--/span-->
+    </div><!--/row-->
+  </div><!--/span-->
+</div><!--/row-->
 {% endblock content %}
