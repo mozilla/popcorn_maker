@@ -23,6 +23,8 @@ def test(*args):
 def prepare_butter():
     print yellow('Compiling Butter files.')
     with lcd(os.path.join(settings.PROJECT_ROOT, 'butter')):
+        local('npm install')
+        local('npm update')
         local('node make')
 
 
