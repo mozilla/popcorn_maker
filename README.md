@@ -45,6 +45,10 @@ This will take a few minutes, so go on and reward yourself with a nice cup of te
 Update the local settings file
 ==============================
 
+From the root of the repository copy the local python settings.
+
+    cp popcorn_gallery/settings/local.py-dist popcorn_gallery/settings/local.py
+
 Amend ``popcorn_gallery/settings/local.py``  adding your details:
 
 - ADMINS: Add an email address and a name.
