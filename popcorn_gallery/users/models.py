@@ -41,7 +41,7 @@ class Profile(models.Model):
 
     @property
     def gravatar_url(self):
-        return '//www.gravatar.com/avatar/%s ' % hashlib.md5(
+        return 'https://secure.gravatar.com/avatar/%s ' % hashlib.md5(
             self.user.email.lower()).hexdigest()
 
     @property
