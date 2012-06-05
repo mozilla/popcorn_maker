@@ -61,6 +61,12 @@ def user_project_meta(request, project):
 @is_popcorn_project
 def user_project_data(request, project):
     response = project.metadata if project.metadata else "{}"
+    # If user is the owner save automatically else, force new name
+    if request.user.is_authenticated() and request.user == project.author:
+        json_response = json.loads(response)
+        json_response['projectID'] = project.uuid
+        json_response['name'] = project.name
+        response = json.dumps(json_response)
     return HttpResponse(response, mimetype='application/json')
 
 

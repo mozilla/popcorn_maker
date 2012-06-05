@@ -333,7 +333,10 @@ class DataIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project_data', self.user, project)
         response = self.client.get(url)
         eq_(response.status_code, 200)
-        eq_(response.content, '{"data": "foo"}')
+        data = json.loads(response.content)
+        ok_('data' in data)
+        ok_(not 'projectID' in data)
+        ok_(not 'name' in data)
 
     @suppress_locale_middleware
     def test_unpublished_project_anon(self):
@@ -359,7 +362,24 @@ class DataIntegrationTest(PopcornIntegrationTestCase):
         self.client.login(username=self.user.username, password='bob')
         response = self.client.get(url)
         eq_(response.status_code, 200)
-        eq_(response.content, '{"data": "foo"}')
+        data = json.loads(response.content)
+        ok_('data' in data)
+        ok_('projectID' in data)
+        ok_('name' in data)
+        self.client.logout()
+
+    @suppress_locale_middleware
+    def test_published_project_not_owner(self):
+        other = create_user('other')
+        project = create_project(author=other, status=Project.LIVE)
+        url = self.get_url('user_project_data', other, project)
+        self.client.login(username=self.user.username, password='bob')
+        response = self.client.get(url)
+        eq_(response.status_code, 200)
+        data = json.loads(response.content)
+        ok_('data' in data)
+        ok_(not 'projectID' in data)
+        ok_(not 'name' in data)
         self.client.logout()
 
     @suppress_locale_middleware

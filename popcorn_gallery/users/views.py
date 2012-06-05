@@ -59,6 +59,8 @@ def dashboard(request):
 def signout(request):
     """Sign the user out, destroying their session."""
     auth.logout(request)
+    if request.is_ajax():
+        return HttpResponse('{"error": "okay"}', 'application/javascript')
     return redirect('/')
 
 
