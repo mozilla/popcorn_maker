@@ -1,41 +1,43 @@
 {% extends "base.html" %}
 
-{% block title -%}{{ _('Get Started') }} - {{ super() }}{% endblock title -%}
-
-{% block header %}
-<header class="busta">
-  <h1 class="shout">Get started</h1>
-</header>
-{% endblock %}
+{% block title -%}{{ _('Start a Project') }} - {{ super() }}{% endblock title -%}
 
 {% block content %}
-<div class="content_columns columns with_nav">
-  <nav class="col box nav">
-    <ul>
-      <li><a{% if not category %} class="current wimper"{% endif %} href="{{ url('template_list') }}">All templates</a></li>
-      {% if category_list %}
-      {% for cat in category_list %}
-      <li>
-        <a{% if category == cat %} class="current wimper"{% endif %} href="{{ cat.get_absolute_url() }}">{{ cat.name }}</a><br>
-      </li>
-      {% endfor %}
+<h1 class="leftpad">Start a project</h1>
+<div class="row-fluid">
+  <div class="hero-unit span 12">
+    <div class="span3">
+
+      <div>
+        <ul class="nav2 nav-tabs nav-stacked">
+          <li class="nav-header">Templates</li>
+          <li class="{% if not category %}active{% endif %}"><a href="{{ url('template_list') }}">All</a></li>
+          {% for cat in category_list %}
+          <li class="{% if category == cat %}active{% endif %}"><a href="{{ cat.get_absolute_url() }}">{{ cat.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="pull-down">
+        <h4>About Popcorn templates</h4>
+        <p class="enforced-font toppad">Popcorn projects are made entirely with HTML, CSS and Javascript.</p>
+        <p class="enforced-font">We have provided some starter templates for you. If you know some code, you should write your own templates and share!<p>
+          <a class="btn" href="#TODO">contribute a template</a>
+      </div>
+    </div>
+
+
+    <div class="span8 well">
+      {% if category %}
+      <h2 class="{{category.slug }}">{{ category.name }}</h2>
+      {% else %}
+      <h2>All templates</h2>
       {% endif %}
-    </ul>
-  </nav>
-  <div class="highlight col box main">
-    {% if category %}
-    <h2 class="{{category.slug }}">{{ category.name }}</h2>
-    {% else %}
-    <h2 class="all">All templates</h2>
-    {% endif %}
-
-    {% include "includes/order_form.html" %}
-
-    {% include "includes/template_list.html" %}
+      {# include "includes/order_form.html" #}
+      {% include "includes/template_list.html" %}
+    </div>
 
   </div>
 </div>
+
 {% endblock content %}
-
-
-{% if category %}<a class="cta" href="{{ url('project_category_join', slug=category.slug) }}">Join this Category</a>{% endif %}

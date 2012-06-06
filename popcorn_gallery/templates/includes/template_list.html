@@ -1,28 +1,24 @@
 {% if template_list %}
-<ul class="columns submissions">
-  {% for template in template_list %}
-  <li class="col box">
-    <article>
-      <a class="title" href="{{ template.get_absolute_url() }}">
-        <h3 class="title wimper">
-          <div class="frame box">
-            {% if template.thumbnail %}
-            <img src="{{ template.thumbnail.url }}" alt="" />
-            {% else %}
-            <img src="{{ STATIC_URL }}images/popcorn-placeholder.png" alt="" />
-            {% endif %}
-          </div>
-          {{ template.name }}
-        </h3>
-      </a>
-      <p>{{ template.description }}</p>
-      {% if with_author %}
-      <address>
-        <p>Created by <a class="fn url" href="{{ url('users_profile', username=template.author.username) }}">{{ template.author.get_profile().display_name }}</a></p>
-      </address>
-    {% endif %}
-    </article>
-  </li>
-  {% endfor %}
-</ul>
+
+{% for template in template_list%}
+
+<div class="row-fluid">
+
+  <div class="span6">
+    <a href="{{ template.get_absolute_url() }}" class="thumbnail">
+      {% if template.thumbnail %}
+      <img src="{{ template.thumbnail.url }}" alt="" width="360" height="268"/>
+      {% else %}
+      <img src="{{ STATIC_URL }}images/popcorn-placeholder.png" alt="" width="360" height="268" />
+      {% endif %}
+    </a>
+    <div class="template-detail">
+      <h2>{{ template.name }}</h2>
+      <p class="project-desc">{{ template.description }} <a class="btn btn-success pull-right" href="{{ template.get_absolute_url() }}">make this</a></p>
+    </div>
+  </div>
+
+</div>
+
+{% endfor %}
 {% endif %}

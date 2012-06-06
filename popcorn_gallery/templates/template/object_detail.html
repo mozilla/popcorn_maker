@@ -3,59 +3,81 @@
 
 {% block title %}{{ template.name }} - {{ super() }}{% endblock title %}
 
-{% block body_attributes %}id="show_submission" class="entries"{% endblock body_attributes %}
 
 {% block content %}
-<a href="{{ url('template_list') }}" class="back wimper">{{ _('See all templates') }}</a>
-<article>
-  <h1 class="shout">{{ template.name }}</h1>
-  <ul class="user_tools">
-    <li><a href="{{ template.get_template_url() }}" class="cta do">{{ _('Make something with this template') }}</a></li>
-  </ul>
-  <div class="columns">
-    <div class="col box">
-      <div class="widgets">
-        <ul class="popularity">
-          <li>Votes: <span class="total_votes">{{ votes.score }}</span></li>
-        </ul>
-      </div>
-      <div class="description">
-        <h2 class="point">Description</h2>
-        <p>{{ template.description }}</p>
-        {% if template.thumbnail  %}
-        <p><img src="{{ template.thumbnail.url }}"  /></p>
-        {% endif %}
-      </div>
-      <div class="tags">
-        {{ tags.tag_list(tag_list) }}
+<div class="row-fluid">
+
+  <div class="hero-unit span 12">
+    <div class="span3">
+      <h1>{{ template.name }}</h1>
+      <br>
+      <p>               <i class="icon-arrow-left"></i>   by <a href="{{ template.author.get_absolute_url() }}">{{ template.author.get_profile().display_name }}</a></p>
+      <p>               <i class="icon-thumbs-up"></i>    {{ votes.score }} likes</p>
+
+      <p class="toppad">{{ template.description }}<p>
+        <a class="btn btn-success btn-larger" href="{{ template.get_template_url() }}">Make this!</a>
+    </div>
+
+
+    <div class="span8 well">
+      <ul class="breadcrumb">
+        <li>
+          <a href="{{ url('template_list') }}">Templates</a> <span class="divider">/</span>
+        </li>
+        {% for category in template.categories.all() %}
+        <li>
+          <a href="{{ category.get_absolute_url() }}">{{ category.name }}</a> <span class="divider">/</span>
+        </li>
+        {% endfor %}
+        <li class="active">Pop Up</li>
+      </ul>
+      <div class="row-fluid">
+        <div class="span12">
+          <a href="{{ template.get_template_url() }}" class="thumbnail">
+            {% if template.thumbnail  %}
+            <img src="{{ template.thumbnail.url }}" alt=""  width="480" height="270" />
+            {% else %}
+            <img src="http://placehold.it/480x270" alt="" width="480" height="270">
+            {% endif %}
+          </a>
+
+          <div class="template-detail">
+            <h2>{{ template.name }}</h2>
+            <p class="project-desc">{{ template.description }} <a class="btn btn-success pull-right" href="{{ template.get_template_url() }}">make this</a></p>
+          </div>
+        </div>
       </div>
     </div>
-    <aside class="col box">
-      <section class="widgets">
-        <h2 class="wimper">Vote</h2>
-        {% if user.is_authenticated() %}
-        {% if user_vote and user_vote.is_upvote %}
-        <form action="{{ url('vote', model='template', object_id=template.pk, direction='clear') }}" method="POST" id="user_vote">
-          {{ csrf() }}
-          <input type="submit" class="cancel cta do" value="{{ _('Clear my vote') }}" />
-        </form>
-        {% else %}
-        <form action="{{ url('vote', model='template', object_id=template.pk, direction='up') }}" method="POST" id="user_vote">
-          {{ csrf()|safe }}
-          <input type="submit" class="thumb cta do" value="{{ _('Give this a thumbs up') }}" />
-        </form>
-        {% endif %}
-        {% else %}
-        <p>To upvote this submission, please login or register for Mozilla Ignite.</p>
-        {% endif %}
-      </section>
-    </aside>
+    <div class="span9 pull-right">
+      comments go here
+    </div>
   </div>
-  <!-- END .columns -->
-</article>
+</div>
+{% endblock content %}
+
+
+{# Missing content #}
 
 <h1>Related Projects</h1>
 {% set with_author = True %}
-{% include "includes/project_list.html" %}
+{# include "includes/project_list.html" #}
 
-{% endblock content %}
+
+<h2 class="wimper">Vote</h2>
+{% if user.is_authenticated() %}
+{% if user_vote and user_vote.is_upvote %}
+<form action="{{ url('vote', model='template', object_id=template.pk, direction='clear') }}" method="POST" id="user_vote">
+  {{ csrf() }}
+  <input type="submit" class="cancel cta do" value="{{ _('Clear my vote') }}" />
+</form>
+{% else %}
+<form action="{{ url('vote', model='template', object_id=template.pk, direction='up') }}" method="POST" id="user_vote">
+  {{ csrf()|safe }}
+  <input type="submit" class="thumb cta do" value="{{ _('Give this a thumbs up') }}" />
+</form>
+{% endif %}
+{% else %}
+<p>To upvote this submission, please login or register.</p>
+{% endif %}
+
+{{ tags.tag_list(tag_list) }}
