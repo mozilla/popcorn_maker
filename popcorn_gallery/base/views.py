@@ -6,7 +6,8 @@ from ..popcorn.models import Project, Template
 
 
 def homepage(request):
-    context = {}
+    project_list = Project.live.filter(is_featured=True)[:3]
+    context = {'project_list': project_list}
     return render(request, 'homepage.html', context)
 
 

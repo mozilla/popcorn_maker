@@ -40,32 +40,26 @@ Welcome to Popcorn, understand it, make something cool, see what's happening
 
   <div class="span7">
     <h2>Recent projects</h2>
-
     <div class="row-fluid toppad">
+      {% for project in project_list %}
       <div class="span4">
         <div>
-          <a href="#TODO" class="thumbnail"> <img src="http://placehold.it/288x175" alt=""> </a>
-          <h5 class="toppad">Visions of Students Today</h5>
-          <p class="beta">created by <a href="#TODO">this guy</a></p>
-          <p class="project-desc">Collage video remix uses popcorn to popup video samples and provide links</p>
+          <a href="{{ project.get_absolute_url() }}" class="thumbnail">
+            {% if project.thumbnail %}
+            <img src="{{ project.thumbnail.url }}" alt="">
+            {% else %}
+            <img src="http://placehold.it/288x175" alt="">
+            {% endif %}
+          </a>
+          <h5 class="toppad">{{ project.name }}</h5>
+          <p class="beta">created by <a href="{{ project.author.get_absolute_url() }}">{{ project.author.get_profile().display_name }}</a></p>
+          <p class="project-desc">{{ project.description }}</p>
         </div>
       </div><!--/span-->
-
-      <div class="span4">
-        <div> <a href="#TODO" class="thumbnail"> <img src="http://placehold.it/288x175" alt=""> </a>
-          <h5 class="toppad">Visions of Students Today</h5>
-          <p class="beta">created by <a href="#TODO">this guy</a></p>
-          <p class="project-desc">Collage video remix uses popcorn to popup video samples and provide links</p>
-        </div>
-      </div><!--/span-->
-
-      <div class="span4">
-        <div> <a href="#TODO"  class="thumbnail"> <img src="http://placehold.it/288x175" alt=""> </a>
-          <h5 class="toppad">Visions of Students Today</h5>
-          <p class="beta">created by <a href="#TODO">this guy</a></p>
-          <p class="project-desc">Collage video remix uses popcorn to popup video samples and provide links</p>
-        </div>
-      </div><!--/span-->
+      {% endfor %}
+      {% if not project_list %}
+      There are not featured projects at the moment.
+      {% endif %}
     </div><!--/row-->
   </div><!--/span-->
 </div><!--/row-->
