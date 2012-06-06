@@ -18,7 +18,7 @@
           </ul>
         </div>
         {% else %}
-        <div>
+        <div class="pull-right">
           <a class="browserid" id="browserid" href="{{ url('login') }}">Sign In</a>
           <form method="POST" action="{{ browserid_target }}">
             {{ csrf() }}
