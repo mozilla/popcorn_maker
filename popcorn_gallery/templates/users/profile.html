@@ -3,17 +3,19 @@
 
 {% block title -%}{{ profile.display_name }} - Users - {{ super() }}{% endblock -%}
 
-{% block body_attributes %}id="user_profile" class="profile"{% endblock body_attributes %}
-
 {% block content -%}
-<div class="content_columns columns">
-  <div class="col main box">
-    {% include "includes/user_bio.html" %}
-    <a href="{{ url('template_list') }}" class="cta">{{ _('Create an project') }}</a>
-  </div>
+
+<div class="row-fluid">
+  {% include "includes/user_bio.html" %}
 </div>
 
-<h2 class="wimper">{{ _('Projects') }}</h2>
-{% include "includes/project_list.html" %}
+<div class="row-fluid">
+  <div class="span12">
+    <h2 class="leftpad">My projects</h2>
+    <br>
+    <p><a class="btn btn-success btn-large" href="{{ url('template_list') }}">New project ></a></p>
+  </div><!--/row-->
+
+</div><!--/row-->
 
 {% endblock content -%}

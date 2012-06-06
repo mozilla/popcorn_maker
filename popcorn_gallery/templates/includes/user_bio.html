@@ -1,19 +1,22 @@
-<header class="vcard">
-  <h1 class="fn">{{ profile.display_name }}</h1>
-  {% if profile.website %}
-  <a href="{{ profile.website }}" class="url">{{ profile.website }}</a>
-  {% endif %}
-  {% if profile.bio %}
-  <p>{{ profile.bio }}</p>
-  {% endif %}
-  {% if profile.user == request.user %}
-  <ul class="user_tools">
-    <li>
-      <a href="{{ url('users_edit') }}" class="cta do">{{ _('Edit your profile') }}</a>
-    </li>
-  </ul>
-  {% endif %}
-  <div class="frame box">
-    <img class="photo" src="{{ profile.gravatar_url }}" alt="" width="80" height="80" />
+<div class="hero-unit span 12">
+  <div class="span5">
+    <h1>{{ profile.display_name }}</h1>
+    <img src="{{ profile.gravatar_url }}" width="80" height="80" style="padding-right:10px; padding-top: 10px;" class="pull-left">
+    {% if profile.bio %}
+    <p class="toppad"><em>{{ profile.bio }}</em></p>
+    {% endif %}
+    {% if profile.website %}
+    <p class="toppad"><a href="{{ profile.website }}" class="url">{{ profile.website }}</a></p>
+    {% if profile.user == request.user %}
+    <a class="btn btn-success btn-larger" href="{{ url('users_edit') }}">Edit your profile!</a>
+    {% endif %}
+    {% endif %}
   </div>
-</header>
+
+  <div class="span7">
+    <div class="textcenter">
+      <!--
+          <img src="img/popcornshot.png" class="center">                        -->
+    </div><!--center-->
+  </div>
+</div>

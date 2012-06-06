@@ -192,6 +192,9 @@ class Project(models.Model):
     def get_delete_url(self):
         return self.get_permalink_for('user_project_delete')
 
+    def get_fork_url(self):
+        return self.get_permalink_for('user_project_fork')
+
     @models.permalink
     def get_api_url(self):
         return ('api:project_detail', [self.uuid])
