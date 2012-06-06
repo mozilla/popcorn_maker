@@ -498,7 +498,7 @@ class TemplateIntegrationTest(TestCase):
         self.category = create_template_category(is_featured=True)
 
     def tearDown(self):
-        for model in [Template, TemplateCategory]:
+        for model in [Template, TemplateCategory, User]:
             model.objects.all().delete()
 
     @suppress_locale_middleware
@@ -578,17 +578,53 @@ class TemplateIntegrationTest(TestCase):
     @suppress_locale_middleware
     def test_template_config_hidden(self):
         template = create_template(status=Template.HIDDEN)
-        response = self.client.get(reverse('template_summary',
+        response = self.client.get(reverse('template_config',
                                            args=[template.slug]))
         eq_(response.status_code, 404)
 
     @suppress_locale_middleware
     def test_template_config(self):
-        template = create_template()
-        response = self.client.get(reverse('template_summary',
+        template = create_template(status=Template.LIVE)
+        response = self.client.get(reverse('template_config',
                                            args=[template.slug]))
         eq_(response.status_code, 200)
-        eq_(response.context['template'], template)
+        response = json.loads(response.content)
+        ok_('savedDataUrl' in response)
+        ok_('baseDir' in response)
+        ok_('name' in response)
+
+
+class TemplateAuthorIntegrationTest(TestCase):
+
+    def setUp(self):
+        self.user = create_user('bob', with_profile=True)
+        self.client.login(username=self.user.username, password='bob')
+        self.template = create_template(author=self.user, status=Project.HIDDEN)
+
+    def tearDown(self):
+        self.client.logout()
+        for model in [Template, User]:
+            model.objects.all().delete()
+
+    @suppress_locale_middleware
+    def test_template_summary(self):
+        response = self.client.get(reverse('template_summary',
+                                           args=[self.template.slug]))
+        eq_(response.status_code, 200)
+        eq_(response.context['template'], self.template)
+
+    @suppress_locale_middleware
+    def test_template_detail(self):
+        response = self.client.get(reverse('template_detail',
+                                           args=[self.template.slug]))
+        eq_(response.status_code, 200)
+        ok_('<!DOCTYPE html5>' in response.content)
+
+    @suppress_locale_middleware
+    def test_template_config(self):
+        response = self.client.get(reverse('template_config',
+                                           args=[self.template.slug]))
+        eq_(response.status_code, 200)
 
 
 class TestCategoryMembershipIntegrationTest(TestCase):

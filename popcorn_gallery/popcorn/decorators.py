@@ -4,7 +4,7 @@ import re
 from django.http import Http404
 
 from .baseconv import base62
-from .models import Project
+from .models import Project, Template
 
 
 def valid_user_project(url_args):
@@ -59,6 +59,19 @@ def is_popcorn_project(func):
         if not project.template:
             raise Http404
         return func(request, project, *args, **kwargs)
+    return wrapper
+
+
+def valid_template(func):
+    @functools.wraps(func)
+    def wrapper(request, slug, *args, **kwargs):
+        try:
+            template = Template.objects.get(slug=slug)
+        except Template.DoesNotExist:
+            raise Http404
+        if not template.is_published and not request.user == template.author:
+            raise Http404
+        return func(request, template, *args, **kwargs)
     return wrapper
 
 

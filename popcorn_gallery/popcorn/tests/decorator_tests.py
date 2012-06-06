@@ -8,9 +8,9 @@ from django.http import Http404, HttpResponseForbidden
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from .fixtures import create_user, create_project
+from .fixtures import create_user, create_project, create_template
 from ..models import Template, Project
-from ..decorators import valid_user_project
+from ..decorators import valid_user_project, valid_template
 
 
 anon_user = AnonymousUser()
@@ -66,7 +66,6 @@ class TestValidProjectDecorator(TestCase):
         request.user = anon_user
         response = view_mock(request, username=self.user.username,
                              shortcode=project.shortcode)
-        ok_(isinstance(response, HttpResponseForbidden))
 
     @tools.raises(Http404)
     def test_removed_project(self):
@@ -92,3 +91,49 @@ class TestValidProjectDecorator(TestCase):
         request.user = alex
         view_mock(request, username=self.user.username,
                   shortcode=project.shortcode)
+
+
+@valid_template
+def view_template(request, template):
+    """Mock of a view"""
+    return template
+
+
+class TestValidTemplateDecorator(TestCase):
+
+    def setUp(self):
+        self.user = create_user('bob')
+        self.factory = RequestFactory()
+
+    def tearDown(self):
+        for model in [Template, User]:
+            model.objects.all().delete()
+
+    def test_published_template(self):
+        template = create_template(author=self.user, status=Template.LIVE)
+        request = self.factory.get('/')
+        request.user = anon_user
+        response= view_template(request, slug=template.slug)
+        eq_(response, template)
+
+    @tools.raises(Http404)
+    def test_unpublished_template(self):
+        template = create_template(author=self.user, status=Template.HIDDEN)
+        request = self.factory.get('/')
+        request.user = anon_user
+        view_template(request, slug=template.slug)
+
+    def test_unpublished_owner(self):
+        template = create_template(author=self.user, status=Template.HIDDEN)
+        request = self.factory.get('/')
+        request.user = self.user
+        response = view_template(request, slug=template.slug)
+        eq_(response, template)
+
+    @tools.raises(Http404)
+    def test_unpublished_other_user(self):
+        alex = create_user('alex')
+        template = create_template(author=self.user, status=Template.HIDDEN)
+        request = self.factory.get('/')
+        request.user = alex
+        view_template(request, slug=template.slug)

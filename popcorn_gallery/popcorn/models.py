@@ -114,6 +114,10 @@ class Template(models.Model):
                 return asset.asset
         return None
 
+    @property
+    def is_published(self):
+        return self.status == self.LIVE
+
 
 class TemplateCategory(models.Model):
     name = models.CharField(max_length=255)

@@ -150,6 +150,7 @@ INVALID_USERNAMES = (
 PROJECT_ROOT = path('')
 
 # Valid domains for popcorn, must be lowercase
+
 POPCORN_VALID_DOMAINS = (
     'mozillapopcorn.org',
     'www.youtube.com',
@@ -157,6 +158,7 @@ POPCORN_VALID_DOMAINS = (
     'vimeo.com',
     'local.mozillapopcorn.org',
     'popcornmaker-dev.allizom.org',
+    'popcornjs.org',
     )
 
 EMAIL_BACKEND = 'django_mailer.smtp_queue.EmailBackend'

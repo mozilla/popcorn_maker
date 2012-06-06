@@ -16,7 +16,7 @@ from tower import ugettext as _
 from voting.models import Vote
 
 from ..decorators import (valid_user_project, is_popcorn_project,
-                          add_csrf_token)
+                          add_csrf_token, valid_template)
 from ..forms import (ProjectEditForm, ExternalProjectEditForm,
                      ProjectSubmissionForm, OrderingForm)
 from ..models import (Project, ProjectCategory, Template, TemplateCategory,
@@ -216,24 +216,15 @@ def template_list(request, slug=None):
     return render(request, 'template/object_list.html', context)
 
 
-def get_template_or_404(slug):
-    """Returns a template if avaliable, else 404"""
-    try:
-        template = Template.live.get(slug=slug)
-    except Template.DoesNotExist:
-        raise Http404
-    return template
-
-
 @add_csrf_token
-def template_detail(request, slug):
-    template = get_template_or_404(slug)
+@valid_template
+def template_detail(request, template):
     return HttpResponse(smart_unicode(template.template_content))
 
 
-def template_summary(request, slug):
+@valid_template
+def template_summary(request, template):
     """Summary of a ``Template`` agregates metadata for the template"""
-    template = get_template_or_404(slug)
     update_views_count(template)
     category_list = TemplateCategory.objects.filter(is_featured=True)
     project_list = Project.live.filter(template=template)[:5]
@@ -251,10 +242,9 @@ def template_summary(request, slug):
         }
     return render(request, 'template/object_detail.html', context)
 
-
-def template_config(request, slug):
+@valid_template
+def template_config(request, template):
     """Initialization data ``Template`` specific"""
-    template = get_template_or_404(slug)
     return template_config_response(template)
 
 
@@ -271,7 +261,7 @@ def template_config_response(template):
     return HttpResponse(json.dumps(data), mimetype='application/json')
 
 
-def template_metadata(request, slug):
-    template = get_template_or_404(slug)
+@valid_template
+def template_metadata(request, template):
     response = template.metadata if template.metadata else "{}"
     return HttpResponse(response, mimetype='application/json')
