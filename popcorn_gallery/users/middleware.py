@@ -11,7 +11,7 @@ class ProfileMiddleware(object):
                   'users_profile_add_link', 'users_profile_links',
                   'users_profile_delete_link', 'create_entry')
 
-    safe_path = ('__debug__', '/admin/', '/api/', '/logout/')
+    safe_path = ('__debug__', '/admin/', '/api/', '/logout/', '/static/')
 
     def is_safe_view(self, path):
         try:
