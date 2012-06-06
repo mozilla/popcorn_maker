@@ -128,7 +128,7 @@ def user_project_summary(request, project):
         'votes': votes,
         'user_vote': user_vote,
         }
-    return render(request, 'project/summary.html', context)
+    return render(request, 'project/object_detail.html', context)
 
 def project_list(request, slug=None):
     if slug:

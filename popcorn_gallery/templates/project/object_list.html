@@ -13,32 +13,39 @@
 
 
 {% block content %}
-<div class="content_columns columns with_nav">
-  <nav class="col box nav">
-    <ul>
-      <li><a{% if not category %} class="current wimper"{% endif %} href="{{ url('project_list') }}">All projects</a></li>
-      {% if category_list %}
-      {% for cat in category_list %}
-      <li>
-        <a{% if category == cat %} class="current wimper"{% endif %} href="{{ cat.get_absolute_url() }}">{{ cat.name }}</a><br>
-      </li>
-      {% endfor %}
+<h1 class="leftpad">Made with Popcorn</h1>
+<div class="row-fluid">
+  <div class="hero-unit span 12">
+    <div class="span3">
+
+      <div>
+        <ul class="nav2 nav-tabs nav-stacked">
+          <li class="nav-header">Projects</li>
+          <li class="{% if not category %}active{% endif %}"><a href="{{ url('project_list') }}">All</a></li>
+          {% for cat in category_list %}
+          <li class="{% if category == cat %}active{% endif %}"><a href="{{ cat.get_absolute_url() }}">{{ cat.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <p><a class="btn btn-success btn-larger" href="{{ url('template_list') }}">New project &gt;</a></p>
+      {% if category %}
+      <p><a class="btn btn-success btn-larger" href="{{ url('project_category_join', slug=category.slug) }}">Join this Category</a></p>
       {% endif %}
-    </ul>
-  </nav>
-  <div class="highlight col box main">
-    {% if category %}
-    <h2 class="{{category.slug }}">{{ category.name }}</h2>
-    {% else %}
-    <h2 class="all">All ideas</h2>
-    {% endif %}
+    </div>
 
-    {% include "includes/order_form.html" %}
+    <div class="span8 well">
+      {% if category %}
+      <h2 class="{{category.slug }}">{{ category.name }}</h2>
+      {% else %}
+      <h2>All projects</h2>
+      {% endif %}
 
-    {% set with_author = True %}
-    {% include "includes/project_list.html" %}
+      {% include "includes/project_list.html" %}
 
+    </div>
   </div>
-  {% if category %}<a class="cta" href="{{ url('project_category_join', slug=category.slug) }}">Join this Category</a>{% endif %}
 </div>
 {% endblock %}
+
+{# missing elements #}
+{# include "includes/order_form.html" #}

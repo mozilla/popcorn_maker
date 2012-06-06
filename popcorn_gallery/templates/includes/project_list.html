@@ -1,37 +1,21 @@
 {% if project_list  %}
-<ul class="columns submissions">
-  {% for project in project_list %}
-  <li class="col box">
-    <article>
-      <a class="title" href="{{ project.get_absolute_url() }}">
-        <h3 class="title wimper">
-          <div class="frame box">
-            {% if project.thumbnail %}
-            <img src="{{ project.thumbnail.url }}" alt="" />
-            {% else %}
-            <img src="{{ STATIC_URL }}images/popcorn-placeholder.png" alt="" />
-            {% endif %}
-          </div>
-          {{ project.name }}
-        </h3>
-      </a>
-      <p>{{ project.description }}</p>
-      {% if with_author %}
-      <address>
-        <p>Created by <a class="fn url" href="{{ url('users_profile', username=project.author.username) }}">{{ project.author.get_profile().display_name }}</a></p>
-      </address>
-    {% endif %}
-    </article>
-    {# User is the owner and the project is not published #}
-    {% if request.user == project.author and not project.is_published %}
-    <div class="alerts inline">
-      <p><strong>Unpublished project</strong></p>
-      <p>Only you can see this until you publish your project</p>
-      <a href="{{ project.get_edit_url() }}" class="cta do">Edit your project</a>
-    </div>
-    {% endif %}
-  </li>
-  {% endfor %}
-</ul>
-{% endif %}
+{% for project in project_list %}
+<div class="row-fluid">
+  <div class="span4">
+    <a href="{{ project.get_absolute_url() }}" class="thumbnail">
+      {% if project.thumbnail %}
+      <img src="{{ project.thumbnail.url }}" alt="" />
+      {% else %}
+      <img src="http://placehold.it/360x268" alt="">
+      {% endif %}
+    </a>
 
+    <div class="template-detail">
+      <h2>{{ project.name }}</h2>
+      <p class="enforced-font">by <a href="{{ project.author.get_absolute_url() }}">{{ project.author.get_profile().display_name }}</a></p>
+      <p class="project-desc">{{ project.description }}<p>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endif %}

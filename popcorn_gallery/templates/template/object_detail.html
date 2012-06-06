@@ -16,6 +16,23 @@
 
       <p class="toppad">{{ template.description }}<p>
         <a class="btn btn-success btn-larger" href="{{ template.get_template_url() }}">Make this!</a>
+        <div class="vote">
+          {% if user.is_authenticated() %}
+          {% if user_vote and user_vote.is_upvote %}
+          <form action="{{ url('vote', model='template', object_id=template.pk, direction='clear') }}" method="POST" id="user_vote">
+            {{ csrf() }}
+            <input type="submit" class="cancel cta do" value="{{ _('Clear my vote') }}" />
+          </form>
+          {% else %}
+          <form action="{{ url('vote', model='template', object_id=template.pk, direction='up') }}" method="POST" id="user_vote">
+            {{ csrf()|safe }}
+            <input type="submit" class="thumb cta do" value="{{ _('Give this a thumbs up') }}" />
+          </form>
+          {% endif %}
+          {% else %}
+          <p>To upvote this submission, please login or register.</p>
+          {% endif %}
+        </div>
     </div>
 
 
@@ -29,7 +46,7 @@
           <a href="{{ category.get_absolute_url() }}">{{ category.name }}</a> <span class="divider">/</span>
         </li>
         {% endfor %}
-        <li class="active">Pop Up</li>
+        <li class="active">{{ template.name }}</li>
       </ul>
       <div class="row-fluid">
         <div class="span12">
@@ -61,23 +78,5 @@
 <h1>Related Projects</h1>
 {% set with_author = True %}
 {# include "includes/project_list.html" #}
-
-
-<h2 class="wimper">Vote</h2>
-{% if user.is_authenticated() %}
-{% if user_vote and user_vote.is_upvote %}
-<form action="{{ url('vote', model='template', object_id=template.pk, direction='clear') }}" method="POST" id="user_vote">
-  {{ csrf() }}
-  <input type="submit" class="cancel cta do" value="{{ _('Clear my vote') }}" />
-</form>
-{% else %}
-<form action="{{ url('vote', model='template', object_id=template.pk, direction='up') }}" method="POST" id="user_vote">
-  {{ csrf()|safe }}
-  <input type="submit" class="thumb cta do" value="{{ _('Give this a thumbs up') }}" />
-</form>
-{% endif %}
-{% else %}
-<p>To upvote this submission, please login or register.</p>
-{% endif %}
 
 {{ tags.tag_list(tag_list) }}

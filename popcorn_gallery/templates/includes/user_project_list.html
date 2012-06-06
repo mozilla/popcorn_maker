@@ -1,15 +1,14 @@
 {% if project_list %}
 <div class="row-fluid toppad">
   <div class="leftpad">
-
     {% for project in project_list %}
     <div class="span2">
       <div>
         <a href="{{ project.get_absolute_url() }}" class="thumbnail">
           {% if project.thumbnail %}
-          <img src="{{ project.thumbnail.url }}" alt="" width="288" height="175">
+          <img src="{{ project.thumbnail.url }}" alt="">
           {% else %}
-          <img src="http://placehold.it/288x175" alt="" width="288" height="175">
+          <img src="http://placehold.it/288x175" alt="">
           {% endif %}
         </a>
         <h5 class="toppad">{{ project.name }}</h5>
