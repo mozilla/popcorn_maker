@@ -122,7 +122,9 @@ class Template(models.Model):
 class TemplateCategory(models.Model):
     name = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from='name')
-    is_featured = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False,
+        help_text=_(u'Determines if the category appears in the Templates '
+                    'homepage'))
 
     class Meta:
         verbose_name_plural = u'Template Categories'
@@ -239,7 +241,9 @@ class Project(models.Model):
 class ProjectCategory(models.Model):
     name = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from='name')
-    is_featured = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False,
+        help_text=_(u'Determines if the category appears in the Projects '
+                    'homepage'))
 
     class Meta:
         verbose_name_plural = u'Project Categories'
