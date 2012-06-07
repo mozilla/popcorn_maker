@@ -1,8 +1,9 @@
 from django.test import TestCase
 
 from nose.tools import ok_, eq_
+from .fixtures import HTML_EXPORT
 from ..templates import (prepare_template_stream, get_absolute_url,
-                         remove_default_values)
+                         remove_default_values, prepare_project_stream)
 
 
 class PrepareTemplateTest(TestCase):
@@ -63,3 +64,12 @@ class TestRemoveDefaultValues(TestCase):
         data = '{"baseDir": "", "name": "", "savedDataUrl": ""}'
         result = remove_default_values(data)
         eq_(result, "{}")
+
+
+class TestSanitizeProjectHTML(TestCase):
+
+    base_url = '/static/'
+
+    def test_prepare_project_stream(self):
+        result = prepare_project_stream(HTML_EXPORT, self.base_url)
+        assert False, result

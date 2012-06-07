@@ -11,6 +11,7 @@ class ProjectForm(forms.Form):
     """Form used to validate the data sent through the API."""
     name = forms.CharField()
     data = PopcornJSONField()
+    html = forms.CharField()
     template = forms.ModelChoiceField(queryset=Template.live.all(),
                                       empty_label=None,
                                       to_field_name='slug')

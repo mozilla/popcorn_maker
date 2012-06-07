@@ -27,7 +27,7 @@ def get_project_data(cleaned_data):
     return {
         'name': cleaned_data['name'],
         'metadata': cleaned_data['data'],
-        'html': '',
+        'html': cleaned_data['html'],
         'template': cleaned_data['template'],
         }
 
@@ -70,6 +70,7 @@ def project_detail(request, project):
         if form.is_valid():
             project.name = form.cleaned_data['name']
             project.metadata = form.cleaned_data['data']
+            project.html = form.cleaned_data['html']
             project.save()
             response = {
                 'error': 'okay',

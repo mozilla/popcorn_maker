@@ -9,25 +9,27 @@ from django_extensions.db.fields import json
 from html5lib import treebuilders
 from html5lib.serializer import htmlserializer
 
-
-BUTTER_ASSETS = {
-    'butter.js': 'src/',
-    'butter.ui.css': 'css/',
-    }
+from .constants import POPCORN_JS_ASSETS, BUTTER_ASSETS
 
 
-def get_butter_library(src):
+def get_popcorn_plugins(template):
+    """Determines from a template which popcorn plugins are required"""
+    pass
+
+
+def get_library_path(src, asset_list):
     """Determines if the element linked is a valid ``butter`` library"""
     if not src:
         return None
     # Is it already a valid URL?
     url = urlparse(src)
     if url.netloc:
-        return None
+        return src
     # Is this part of butter?
-    filename = src.split('/')[-1]
-    if filename in BUTTER_ASSETS:
-        return settings.STATIC_URL + BUTTER_ASSETS[filename] + filename
+    for asset in asset_list:
+        # Asset is part of butter
+        if asset in src:
+            return settings.STATIC_URL + asset
     return None
 
 
@@ -45,12 +47,7 @@ def prepare_template_stream(stream, base_url):
     tree = treebuilders.getTreeBuilder('lxml')
     parser = html5lib.HTMLParser(tree=tree, namespaceHTMLElements=False)
     document_tree = parser.parse(stream)
-    script_elements = document_tree.xpath('//script[@src]')
-    for script in script_elements:
-        src = script.get('src')
-        butter_library = get_butter_library(src)
-        if butter_library:
-            script.set('src', butter_library)
+    update_butter_links(document_tree)
     make_links_absolute(document_tree, base_url)
     return _serialize_stream(document_tree)
 
@@ -102,9 +99,36 @@ def make_links_absolute(document_tree, base_url):
             element.set(attr, url)
     return document_tree
 
+def update_butter_links(document_tree):
+    script_elements = document_tree.xpath('//script[@src]')
+    asset_list = POPCORN_JS_ASSETS + BUTTER_ASSETS
+    for script in script_elements:
+        src = script.get('src')
+        # Determine if the asset is part of Butter or Popcorn
+        asset_path = get_library_path(src, asset_list)
+        if asset_path:
+            script.set('src', asset_path)
+    return document_tree
 
 def get_absolute_url(base_url, path):
     url = urlparse(path)
     if url.netloc:
         return path
     return urljoin(base_url, path)
+
+
+def remove_invalid_links(document_tree, base_url):
+    """Removes any link that is not part of the base url or whitelisted domains"""
+    pass
+
+
+def prepare_project_stream(stream, base_url):
+    """ Sanitizes a butter HTML export by:
+     - Strip any malicious tag and all JS.
+     - Allow only internal and whitelisted URLs
+    """
+    stream = force_unicode(stream) if stream else u''
+    tree = treebuilders.getTreeBuilder('lxml')
+    parser = html5lib.HTMLParser(tree=tree, namespaceHTMLElements=False)
+    document_tree = parser.parse(stream)
+    return _serialize_stream(document_tree)

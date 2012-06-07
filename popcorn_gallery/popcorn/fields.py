@@ -1,10 +1,12 @@
 import re
 import bleach
+import html5lib
 import urlparse
 
 from django import forms
 from django.conf import settings
 
+from html5lib import sanitizer
 from django_extensions.db.fields import json
 
 

@@ -278,5 +278,5 @@ class ProjectCategoryMembership(models.Model):
 
     def __unicode__(self):
         return u'%s membership for %s: %s' %(self.project_category,
-                                                self.user,
-                                                self.get_status_display())
+                                             self.user,
+                                             self.get_status_display())
