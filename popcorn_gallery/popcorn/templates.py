@@ -2,19 +2,17 @@ import html5lib
 
 from urlparse import urlparse, urljoin
 
+
 from django.conf import settings
 from django.utils.encoding import force_unicode
 
 from django_extensions.db.fields import json
 from html5lib import treebuilders
 from html5lib.serializer import htmlserializer
+from lxml.html import html5parser, builder as E
 
 from .constants import POPCORN_JS_ASSETS, BUTTER_ASSETS
-
-
-def get_popcorn_plugins(template):
-    """Determines from a template which popcorn plugins are required"""
-    pass
+from .sanitize import clean
 
 
 def get_library_path(src, asset_list):
@@ -99,6 +97,7 @@ def make_links_absolute(document_tree, base_url):
             element.set(attr, url)
     return document_tree
 
+
 def update_butter_links(document_tree):
     script_elements = document_tree.xpath('//script[@src]')
     asset_list = POPCORN_JS_ASSETS + BUTTER_ASSETS
@@ -110,6 +109,7 @@ def update_butter_links(document_tree):
             script.set('src', asset_path)
     return document_tree
 
+
 def get_absolute_url(base_url, path):
     url = urlparse(path)
     if url.netloc:
@@ -117,18 +117,25 @@ def get_absolute_url(base_url, path):
     return urljoin(base_url, path)
 
 
-def remove_invalid_links(document_tree, base_url):
-    """Removes any link that is not part of the base url or whitelisted domains"""
-    pass
-
-
 def prepare_project_stream(stream, base_url):
-    """ Sanitizes a butter HTML export by:
-     - Strip any malicious tag and all JS.
-     - Allow only internal and whitelisted URLs
+    """ Sanitizes a butter HTML export
+     - Picks the plug-in required from the stream.
     """
     stream = force_unicode(stream) if stream else u''
     tree = treebuilders.getTreeBuilder('lxml')
     parser = html5lib.HTMLParser(tree=tree, namespaceHTMLElements=False)
     document_tree = parser.parse(stream)
-    return _serialize_stream(document_tree)
+    # plugins are relative
+    scripts = document_tree.xpath('//script[@src]')
+    plugins = [s.get('src') for s in scripts if not urlparse(s.get('src')).netloc]
+    # styles are relative
+    styles = document_tree.xpath('//link[@href]')
+    css = [s.get('href') for s in styles if not urlparse(s.get('href')).netloc]
+    clean_html = clean(stream)
+    html = E.HTML(
+        E.HEAD(
+            *[E.LINK(rel='stylesheet', href=u, type='text/css') for u in css] + [E.SCRIPT(src=u) for u in plugins]
+        ),
+        E.BODY(html5parser.fromstring(clean_html)),
+        )
+    return _serialize_stream(html)
