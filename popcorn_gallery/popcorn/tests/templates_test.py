@@ -72,4 +72,3 @@ class TestSanitizeProjectHTML(TestCase):
 
     def test_prepare_project_stream(self):
         result = prepare_project_stream(HTML_EXPORT, self.base_url)
-        assert False, result

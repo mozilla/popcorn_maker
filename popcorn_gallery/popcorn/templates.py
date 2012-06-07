@@ -4,12 +4,14 @@ from urlparse import urlparse, urljoin
 
 
 from django.conf import settings
+from django.template.loader import render_to_string
 from django.utils.encoding import force_unicode
+from django.utils.html import strip_tags
 
 from django_extensions.db.fields import json
 from html5lib import treebuilders
 from html5lib.serializer import htmlserializer
-from lxml.html import html5parser, builder as E
+from lxml.html import tostring
 
 from .constants import POPCORN_JS_ASSETS, BUTTER_ASSETS
 from .sanitize import clean
@@ -131,11 +133,19 @@ def prepare_project_stream(stream, base_url):
     # styles are relative
     styles = document_tree.xpath('//link[@href]')
     css = [s.get('href') for s in styles if not urlparse(s.get('href')).netloc]
-    clean_html = clean(stream)
-    html = E.HTML(
-        E.HEAD(
-            *[E.LINK(rel='stylesheet', href=u, type='text/css') for u in css] + [E.SCRIPT(src=u) for u in plugins]
-        ),
-        E.BODY(html5parser.fromstring(clean_html)),
-        )
-    return _serialize_stream(html)
+    # inline css
+    inline_css = []
+    for inline in document_tree.xpath('//style'):
+        inline_css.append(strip_tags(inline.text))
+        inline.getparent().remove(inline)
+    # remove script tags
+    for inline in document_tree.xpath('//script'):
+        inline.getparent().remove(inline)
+    body = [clean(tostring(b)) for b in document_tree.xpath('//body')]
+    context = {
+        'styles': css,
+        'scripts': plugins,
+        'inline_css': inline_css,
+        'body': body,
+        }
+    return render_to_string('project/skeleton.html', context)

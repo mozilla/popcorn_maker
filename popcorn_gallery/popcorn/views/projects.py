@@ -33,8 +33,11 @@ project_view = partial(valid_user_project(['username', 'shortcode']))
 @is_popcorn_project
 @add_csrf_token
 def user_project(request, project):
-    context = {'project': project, 'template': project.template}
-    return HttpResponse(smart_unicode(project.template.template_content))
+    if project.is_forkable:
+        response = project.template.template_content
+    else:
+        response = project.html
+    return HttpResponse(smart_unicode(response))
 
 
 @project_view

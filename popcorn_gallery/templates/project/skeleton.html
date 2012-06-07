@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    {% for item in styles %}
+    <link rel="stylesheet" href="{{ item }}" type="text/css" media="screen" />
+    {% endfor%}
+    {% for item in scripts %}
+    <script type="text/javascript" src="{{ item }}"></script>
+    {% endfor%}
+    <style type="text/css" media="screen">
+      {% for item in inline_css %}
+      {{ item }}
+      {% endfor %}
+    </style>
+  </head>
+  <body>
+    {% for item in body %}
+    {{ item|safe }}
+    {% endfor%}
+  </body>
+</html>
