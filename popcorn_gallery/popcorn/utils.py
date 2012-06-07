@@ -14,12 +14,16 @@ from voting.models import Vote
 from .storage import TemplateStorage
 
 
+def get_valid_file_regex(file_extensions):
+    valid_extensions = "|".join(file_extensions)
+    regex = '([-\.\w]+\.(?:%s))' % valid_extensions
+    return re.compile(regex)
+
+
 def get_valid_file_list(path_base, path_list, file_extensions):
     """Returns a list of valid files from the given path,
     with the right extension"""
-    valid_extensions = "|".join(file_extensions)
-    regex = '([-\.\w]+\.(?:%s))' % valid_extensions
-    pattern = re.compile(regex)
+    pattern = get_valid_file_regex(file_extensions)
     valid_file_list = []
     for current_path in path_list:
         for root, dirs, files in os.walk(current_path):
