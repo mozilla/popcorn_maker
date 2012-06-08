@@ -27,7 +27,7 @@ def is_valid_string(value):
 def validate_value(value):
     """Takes the value and runs it trough the defined validators"""
     if isinstance(value, basestring):
-        string_validators = [is_valid_url, is_valid_string]
+        string_validators = [is_valid_string]
         for validator in string_validators:
             value = validator(value)
     return value

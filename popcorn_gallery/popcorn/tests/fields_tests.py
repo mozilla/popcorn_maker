@@ -3,7 +3,7 @@ import random
 from django.test import TestCase
 from django import forms
 
-from nose.tools import eq_
+from nose.tools import eq_, ok_
 from ..forms import PopcornJSONField
 
 
@@ -51,17 +51,17 @@ class PopcornJSONFieldTests(TestCase):
         form = MockForm({'data': data})
         self.assertTrue(form.is_valid())
 
-    def test_invalid_url(self):
+    def test_url(self):
         data = get_data_fixtures()
         data['url'] = {'url': 'http://invalid.mozillapopcorn.org'}
         form = MockForm({'data': data})
-        self.assertFalse(form.is_valid())
+        ok_(form.is_valid())
 
-    def test_invalid_schemaless_url(self):
+    def test_schemaless_url(self):
         data = get_data_fixtures()
         data['url'] = {'field': '//invalid.mozillapopcorn.org'}
         form = MockForm({'data': data})
-        self.assertFalse(form.is_valid())
+        ok_(form.is_valid())
 
     def test_sanitized_body_html(self):
         evil_js = 'an <script>evil()</script> example'
