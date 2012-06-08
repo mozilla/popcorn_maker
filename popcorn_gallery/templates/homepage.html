@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 
 {% block title %}
-Welcome to Popcorn, understand it, make something cool, see what's happening
+Mozilla Popcorn: Web Video Outside the Box
 {% endblock title %}
 
 {% block content %}
 <div class="row-fluid">
-  <div class="hero-unit span 12">
+  <div class="hero-unit span 12 well">
     <div class="span5">
-      <h1>Video that works like<br> <em>the web</em></h1>
-      <p><strong>Thanks for helping us beta test Popcorn!</strong></p>
-      <p>You're getting a sneak peak at some free software that's
-        launching in November 2012. So let's make some interactive
-        media together. We look forward to your feedback.</p>
+      <h1><em>Web video</em> <br>outside the box</h1>
+      <p class="toppad"><strong>Thanks for helping us improve Popcorn!</strong></p>
+      <p class="toppad">You're previewing some free software that's
+        launching in November 2012. It's about 50% complete and we're looking for your ideas and feedback to make the software as awesome as possible.</p>
+        <p>You'll likely find bugs, but we're building the future of web video together. So let's make some Popcorn--we look forward to your feedback!</p>
       <p><a class="btn btn-success btn-larger" href="{{ url('template_list') }}">Get Started &gt;</a></p>
     </div>
 
     <div class="span7">
       <div class="textcenter">
-        <video width="80%" class="video-js center" poster="http://mozillapopcorn.org/wp-content/themes/popcorn/images/poster.png" id="myVideo" preload="none" controls="controls">
+        <video width="80%" class="video-js center" poster="{{ STATIC_URL }}/img/shot.jpg" id="myVideo" preload="none" controls="controls">
           <source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.webm" type="video/webm" />
           <source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.mp4" type="video/mp4" />
           <source src="http://mozillapopcorn.org/wp-content/themes/popcorn/video/popcornsite.ogv" type="video/ogg" />
@@ -30,7 +30,7 @@ Welcome to Popcorn, understand it, make something cool, see what's happening
 </div>
 
 <div class="row-fluid">
-  <div class="span5 leftpad">
+  <div class="span5 leftpad well">
     <h2>What's new?</h2>
     <br>
     <div class="textcenter"><img src="{{ STATIC_URL }}img/storycamp_logo.png" width="301px" class="toppad center"></div>
@@ -38,7 +38,7 @@ Welcome to Popcorn, understand it, make something cool, see what's happening
     <a class="btn" href="#TODO">learn more</a>
   </div>
 
-  <div class="span7">
+  <div class="span7 well">
     <h2>Recent projects</h2>
     <div class="row-fluid toppad">
       {% for project in project_list %}

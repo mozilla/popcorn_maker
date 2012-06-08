@@ -5,7 +5,7 @@
 
   {% if project %}{{ project.name  }}{% else %}{{ template.name }}{% endif %}
   <div class="editor-actions">
-    <button id="butter-header-save" title="Save your project">Save</button>
+    <button id="butter-header-save" class="btn" title="Save your project"><i class="icon-ok-sign">Save</button>
     <button id="butter-header-export" title="View and copy the raw data for your project">Export</button>
     <button id="butter-header-share" title="Generate a link to share this project with the world">Share</button>
     {% if user.is_authenticated() %}
