@@ -21,9 +21,11 @@ ALLOWED_TAGS = [
 
 ALLOWED_ATTRS = {
     "meta": ["charset", "name", "content"],
-    "*": ["class", "id"],
+    "*": ["class", "id", "data-butter", "data-butter-default"],
     "img": ["src", "width", "height"],
     "a": ["href"],
+    "video": ["src", "controls"],
+    "source": ["src"],
 }
 
 

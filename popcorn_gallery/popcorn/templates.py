@@ -124,7 +124,6 @@ def prepare_popcorn_string_from_project_data(project_data):
         corresponding to given project data
     """
     popcorn_string = ''
-
     try:
         media_list = project_data['media']
         popcorn_string += '<script>'
@@ -178,7 +177,7 @@ def prepare_project_stream(stream, base_url, metadata):
     # remove script tags
     for inline in document_tree.xpath('//script'):
         inline.getparent().remove(inline)
-    popcorn = prepare_popcorn_string_from_project_data(metadata) 
+    popcorn = prepare_popcorn_string_from_project_data(json.loads(metadata)) if metadata else ''
     body = [clean(tostring(b)) + popcorn for b in document_tree.xpath('//body')]
     context = {
         'styles': css,

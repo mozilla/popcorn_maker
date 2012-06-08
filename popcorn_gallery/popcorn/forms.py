@@ -21,7 +21,7 @@ class ProjectForm(forms.Form):
     def clean(self):
         template = self.cleaned_data.get('template')
         html = self.cleaned_data.get('html')
-        metadata = self.cleaned_data.get('metadata', {})
+        metadata = self.cleaned_data.get('data')
         if template and html:
             base_url = '%s%s/%s' % (settings.TEMPLATE_MEDIA_URL,
                                     template.author.username, template.slug)
