@@ -1,10 +1,11 @@
 from django.test import TestCase
 
 from nose.tools import ok_, eq_
-from .fixtures import HTML_EXPORT
+from .fixtures import HTML_EXPORT, METADATA_EXPORT
 from ..templates import (prepare_template_stream, get_absolute_url,
                          remove_default_values, prepare_project_stream)
 
+import re
 
 class PrepareTemplateTest(TestCase):
 
@@ -71,6 +72,15 @@ class TestSanitizeProjectHTML(TestCase):
     base_url = '/static/'
 
     def test_prepare_project_stream(self):
-        # TODO determine some initial metadata fixtures
-        metadata = {}
-        result = prepare_project_stream(HTML_EXPORT, self.base_url, metadata)
+        result = prepare_project_stream(HTML_EXPORT, self.base_url, {})
+
+class TestProjectPopcornScript(TestCase):
+    base_url = '/static/'
+
+    def test_prepare_project_stream(self):
+        result = prepare_project_stream(HTML_EXPORT, self.base_url, METADATA_EXPORT)
+        spaceless_result = re.sub(r'\s', '', result)
+        ok_('<script>(function(){varpopcorn=Popcorn.smart("#' + METADATA_EXPORT['media'][0]['target'] + '","' + METADATA_EXPORT['media'][0]['url'] + '"' in spaceless_result)
+        result = prepare_project_stream(HTML_EXPORT, self.base_url, {})
+        spaceless_result = re.sub(r'\s', '', result)
+        ok_('<script>(function(){varpopcorn=Popcorn(' not in spaceless_result)
