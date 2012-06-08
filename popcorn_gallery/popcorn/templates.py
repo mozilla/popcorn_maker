@@ -119,6 +119,43 @@ def get_absolute_url(base_url, path):
     return urljoin(base_url, path)
 
 
+def prepare_popcorn_string_from_project_data(project_data):
+    """ Prepares a script tag representing a Popcorn instance
+        corresponding to given project data
+    """
+    popcorn_string = ''
+
+    try:
+        media_list = project_data['media']
+        popcorn_string += '<script>'
+        for media in media_list:
+            track_list = media['tracks']
+
+            popcorn_string += '\n(function(){'
+            popcorn_string += '\nvar popcorn = Popcorn.smart( "#' + \
+                media['target'] + '", "' + \
+                media['url'] + '", {"frameAnimation":true} );'
+
+            for track in track_list:
+                track_event_list = track['trackEvents']
+                for track_event in track_event_list:
+                    popcorn_string += '\npopcorn.' + track_event['type'] + '({'
+                    options = track_event['popcornOptions']
+                    for prop in options:
+                        popcorn_string += '\n\t"' + prop + '": "' + str(options[prop]) + '",'
+                    if popcorn_string[-1:] == ',':
+                        popcorn_string = popcorn_string[:-1]
+                    popcorn_string += '\n});'
+
+            popcorn_string += '\n}());\n'
+        popcorn_string += '</script>'
+
+    except KeyError:
+        #TODO something should occur when invalid trackevent data is passed in perhaps
+        pass
+
+    return popcorn_string
+
 def prepare_project_stream(stream, base_url, metadata):
     """ Sanitizes a butter HTML export
      - Picks the plug-in required from the stream.
@@ -141,11 +178,13 @@ def prepare_project_stream(stream, base_url, metadata):
     # remove script tags
     for inline in document_tree.xpath('//script'):
         inline.getparent().remove(inline)
-    body = [clean(tostring(b)) for b in document_tree.xpath('//body')]
+    popcorn = prepare_popcorn_string_from_project_data(metadata) 
+    body = [clean(tostring(b)) + popcorn for b in document_tree.xpath('//body')]
     context = {
         'styles': css,
         'scripts': plugins,
         'inline_css': inline_css,
         'body': body,
         }
+
     return render_to_string('project/skeleton.html', context)

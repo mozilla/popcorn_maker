@@ -67,6 +67,63 @@ def create_project_category(**kwargs):
         defaults.update(kwargs)
     return ProjectCategory.objects.create(**defaults)
 
+METADATA_EXPORT = {
+    "targets": [{
+        "id": "Target0",
+        "name": "Target0",
+        "element": "Area1"
+    }, {
+        "id": "Target1",
+        "name": "Target1",
+        "element": "Area2"
+    }],
+    "media": [{
+        "id": "Media0",
+        "name": "Media0",
+        "url": "http://localhost:8888/external/popcorn-js/test/trailer.ogv",
+        "target": "main",
+        "duration": 64.541666,
+        "tracks": [{
+            "name": "Track0",
+            "id": "Track0",
+            "trackEvents": [{
+                "id": "TrackEvent0",
+                "type": "text",
+                "popcornOptions": {
+                    "start": 0,
+                    "end": 3,
+                    "text": "test",
+                    "target": "Area1",
+                    "escape": "",
+                    "multiline": ""
+                },
+                "track": "Track0",
+                "name": "TrackEvent0"
+            }]
+        }, {
+            "name": "Track1",
+            "id": "Track1",
+            "trackEvents": []
+        }, {
+            "name": "Track2",
+            "id": "Track2",
+            "trackEvents": [{
+                "id": "TrackEvent1",
+                "type": "text",
+                "popcornOptions": {
+                    "start": 1,
+                    "end": 2,
+                    "target": "Area2",
+                    "text": "Popcorn.js",
+                    "escape": "",
+                    "multiline": ""
+                },
+                "track": "Track2",
+                "name": "TrackEvent1"
+            }]
+        }]
+    }]
+}
 
 HTML_EXPORT = """
 <html><head><base href="http://local.mozillapopcorn.org/en-US/template/sample-template/"><link href="//www.google.com/uds/solutions/dynamicfeed/gfdynamicfeedcontrol.css" rel="stylesheet" type="text/css"><link href="//www.google.com/uds/solutions/dynamicfeed/gfdynamicfeedcontrol.css" rel="stylesheet" type="text/css"><script src="//english.wikipedia.org/w/api.php?action=parse&amp;props=text&amp;redirects&amp;page=Cape_Town&amp;format=json&amp;callback=wikiCallback1339091347081"></script><script src="//english.wikipedia.org/w/api.php?action=parse&amp;props=text&amp;redirects&amp;page=Cape_Town&amp;format=json&amp;callback=wikiCallback1339091346879"></script>
