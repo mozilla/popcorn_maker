@@ -21,10 +21,11 @@ class ProjectForm(forms.Form):
     def clean(self):
         template = self.cleaned_data.get('template')
         html = self.cleaned_data.get('html')
+        metadata = self.cleaned_data.get('metadata', {})
         if template and html:
             base_url = '%s%s/%s' % (settings.TEMPLATE_MEDIA_URL,
                                     template.author.username, template.slug)
-            self.cleaned_data['html'] = prepare_project_stream(html, base_url)
+            self.cleaned_data['html'] = prepare_project_stream(html, base_url, metadata)
         return self.cleaned_data
 
 

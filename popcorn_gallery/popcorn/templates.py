@@ -119,7 +119,7 @@ def get_absolute_url(base_url, path):
     return urljoin(base_url, path)
 
 
-def prepare_project_stream(stream, base_url):
+def prepare_project_stream(stream, base_url, metadata):
     """ Sanitizes a butter HTML export
      - Picks the plug-in required from the stream.
     """
