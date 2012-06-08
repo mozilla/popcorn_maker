@@ -33,11 +33,17 @@ project_view = partial(valid_user_project(['username', 'shortcode']))
 @is_popcorn_project
 @add_csrf_token
 def user_project(request, project):
-    if project.is_forkable:
+    if project.is_forkable or request.user == project.author:
         response = project.template.template_content
     else:
         response = project.html
     return HttpResponse(smart_unicode(response))
+
+
+@project_view
+@is_popcorn_project
+def user_project_preview(request, project):
+    return HttpResponse(smart_unicode(project.html))
 
 
 @project_view
@@ -132,6 +138,7 @@ def user_project_summary(request, project):
         'user_vote': user_vote,
         }
     return render(request, 'project/object_detail.html', context)
+
 
 def project_list(request, slug=None):
     if slug:
