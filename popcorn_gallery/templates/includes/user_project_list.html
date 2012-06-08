@@ -2,7 +2,8 @@
 <div class="row-fluid toppad">
   <div class="leftpad">
     {% for project in project_list %}
-    <div class="span2">
+    {% if loop.first %}<div class="span2">{% endif %}
+      {% if loop.index is divisibleby 3 %}</div><div class="span2">{% endif %}
       <div>
         <a href="{{ project.get_absolute_url() }}" class="thumbnail">
           {% if project.thumbnail %}
@@ -22,7 +23,7 @@
         <a class="btn-mini" href="{{ project.get_delete_url() }}"><i class="icon-warning-sign"></i>delete</a>
         {% endif %}
       </div>
-    </div><!--/span-->
+      {% if loop.last %}</div><!--/span-->{% endif %}
     {% endfor %}
   </div>
 </div><!--/span-->
