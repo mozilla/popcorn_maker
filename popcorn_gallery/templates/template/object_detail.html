@@ -52,7 +52,7 @@
         <div class="span12">
           <a href="{{ template.get_template_url() }}" class="thumbnail">
             {% if template.thumbnail  %}
-            <img src="{{ template.thumbnail.url }}" alt=""  width="480" height="270" />
+            <img src="{{ thumbnail(template.thumbnail, (480, 270)) }}" alt=""  width="480" height="270" />
             {% else %}
             <img src="http://placehold.it/480x270" alt="" width="480" height="270">
             {% endif %}
