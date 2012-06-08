@@ -135,7 +135,7 @@ body {
   font-size: 13px;
   line-height: 18px;
   color: #000;
-  background:url("../img/body_bg.jpg") repeat-x #f6f0dc;
+  background:url("../img/sand.png") repeat-x #F5F1E8;
 }
 a {
   color: #0088cc;
@@ -4107,7 +4107,7 @@ a.thumbnail:hover {
   min-height: 20px;
   padding: 19px;
   margin-bottom: 20px;
-  background-color: #f5f5f5;
+  background-color: #fff;
   border: 1px solid #eee;
   border: 1px solid rgba(0, 0, 0, 0.05);
   -webkit-border-radius: 4px;

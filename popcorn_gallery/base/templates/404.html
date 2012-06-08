@@ -1,15 +1,13 @@
-<!DOCTYPE html>
-<html LANG="{{ LANG }}" dir="{{ DIR }}">
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <title>{{ _('Page not found') }}</title>
-  </head>
-  <body>
-    <h1>{{ _('Page not found') }}</h1>
-    <p>
-      {% trans %}
-        Sorry, but we couldn't find the page you're looking for.
-      {% endtrans %}
-    </p>
-  </body>
-</html>
+{% extends "base.html" %}
+{% block title %}
+Page Not Found - {{ super() }}
+{% endblock title %}
+
+{% block content %}
+<div class="container-fluid textcenter">
+  <div class="span12 well center">
+        <p>Oh no! We couldn't find the page you're looking for. If you think this is an error, <a href="mailto:popcorn@mozilla.com">let us know</a>.</p>
+        <img src="{{ STATIC_URL }}/img/spill.png" class="pull-right">
+  </div>
+</div>
+{% endblock content %}
