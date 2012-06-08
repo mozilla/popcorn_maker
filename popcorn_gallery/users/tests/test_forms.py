@@ -58,3 +58,13 @@ class TestProfileForms(TestCase):
         data = {'name': 'BOB'}
         form = ProfileCreateForm(data, instance=user.get_profile())
         self.assertFalse(form.is_valid())
+
+    def test_invalid_username_characters(self):
+        user = create_user('bob')
+        data = {'name': 'BOB',
+                'agreement': True,
+                'username': 'bob!'
+                }
+        form = ProfileCreateForm(data, instance=user.get_profile())
+        self.assertFalse(form.is_valid())
+
