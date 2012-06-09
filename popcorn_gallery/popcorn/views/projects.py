@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_unicode
 
@@ -33,17 +33,15 @@ project_view = partial(valid_user_project(['username', 'shortcode']))
 @is_popcorn_project
 @add_csrf_token
 def user_project(request, project):
-    if project.is_forkable or request.user == project.author:
-        response = project.template.template_content
-    else:
-        response = project.html
-    return HttpResponse(smart_unicode(response))
+    return HttpResponse(smart_unicode(project.html))
 
 
 @project_view
 @is_popcorn_project
-def user_project_preview(request, project):
-    return HttpResponse(smart_unicode(project.html))
+def user_project_butter(request, project):
+    if project.is_forkable or request.user == project.author:
+        return HttpResponse(smart_unicode(project.template.template_content))
+    return redirect('user_project', )
 
 
 @project_view

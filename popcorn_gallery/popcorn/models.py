@@ -197,6 +197,9 @@ class Project(models.Model):
     def get_fork_url(self):
         return self.get_permalink_for('user_project_fork')
 
+    def get_butter_url(self):
+        return self.get_permalink_for('user_project_butter')
+
     @models.permalink
     def get_api_url(self):
         return ('api:project_detail', [self.uuid])
