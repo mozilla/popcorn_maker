@@ -1,19 +1,32 @@
 from django import forms
+from django.conf import settings
 from django.forms.widgets import CheckboxSelectMultiple
 from django.template.defaultfilters import slugify
 
 from tower import ugettext_lazy as _
 from .models import Project, Template, ProjectCategory, ProjectCategoryMembership
 from .fields import PopcornJSONField
+from .templates import prepare_project_stream
 
 
 class ProjectForm(forms.Form):
     """Form used to validate the data sent through the API."""
     name = forms.CharField()
     data = PopcornJSONField()
+    html = forms.CharField()
     template = forms.ModelChoiceField(queryset=Template.live.all(),
                                       empty_label=None,
                                       to_field_name='slug')
+
+    def clean(self):
+        template = self.cleaned_data.get('template')
+        html = self.cleaned_data.get('html')
+        metadata = self.cleaned_data.get('data')
+        if template and html:
+            base_url = '%s%s/%s' % (settings.TEMPLATE_MEDIA_URL,
+                                    template.author.username, template.slug)
+            self.cleaned_data['html'] = prepare_project_stream(html, base_url, metadata)
+        return self.cleaned_data
 
 
 class ProjectEditForm(forms.ModelForm):

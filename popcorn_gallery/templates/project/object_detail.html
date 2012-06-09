@@ -77,7 +77,11 @@
 
           <div class="template-detail">
             <h2>{{ project.name }}</h2>
-            <p class="project-desc">{{ project.description }} <a class="btn btn-success pull-right" href="{{ project.get_project_url() }}">make this</a></p>
+            <p class="project-desc">{{ project.description }}
+              {% if project.is_forkable or request.user == project.author %}
+              <a class="btn btn-success pull-right" href="{{ project.get_butter_url() }}">make this</a>
+              {% endif %}
+            </p>
           </div>
         </div>
       </div>
