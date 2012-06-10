@@ -54,7 +54,7 @@
             {% if template.thumbnail  %}
             <img src="{{ thumbnail(template.thumbnail, (480, 270)) }}" alt=""  width="480" height="270" />
             {% else %}
-            <img src="http://placehold.it/480x270" alt="" width="480" height="270">
+            <img src="{{ STATIC_URL }}/images/popcorn-placeholder.png" alt="" width="480" height="270">
             {% endif %}
           </a>
 
