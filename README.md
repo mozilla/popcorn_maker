@@ -141,3 +141,21 @@ Creating a superuser
 From inside the VM run:
 
     python manage.py createsuperuser
+
+Adding templates
+================
+
+Only admins/superusers are allowed to add templates to the gallery.
+You must create a superuser as specified in the above step.
+
+Once that has been done, visit: `http://local.mozillapopcorn.org/admin` in your browser and login to the Django Admin interface.
+There you can choose to add a template file by file, or import a zip file.
+A sample zipped template can be found at [https://github.com/alfredo/popcorn_gallery_template](https://github.com/alfredo/popcorn_gallery_template)
+
+Now you must set each file to the proper type:
+* config
+* default track events
+* static assets
+* template html
+
+Once that has all ben set, click the publish checkbox at the bottom of the page, then save your changes.
