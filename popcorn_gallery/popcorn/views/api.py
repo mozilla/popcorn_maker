@@ -105,7 +105,7 @@ def project_publish(request, uuid):
         project.is_shared = True
         response = {
             'error': 'okay',
-            'url': '%s%s' % (settings.SITE_URL, project.get_absolute_url()),
+            'url': '%s%s' % (settings.SITE_URL, project.get_project_url()),
             }
         return HttpResponse(json.dumps(response), mimetype='application/json')
     raise Http404
