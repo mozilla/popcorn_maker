@@ -5,9 +5,9 @@
   <div class="span4">
     <a href="{{ project.get_absolute_url() }}" class="thumbnail">
       {% if project.thumbnail %}
-      <img src="{{ thumbnail(project.thumbnail, (360, 268)) }}" alt="" />
+      <img src="{{ thumbnail(project.thumbnail, (480, 270)) }}" alt="" />
       {% else %}
-      <img src="http://placehold.it/360x268" alt="">
+      <img src="http://placehold.it/480x270" alt="">
       {% endif %}
     </a>
 
