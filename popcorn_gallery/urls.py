@@ -15,7 +15,7 @@ urlpatterns = patterns(
     url(r'^dashboard/$', 'dashboard', name='users_dashboard'),
     url(r'^logout/$', 'signout', name='logout'),
     url(r'^browserid/logout/$', 'signout', name='browserid_verify'),
-    url('^login/$', 'login', name='login'),
+    url(r'^login/$', 'login', name='login'),
     url('^login/failed/$', 'login', {'failed': True}, name='login_failed'),
 )
 
