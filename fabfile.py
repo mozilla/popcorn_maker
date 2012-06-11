@@ -20,12 +20,17 @@ def test(*args):
               '--settings=popcorn_gallery.settings.test')
 
 
-def prepare_butter():
-    print yellow('Compiling Butter files.')
+def update_npm():
+    print yellow('Updating npm')
     with lcd(os.path.join(settings.PROJECT_ROOT, 'butter')):
         local('npm install')
         local('npm update')
+
+def prepare_butter():
+    print yellow('Compiling Butter files.')
+    with lcd(os.path.join(settings.PROJECT_ROOT, 'butter')):
         local('node make')
+    copy_butter()
 
 
 def syncdb():
@@ -35,10 +40,12 @@ def syncdb():
         local('python manage.py migrate --noinput')
 
 
-def copy_butter_style():
+def copy_butter():
     print yellow('Coping Butter styling')
     with lcd(settings.PROJECT_ROOT):
-        local('cp butter/css/butter.ui.css assets/css/')
+        local('cp butter/dist/* assets/dist/')
+        local('cp butter/dist/*.css assets/css/')
+        local('cp butter/dist/*.js assets/js/')
 
 
 def update_index():
@@ -51,7 +58,7 @@ def update():
     print yellow('Updating the site:')
     syncdb()
     prepare_butter()
-    copy_butter_style()
+    copy_butter()
     update_index()
 
 
