@@ -49,6 +49,7 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'popcorn_gallery.reports',
     'popcorn_gallery.search',
     'popcorn_gallery.attachments',
+    'popcorn_gallery.tutorials',
 ]
 
 

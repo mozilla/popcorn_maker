@@ -1,7 +1,8 @@
-from mock import MagicMock
 from django.contrib.auth.models import AnonymousUser
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+
+from mock import MagicMock
 from test_utils import RequestFactory
 
 from ..middleware import ProfileMiddleware

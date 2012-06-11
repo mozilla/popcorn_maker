@@ -34,6 +34,8 @@ urlpatterns += patterns(
     (r'^report/', include('popcorn_gallery.reports.urls')),
     (r'^api/', include('popcorn_gallery.popcorn.urls.api', namespace='api')),
     (r'^search/', include('popcorn_gallery.search.urls', namespace='search'),),
+    (r'^tutorial/', include('popcorn_gallery.tutorials.urls',
+                            namespace='tutorial'),),
     (r'', include('popcorn_gallery.popcorn.urls.projects')),
     url(r'^browserid/verify$', AjaxVerify.as_view(), name='browserid_verify'),
     url(r'^vote/(?P<model>project|template)/(?P<object_id>\d+)/(?P<direction>up|clear)/$',

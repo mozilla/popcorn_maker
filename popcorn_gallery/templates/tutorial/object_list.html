@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Tutorials - {{ super() }}{% endblock title %}
+
+{% block content %}
+{% for tutorial in tutorial_list %}
+<div class="">
+  <h1><a href="{{ tutorial.get_absolute_url() }}">{{ tutorial.title }}</a></h1>
+  {% if tutorial.thumbnail %}
+  <img src="{{ thumbnail(tutorial.thumbnail, (200,200)) }}" alt="" />
+  {% endif %}
+</div>
+{% endfor%}
+{% endblock content %}
