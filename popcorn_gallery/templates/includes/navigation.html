@@ -6,11 +6,12 @@
       </a><a href="{{ url('homepage') }}">
         {% if user.is_authenticated() %}
         <div class="btn-group pull-right">
-          <a class="btn dropdown-toggle" data-toggle="dropdown" data-target="{{ url('users_profile', username=request.user.username) }}">
+          <a class="btn dropdown-toggle" data-toggle="dropdown">
             <i class="icon-user"></i> {{ request.user.get_profile().display_name }}
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu">
+            <li><a href="{{ url('users_dashboard') }}">Dashboard</a></li>
             <li><a href="{{ url('users_profile', username=request.user.username) }}">Profile</a></li>
             <li><a href="{{ url('users_edit') }}">Edit Profile</a></li>
             <li class="divider"></li>

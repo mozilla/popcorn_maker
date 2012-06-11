@@ -52,9 +52,9 @@
         <div class="span12">
           <a href="{{ template.get_template_url() }}" class="thumbnail">
             {% if template.thumbnail  %}
-            <img src="{{ thumbnail(template.thumbnail, (480, 270)) }}" alt=""  width="480" height="270" />
+            <img src="{{ thumbnail(template.thumbnail, (480, 270)) }}" alt=""  />
             {% else %}
-            <img src="{{ STATIC_URL }}/images/popcorn-placeholder.png" alt="" width="480" height="270">
+            <img src="{{ STATIC_URL }}/images/popcorn-placeholder.png" alt="" />
             {% endif %}
           </a>
 

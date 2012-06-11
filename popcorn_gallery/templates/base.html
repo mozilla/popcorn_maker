@@ -34,20 +34,20 @@
     <div class="container-fluid">
       {% block content %}{% endblock content %}
     </div><!--/.fluid-container-->
-      {% include "includes/footer.html" %}
+    {% include "includes/footer.html" %}
 
     <!-- Le javascript
          ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     {% block scripts %}
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
     <script type="text/javascript" src="https://browserid.org/include.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/browserid.js"></script>
-   	<script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap-tooltip.js"></script>
-     <script>
-         $('.dropdown-toggle').dropdown()
-     </script>
+    <script>
+      $('.dropdown-toggle').dropdown();
+    </script>
     {# future libraries #}
     <!-- <script src="{{ STATIC_URL }}js/bootstrap-alert.js"></script> -->
     <!-- <script src="{{ STATIC_URL }}js/bootstrap-modal.js"></script> -->
@@ -58,18 +58,18 @@
     <!-- <script src="{{ STATIC_URL }}js/bootstrap-collapse.js"></script> -->
     <!-- <script src="{{ STATIC_URL }}js/bootstrap-carousel.js"></script> -->
     <!-- <script src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script> -->
-    {# end missing libraries #}
+    {# end future libraries #}
 
     {% endblock scripts %}
 
-<script type="text/javascript">
-  var uvOptions = {};
-  (function() {
-    var uv = document.createElement('script'); uv.type = 'text/javascript'; uv.async = true;
-    uv.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'widget.uservoice.com/8vOeVcclRtYPvAvTiIGPlA.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(uv, s);
-  })();
-</script>
+    <script type="text/javascript">
+      var uvOptions = {};
+      (function() {
+      var uv = document.createElement('script'); uv.type = 'text/javascript'; uv.async = true;
+      uv.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'widget.uservoice.com/8vOeVcclRtYPvAvTiIGPlA.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(uv, s);
+      })();
+    </script>
 
 
   </body>
