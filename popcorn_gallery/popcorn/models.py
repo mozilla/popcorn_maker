@@ -12,7 +12,8 @@ from tower import ugettext_lazy as _
 from .baseconv import base62
 from .managers import ProjectManager, ProjectLiveManager, TemplateManager
 from .storage import TemplateStorage
-from .templates import prepare_template_stream, remove_default_values
+from .templates import (prepare_template_stream, remove_default_values,
+                        export_template)
 from ..attachments.models import Asset
 from ..base.decorators import cached_property
 
@@ -177,6 +178,13 @@ class Project(models.Model):
 
     def __unicode__(self):
         return u'Project %s from %s' % (self.name, self.author)
+
+    def save(self, *args, **kwargs):
+        if self.template and self.metadata:
+            self.html = export_template(self.template, self.metadata)
+        else:
+            self.html = ''
+        return super(Project, self).save(*args, **kwargs)
 
     @models.permalink
     def get_permalink_for(self, name):

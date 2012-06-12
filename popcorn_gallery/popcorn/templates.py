@@ -2,19 +2,16 @@ import html5lib
 
 from urlparse import urlparse, urljoin
 
-
 from django.conf import settings
-from django.template.loader import render_to_string
 from django.utils.encoding import force_unicode
-from django.utils.html import strip_tags
 
 from django_extensions.db.fields import json
 from html5lib import treebuilders
 from html5lib.serializer import htmlserializer
-from lxml.html import tostring
+from lxml.html import builder as E
 
-from .constants import POPCORN_JS_ASSETS, BUTTER_ASSETS
-from .sanitize import clean
+
+from .constants import POPCORN_JS_ASSETS, BUTTER_ASSETS, URL_ATTRIBUTES
 
 
 def get_library_path(src, asset_list):
@@ -41,12 +38,16 @@ def _serialize_stream(document_tree):
     return unicode(serializer.render(stream))
 
 
-def prepare_template_stream(stream, base_url):
-    """Prepares the stream to be stored in the DB"""
+def _get_document_tree(stream):
     stream = force_unicode(stream) if stream else u''
     tree = treebuilders.getTreeBuilder('lxml')
     parser = html5lib.HTMLParser(tree=tree, namespaceHTMLElements=False)
-    document_tree = parser.parse(stream)
+    return parser.parse(stream)
+
+
+def prepare_template_stream(stream, base_url):
+    """Prepares the stream to be stored in the DB"""
+    document_tree = _get_document_tree(stream)
     update_butter_links(document_tree)
     make_links_absolute(document_tree, base_url)
     return _serialize_stream(document_tree)
@@ -60,34 +61,12 @@ def remove_default_values(stream, base_url=None):
     return json.dumps(data)
 
 
-URL_ATTRIBUTES = [
-    ('a', 'href'),
-    ('applet', 'codebase'),
-    ('area', 'href'),
-    ('blockquote', 'cite'),
-    ('body', 'background'),
-    ('del', 'cite'),
-    ('form', 'action'),
-    ('frame', 'longdesc'),
-    ('frame', 'src'),
-    ('iframe', 'longdesc'),
-    ('iframe', 'src'),
-    ('head', 'profile'),
-    ('img', 'longdesc'),
-    ('img', 'src'),
-    ('img', 'usemap'),
-    ('input', 'src'),
-    ('input', 'usemap'),
-    ('ins', 'cite'),
-    ('link', 'href'),
-    ('object', 'classid'),
-    ('object', 'codebase'),
-    ('object', 'data'),
-    ('object', 'usemap'),
-    ('q', 'cite'),
-    ('script', 'src'),
-    ('video', 'src'),
-    ]
+def _remove_scripts(document_tree):
+    """Removes any script tag from the tree"""
+    script_elements = document_tree.xpath('//script')
+    for script in script_elements:
+        script.getparent().remove(script)
+    return document_tree
 
 
 def make_links_absolute(document_tree, base_url):
@@ -126,7 +105,6 @@ def prepare_popcorn_string_from_project_data(project_data):
     popcorn_string = ''
     try:
         media_list = project_data['media']
-        popcorn_string += '<script>'
         for media in media_list:
             track_list = media['tracks']
 
@@ -147,43 +125,55 @@ def prepare_popcorn_string_from_project_data(project_data):
                     popcorn_string += '\n});'
 
             popcorn_string += '\n}());\n'
-        popcorn_string += '</script>'
-
     except KeyError:
         #TODO something should occur when invalid trackevent data is passed in perhaps
         pass
 
     return popcorn_string
 
-def prepare_project_stream(stream, base_url, metadata):
-    """ Sanitizes a butter HTML export
-     - Picks the plug-in required from the stream.
-    """
-    stream = force_unicode(stream) if stream else u''
-    tree = treebuilders.getTreeBuilder('lxml')
-    parser = html5lib.HTMLParser(tree=tree, namespaceHTMLElements=False)
-    document_tree = parser.parse(stream)
-    # plugins are relative
-    scripts = document_tree.xpath('//script[@src]')
-    plugins = [s.get('src') for s in scripts if not urlparse(s.get('src')).netloc]
-    # styles are relative
-    styles = document_tree.xpath('//link[@href]')
-    css = [s.get('href') for s in styles if not urlparse(s.get('href')).netloc]
-    # inline css
-    inline_css = []
-    for inline in document_tree.xpath('//style'):
-        inline_css.append(strip_tags(inline.text))
-        inline.getparent().remove(inline)
-    # remove script tags
-    for inline in document_tree.xpath('//script'):
-        inline.getparent().remove(inline)
-    popcorn = prepare_popcorn_string_from_project_data(json.loads(metadata)) if metadata else ''
-    body = [clean(tostring(b)) + popcorn for b in document_tree.xpath('//body')]
-    context = {
-        'styles': css,
-        'scripts': plugins,
-        'inline_css': inline_css,
-        'body': body,
-        }
 
-    return render_to_string('project/skeleton.html', context)
+def _add_popcorn_plugins(document_tree, config):
+    """Adds the popcorn plugins from the template config"""
+    if not config:
+        return document_tree
+    static_tag = "{{baseDir}}"
+    script_text = '<script type="text/javascript" src="%s"></script>'
+    fix_url = lambda x: x.replace(' ','').replace(static_tag,
+                                                  settings.STATIC_URL)
+    head = document_tree.xpath('//head')[0]
+    popcorn = E.SCRIPT(src=settings.STATIC_URL+'dist/buttered-popcorn.min.js',
+                       type="text/javascript")
+    head.append(popcorn)
+    for plugin in config['plugin']['plugins']:
+        src = fix_url(plugin['path'])
+        script_tag = E.SCRIPT(type="text/javascript", src=src)
+        head.append(script_tag)
+    return document_tree
+
+
+def _add_popcorn_metadata(document_tree, metadata):
+    """Transform the metadata into Popcorn instructions"""
+    if not metadata:
+        return document_tree
+    data = json.loads(metadata)
+    popcorn = prepare_popcorn_string_from_project_data(data)
+    body = document_tree.xpath('//body')[0]
+    script = E.SCRIPT(popcorn, type="text/javascript")
+    body.append(script)
+    return document_tree
+
+
+def export_template(template, metadata):
+    """Generates a Project export from the ``Template`` and ``metadata``
+    - Gets the skeleton from the template HTML
+    - Removes any Butter reference
+    - Imports the plugin from the template config file
+    - Adds popcorn functionality from the metadata.
+    """
+    base_url = '%s%s/%s' % (settings.TEMPLATE_MEDIA_URL,
+                            template.author.username, template.slug)
+    document_tree = _get_document_tree(template.template_content)
+    _remove_scripts(document_tree)
+    _add_popcorn_plugins(document_tree, template.config)
+    _add_popcorn_metadata(document_tree, metadata)
+    return _serialize_stream(document_tree)

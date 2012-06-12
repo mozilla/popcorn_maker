@@ -38,6 +38,7 @@ def user_project(request, project):
 
 @project_view
 @is_popcorn_project
+@add_csrf_token
 def user_project_butter(request, project):
     if project.is_forkable or request.user == project.author:
         return HttpResponse(smart_unicode(project.template.template_content))

@@ -7,6 +7,7 @@ from django_extensions.db.fields import json
 from ..decorators import valid_user_project
 from ..forms import ProjectForm
 from ..models import Project
+from ..templates import export_template
 from ...base.decorators import json_handler, login_required_ajax
 
 
@@ -24,11 +25,12 @@ def project_list(request):
 
 
 def get_project_data(cleaned_data):
+    template = cleaned_data['template']
+    metadata = cleaned_data['data']
     return {
         'name': cleaned_data['name'],
-        'metadata': cleaned_data['data'],
-        'html': cleaned_data['html'],
-        'template': cleaned_data['template'],
+        'metadata': metadata,
+        'template': template,
         }
 
 
@@ -70,7 +72,6 @@ def project_detail(request, project):
         if form.is_valid():
             project.name = form.cleaned_data['name']
             project.metadata = form.cleaned_data['data']
-            project.html = form.cleaned_data['html']
             project.save()
             response = {
                 'error': 'okay',

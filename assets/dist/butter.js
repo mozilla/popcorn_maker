@@ -10228,7 +10228,7 @@ define('ui/ui',[ "core/eventmanager", "./toggler", "./logo-spinner", "./context-
 
     // Butter will report a version, which is the git commit sha
     // of the version we ship.  This happens in make.js's build target.
-    Butter.version = "v0.5.1-16-g7c5c89e";
+    Butter.version = "0.5";
 
     if ( window.Butter.__waiting ) {
       for ( var i=0, l=window.Butter.__waiting.length; i<l; ++i ) {

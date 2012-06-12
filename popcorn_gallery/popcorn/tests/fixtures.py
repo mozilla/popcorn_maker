@@ -17,7 +17,7 @@ def create_template(**kwargs):
     defaults = {
         'name': 'basic',
         'slug': 'basic',
-        'template_content': '<!DOCTYPE html5>',
+        'template_content': '<!DOCTYPE html>',
         }
     if kwargs:
         defaults.update(kwargs)
@@ -30,7 +30,7 @@ def create_project(**kwargs):
     defaults = {
         "name": 'Popcorn Project',
         "metadata": "{\"data\": \"foo\"}",
-        "html": "<!DOCTYPE html5>",
+        "html": "<!DOCTYPE html>",
         }
     if kwargs:
         defaults.update(kwargs)
@@ -341,4 +341,19 @@ popcorn.text({
 
  return popcorn;
 }());</script></body></html>
+"""
+
+POPCORN_CONFIG = """
+{"plugin": {
+    "plugins": [
+        {"path": "{{baseDir}}popcorn.attribution.js", "type": "attribution"},
+        {"path": "{{baseDir}}popcorn.code.js", "type": "code"},
+        {"path": "{{baseDir}}popcorn.flickr.js", "type": "flickr"}
+        ]
+    }
+}
+"""
+
+POPCORN_METADATA = """
+{"media": [{"target": "main", "url": "/static/external/popcorn-js/test/trailer.ogv", "tracks": [{"name": "Track0", "trackEvents": [{"track": "Track0", "popcornOptions": {"start": 0, "end": 3, "target": "Area1", "text": "test"}, "type": "text", "id": "TrackEvent0", "name": "TrackEvent0"}], "id": "Track0"}, {"name": "Track1", "trackEvents": [], "id": "Track1"}, {"name": "Track2", "trackEvents": [{"track": "Track2", "popcornOptions": {"start": 1, "end": 2, "target": "Area2"}, "type": "text", "id": "TrackEvent1", "name": "TrackEvent1"}], "id": "Track2"}], "duration": "64.54166412353516", "id": "Media0", "name": "Media0"}], "targets": [{"element": "Area1", "id": "Target0", "name": "Target0"}, {"element": "Area2", "id": "Target1", "name": "Target1"}]}
 """

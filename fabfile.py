@@ -29,7 +29,7 @@ def update_npm():
 def prepare_butter():
     print yellow('Compiling Butter files.')
     with lcd(os.path.join(settings.PROJECT_ROOT, 'butter')):
-        local('node make')
+        local('VERSION=0.5 node make release')
     copy_butter()
 
 
@@ -43,7 +43,7 @@ def syncdb():
 def copy_butter():
     print yellow('Coping Butter styling')
     with lcd(settings.PROJECT_ROOT):
-        local('cp butter/dist/* assets/dist/')
+        local('cp -r butter/dist/* assets/dist/')
         local('cp butter/dist/*.css assets/css/')
         local('cp butter/dist/*.js assets/js/')
 

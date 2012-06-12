@@ -1,3 +1,33 @@
+URL_ATTRIBUTES = [
+    ('a', 'href'),
+    ('applet', 'codebase'),
+    ('area', 'href'),
+    ('blockquote', 'cite'),
+    ('body', 'background'),
+    ('del', 'cite'),
+    ('form', 'action'),
+    ('frame', 'longdesc'),
+    ('frame', 'src'),
+    ('iframe', 'longdesc'),
+    ('iframe', 'src'),
+    ('head', 'profile'),
+    ('img', 'longdesc'),
+    ('img', 'src'),
+    ('img', 'usemap'),
+    ('input', 'src'),
+    ('input', 'usemap'),
+    ('ins', 'cite'),
+    ('link', 'href'),
+    ('object', 'classid'),
+    ('object', 'codebase'),
+    ('object', 'data'),
+    ('object', 'usemap'),
+    ('q', 'cite'),
+    ('script', 'src'),
+    ('video', 'src'),
+    ]
+
+
 POPCORN_JS_ASSETS = [
     'external/popcorn-js/popcorn.js',
     'external/popcorn-js/build/jslint-check.js',

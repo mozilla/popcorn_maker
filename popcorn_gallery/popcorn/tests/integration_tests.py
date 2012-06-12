@@ -91,7 +91,7 @@ class DetailIntegrationTest(PopcornIntegrationTestCase):
         url = self.get_url('user_project', self.user, project)
         response = self.client.get(url)
         eq_(response.status_code, 200)
-        ok_('<!DOCTYPE html5>' in response.content)
+        ok_('<!DOCTYPE html>' in response.content)
 
     @suppress_locale_middleware
     def test_unpublished_project_anon(self):
@@ -117,7 +117,7 @@ class DetailIntegrationTest(PopcornIntegrationTestCase):
         self.client.login(username=self.user.username, password='bob')
         response = self.client.get(url)
         eq_(response.status_code, 200)
-        ok_('<!DOCTYPE html5>' in response.content)
+        ok_('<!DOCTYPE html>' in response.content)
         self.client.logout()
 
     @suppress_locale_middleware
@@ -554,7 +554,7 @@ class TemplateIntegrationTest(TestCase):
         response = self.client.get(reverse('template_detail',
                                            args=[template.slug]))
         eq_(response.status_code, 200)
-        ok_('<!DOCTYPE html5>' in response.content)
+        ok_('<!DOCTYPE html>' in response.content)
 
     @suppress_locale_middleware
     def test_template_summary_hidden(self):
@@ -618,7 +618,7 @@ class TemplateAuthorIntegrationTest(TestCase):
         response = self.client.get(reverse('template_detail',
                                            args=[self.template.slug]))
         eq_(response.status_code, 200)
-        ok_('<!DOCTYPE html5>' in response.content)
+        ok_('<!DOCTYPE html>' in response.content)
 
     @suppress_locale_middleware
     def test_template_config(self):

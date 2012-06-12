@@ -1,0 +1,25 @@
+{
+  "name": "robots",
+  "baseDir": "../../../",
+  "plugin": {
+    "plugins": [
+      {
+        "type": "text",
+        "path": "{{baseDir}}external/popcorn-js/plugins/text/popcorn.text.js"
+      },
+      {
+        "type": "speak",
+        "path": "{{baseDir}}templates/supported/shared/plugins/speak/popcorn.speak.js"
+      },
+      {
+        "type": "zoink",
+        "path": "{{baseDir}}templates/supported/shared/plugins/zoink/popcorn.zoink.js"
+      }
+    ],
+    "defaults": [
+      "text",
+      "speak",
+      "zoink"
+    ]
+  }
+}

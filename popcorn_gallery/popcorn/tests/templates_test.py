@@ -1,12 +1,17 @@
+import re
+
 from django.test import TestCase
 
 from django_extensions.db.fields import json
 from nose.tools import ok_, eq_
-from .fixtures import HTML_EXPORT, METADATA_EXPORT
+from .fixtures import (HTML_EXPORT, METADATA_EXPORT, POPCORN_CONFIG,
+                       POPCORN_METADATA)
 from ..templates import (prepare_template_stream, get_absolute_url,
-                         remove_default_values, prepare_project_stream)
+                         remove_default_values, _get_document_tree,
+                         _serialize_stream, _remove_scripts,
+                         _add_popcorn_plugins, _add_popcorn_metadata,
+                         prepare_popcorn_string_from_project_data)
 
-import re
 
 class PrepareTemplateTest(TestCase):
 
@@ -68,20 +73,41 @@ class TestRemoveDefaultValues(TestCase):
         eq_(result, "{}")
 
 
-class TestSanitizeProjectHTML(TestCase):
+class ExportProjectHTML(TestCase):
 
     base_url = '/static/'
 
-    def test_prepare_project_stream(self):
-        result = prepare_project_stream(HTML_EXPORT, self.base_url, {})
+    def test_remove_scripts_inline(self):
+        stream = '<script>alert()</script>'
+        document_tree = _get_document_tree(stream)
+        eq_(len(document_tree.xpath('//script')), 1)
+        _remove_scripts(document_tree)
+        eq_(len(document_tree.xpath('//script')), 0)
 
-class TestProjectPopcornScript(TestCase):
-    base_url = '/static/'
+    def test_remove_scripts(self):
+        stream = '<script type="text/javascript" src="javscript.js"></script>'
+        document_tree = _get_document_tree(stream)
+        eq_(len(document_tree.xpath('//script')), 1)
+        _remove_scripts(document_tree)
+        eq_(len(document_tree.xpath('//script')), 0)
 
-    def test_prepare_project_stream(self):
-        result = prepare_project_stream(HTML_EXPORT, self.base_url, json.dumps(METADATA_EXPORT))
-        spaceless_result = re.sub(r'\s', '', result)
-        ok_('<script>(function(){varpopcorn=Popcorn.smart("#' + METADATA_EXPORT['media'][0]['target'] + '","' + METADATA_EXPORT['media'][0]['url'] + '"' in spaceless_result)
-        result = prepare_project_stream(HTML_EXPORT, self.base_url, {})
+    def test_add_popcorn_plugins(self):
+        config = json.loads(POPCORN_CONFIG)
+        document_tree = _get_document_tree('<html><head></head></html>')
+        _add_popcorn_plugins(document_tree, config)
+        eq_(len(document_tree.xpath('//script[@src]')), 4)
+
+    def test_add_popcorn_metadata(self):
+        document_tree = _get_document_tree('<html><body></body></html>')
+        _add_popcorn_metadata(document_tree, POPCORN_METADATA)
+        eq_(len(document_tree.xpath('//script')), 1)
+        result = _serialize_stream(document_tree)
         spaceless_result = re.sub(r'\s', '', result)
         ok_('<script>(function(){varpopcorn=Popcorn(' not in spaceless_result)
+
+
+    def test_prepare_popcorn_string(self):
+        metadata = json.loads(POPCORN_METADATA)
+        result = prepare_popcorn_string_from_project_data(metadata)
+        spaceless_result = re.sub(r'\s', '', result)
+        ok_('(function(){varpopcorn=Popcorn.smart("#' + metadata['media'][0]['target'] + '","' + metadata['media'][0]['url'] + '"' in spaceless_result)
