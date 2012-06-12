@@ -2517,7 +2517,8 @@ define('core/popcorn-wrapper',[ "core/logger", "core/eventmanager" ], function( 
     this.updateEvent = function( trackEvent ){
       var options = trackEvent.popcornOptions,
           butterId = trackEvent.id,
-          popcornId = _butterEventMap[ butterId ];
+          popcornId = _butterEventMap[ butterId ],
+          popcornEvent = null;
       /* ensure that the trackevent actually exists before removal.
       * we remove the trackevent because there is no easy way
       * to ensure what data has changed on any given track. It
@@ -2535,8 +2536,10 @@ define('core/popcorn-wrapper',[ "core/logger", "core/eventmanager" ], function( 
           // store a local reference to the newly created trackevent
           _butterEventMap[ butterId ] = _popcorn.getLastTrackEventId();
 
+          popcornEvent = _popcorn.getTrackEvent( _butterEventMap[ butterId ] );
+          trackEvent.popcornTrackEvent = popcornEvent;
+
           if( trackEvent.view ){
-            var popcornEvent = _popcorn.getTrackEvent( _butterEventMap[ butterId ] );
             if( popcornEvent.toString ){
               trackEvent.view.setToolTip( popcornEvent.toString() );
             }
@@ -3883,6 +3886,9 @@ function(
     var _element = document.createElement( "div" ),
         _container = document.createElement( "div" );
 
+    var _hScrollbar,
+        _vScrollbar;
+
     var _droppable;
 
     _element.appendChild( _container );
@@ -3910,6 +3916,11 @@ function(
         }
       }
     });
+
+    this.setScrollbars = function( hScrollbar, vScrollbar ){
+      _hScrollbar = hScrollbar;
+      _vScrollbar = vScrollbar;
+    };
 
     this.orderTracks = function( orderedTracks ){
       for( var i=0, l=orderedTracks.length; i<l; ++i ){
@@ -3957,6 +3968,7 @@ function(
       trackView.duration = _media.duration;
       trackView.zoom = _zoom;
       trackView.parent = _this;
+      _vScrollbar.update();
     }
 
     var existingTracks = _media.tracks;
@@ -3971,6 +3983,9 @@ function(
     _media.listen( "trackremoved", function( e ){
       var trackView = e.data.view;
       _container.removeChild( trackView.element );
+      if( _vScrollbar ){
+        _vScrollbar.update();
+      }
     });
 
     _this.update = function(){
@@ -4004,48 +4019,6 @@ function(
           return _element;
         }
       },
-      width: {
-        enumerable: true,
-        get: function(){
-          return _element.getBoundingClientRect().width;
-        }
-      },
-      height: {
-        enumerable: true,
-        get: function(){
-          return _element.getBoundingClientRect().height;
-        }
-      },
-      scrollWidth: {
-        enumerable: true,
-        get: function(){
-          return _element.scrollWidth;
-        }
-      },
-      scrollHeight: {
-        enumerable: true,
-        get: function(){
-          return _element.scrollHeight;
-        }
-      },
-      vScroll: {
-        enumerable: true,
-        get: function(){
-          return _element.scrollTop / _element.scrollHeight;
-        },
-        set: function( val ){
-          _element.scrollTop = _element.scrollHeight * val;
-        }
-      },
-      hScroll: {
-        enumerable: true,
-        get: function(){
-          return _element.scrollLeft / _element.scrollWidth;
-        },
-        set: function( val ){
-          _element.scrollLeft = _element.scrollWidth * val;
-        }
-      },
       container: {
         enumerable: true,
         get: function(){
@@ -4075,8 +4048,6 @@ define('timeline/scrollbars',[ "core/eventmanager" ], function( EventManagerWrap
         _scrollTarget = scrollTarget || _containerParent,
         _elementHeight,
         _parentHeight,
-        _childHeight,
-        _scrollHeight,
         _handleHeight,
         _mousePos = 0,
         _this = this;
@@ -4090,10 +4061,8 @@ define('timeline/scrollbars',[ "core/eventmanager" ], function( EventManagerWrap
 
     function setup(){
       _parentHeight = _containerParent.getBoundingClientRect().height;
-      _childHeight = _containerChild.getBoundingClientRect().height;
       _elementHeight = _element.getBoundingClientRect().height;
-      _scrollHeight = _containerChild.scrollHeight;
-      _handleHeight = _elementHeight - ( _scrollHeight - _parentHeight ) / VERTICAL_SIZE_REDUCTION_FACTOR;
+      _handleHeight = _elementHeight - ( _containerChild.scrollHeight - _parentHeight ) / VERTICAL_SIZE_REDUCTION_FACTOR;
       _handleHeight = Math.max( 20, Math.min( _elementHeight, _handleHeight ) );
       _handle.style.height = _handleHeight + "px";
       setHandlePosition();
@@ -4110,7 +4079,7 @@ define('timeline/scrollbars',[ "core/eventmanager" ], function( EventManagerWrap
       diff = Math.max( 0, Math.min( diff, _elementHeight - _handleHeight ) );
       _handle.style.top = diff + "px";
       var p = _handle.offsetTop / ( _elementHeight - _handleHeight );
-      _containerParent.scrollTop = ( _scrollHeight - _elementHeight ) * p;
+      _containerParent.scrollTop = ( _containerChild.scrollHeight - _parentHeight ) * p;
       _this.dispatch( "scroll", _containerParent.scrollTop );
     } //onMouseMove
 
@@ -4129,10 +4098,11 @@ define('timeline/scrollbars',[ "core/eventmanager" ], function( EventManagerWrap
     }; //update
 
     function setHandlePosition(){
-      if( _containerChild.scrollHeight - _elementHeight > 0 ) {
+      if( _containerChild.scrollHeight - _elementHeight > 0 ){
         _handle.style.top = ( _elementHeight - _handleHeight ) *
-          ( _containerParent.scrollTop / ( _containerChild.scrollHeight - _elementHeight ) ) + "px";
-      }else{
+          ( _containerParent.scrollTop / ( _containerChild.scrollHeight - _parentHeight ) ) + "px";
+      }
+      else{
         _handle.style.top = "0px";
       }
     }
@@ -4176,7 +4146,7 @@ define('timeline/scrollbars',[ "core/eventmanager" ], function( EventManagerWrap
       }
 
       p = _handle.offsetTop / ( _elementHeight - _handleHeight );
-      _containerParent.scrollTop = ( _scrollHeight - _elementHeight ) * p;
+      _containerParent.scrollTop = ( _containerChild.scrollHeight - _elementHeight ) * p;
     }, false);
 
     window.addEventListener( "resize", setup, false );
@@ -6293,6 +6263,7 @@ define('core/trackevent',[
     EventManagerWrapper( _this );
 
     _this.popcornOptions = _popcornOptions;
+    _this.popcornTrackEvent = null;
 
     function defaultValue( item ) {
       if ( item.default ) {
@@ -7124,6 +7095,8 @@ define('timeline/media',[
         _zoomFactor,
         _zoom;
 
+    _tracksContainer.setScrollbars( _hScrollBar, _vScrollBar );
+
     EventManagerWrapper( _this );
 
     _rootElement.className = "media-instance";
@@ -7253,7 +7226,6 @@ define('timeline/media',[
       }
 
       function onTrackAdded( e ){
-        _vScrollBar.update();
         var track = e.data;
         track.view.listen( "plugindropped", onPluginDropped );
         track.view.listen( "trackeventdropped", onTrackEventDropped );
@@ -7283,7 +7255,6 @@ define('timeline/media',[
       _media.listen( "trackeventadded", onTrackEventAdded );
 
       _media.listen( "trackremoved", function( e ){
-        _vScrollBar.update();
         var track = e.data;
         track.view.unlisten( "plugindropped", onPluginDropped );
         track.view.unlisten( "trackeventdropped", onTrackEventDropped );
