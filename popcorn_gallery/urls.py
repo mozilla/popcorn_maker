@@ -24,6 +24,8 @@ urlpatterns += patterns(
     'django.views.generic.simple',
     url('^about/$', 'direct_to_template', {'template': 'about.html'},
         name='about'),
+    url('^subscribe/$', 'direct_to_template', {'template': 'subscribe.html'},
+        name='subscribe'),
     )
 
 
