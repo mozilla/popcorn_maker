@@ -57,7 +57,7 @@ def update_site(env, debug):
         (EXEC, 'python manage.py migrate --noinput'),
         (EXEC, 'python manage.py collectstatic --noinput'),
         (EXEC, 'python manage.py update_index'),
-        (EXEC, 'python manage.py base_create_superusers'),
+        # (EXEC, 'python manage.py base_create_superusers'),
         # (EXEC, 'find . -iname \*pyc -delete'),
         ]
     for cmd, cmd_args in commands:

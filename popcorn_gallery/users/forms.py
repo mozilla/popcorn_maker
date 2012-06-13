@@ -20,7 +20,9 @@ class ProfileForm(forms.ModelForm):
 
 
 class ProfileCreateForm(ProfileForm):
-    username = forms.CharField(max_length=30)
+    username = forms.CharField(max_length=30, error_messages={
+        'required': _l(u'A username is required.')
+        })
     agreement = forms.BooleanField(required=True, error_messages={
         'required': _l(u'You must agree to the privacy policy to register.')
         })
