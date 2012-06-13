@@ -74,15 +74,14 @@ class UploadTemplateAdminForm(forms.Form):
 
     def clean_template_zip(self):
         """Validates that the template filename slug doesn't exist"""
-        if not self.cleaned_data.get('template_zip'):
+        template_zip = self.cleaned_data.get('template_zip')
+        if not template_zip:
             return None
+        file_bits = template_zip.name.split('.')
         try:
-            filename = self.cleaned_data['template_zip'].name.split('.')[-2]
+            # make sure filename exists and looks like a zip file
+            if len(file_bits) > 1 and file_bits[-1] == 'zip':
+                return template_zip
         except IndexError:
-            raise forms.ValidationError('File must be a zip file')
-        self.slug = slugify(filename)
-        try:
-            template = Template.objects.get(slug=self.slug)
-        except Template.DoesNotExist:
-            return self.cleaned_data['template_zip']
-        raise forms.ValidationError('Template with this slug already exists')
+            pass
+        raise forms.ValidationError('File must be a zip file')

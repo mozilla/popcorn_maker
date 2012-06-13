@@ -28,7 +28,7 @@ class JSONClient(Client):
 VALID_DATA = {
     "name": "Rad Project!",
     "data": {"data": "foo"},
-    "template": "base-template",
+    "template": "basic",
     "html": "<!DOCTYPE html5>",
     }
 

@@ -1,9 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 
 
-project_pattern = '(?P<username>[-\w]+)/(?P<shortcode>[-\w]+)'
-
-
 # base urls
 urlpatterns = patterns(
     'popcorn_gallery.popcorn.views.projects',
@@ -15,6 +12,9 @@ urlpatterns = patterns(
     url(r'^projects/category/(?P<slug>[\w-]+)/join/$', 'project_category_join',
         name='project_category_join'),
     )
+
+
+template_pattern = '(?P<username>[-\w]+)/(?P<slug>[-\w]+)'
 
 # templates urls
 urlpatterns += patterns(
@@ -31,6 +31,9 @@ urlpatterns += patterns(
     url(r'^template/(?P<slug>[\w-]+)/summary/$', 'template_summary',
         name='template_summary'),
     )
+
+
+project_pattern = '(?P<username>[-\w]+)/(?P<shortcode>[-\w]+)'
 
 # user_project urls
 urlpatterns += patterns(

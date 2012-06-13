@@ -10,7 +10,6 @@ from html5lib import treebuilders
 from html5lib.serializer import htmlserializer
 from lxml.html import builder as E
 
-
 from .constants import POPCORN_JS_ASSETS, BUTTER_ASSETS, URL_ATTRIBUTES
 
 
@@ -45,20 +44,11 @@ def _get_document_tree(stream):
     return parser.parse(stream)
 
 
-def prepare_template_stream(stream, base_url):
-    """Prepares the stream to be stored in the DB"""
-    document_tree = _get_document_tree(stream)
-    update_butter_links(document_tree)
-    make_links_absolute(document_tree, base_url)
-    return _serialize_stream(document_tree)
-
-
-def remove_default_values(stream, base_url=None):
-    data = json.loads(stream)
-    for attr in ['baseDir', 'name', 'savedDataUrl']:
-        if attr in data:
-            del data[attr]
-    return json.dumps(data)
+def _absolutify_url(base_url, path):
+    url = urlparse(path)
+    if url.netloc:
+        return path
+    return urljoin(base_url, path)
 
 
 def _remove_scripts(document_tree):
@@ -69,34 +59,13 @@ def _remove_scripts(document_tree):
     return document_tree
 
 
-def make_links_absolute(document_tree, base_url):
+def _make_links_absolute(document_tree, base_url):
     for tag, attr in URL_ATTRIBUTES:
         xpath = '//%s[@%s]' % (tag, attr)
         element_list = document_tree.xpath(xpath)
         for element in element_list:
-            url = get_absolute_url(base_url, element.get(attr))
-            element.set(attr, url)
+            element.set(attr, _absolutify_url(base_url, element.get(attr)))
     return document_tree
-
-
-def update_butter_links(document_tree):
-    script_elements = document_tree.xpath('//script[@src]')
-    asset_list = POPCORN_JS_ASSETS + BUTTER_ASSETS
-    for script in script_elements:
-        src = script.get('src')
-        # Determine if the asset is part of Butter or Popcorn
-        asset_path = get_library_path(src, asset_list)
-        if asset_path:
-            script.set('src', asset_path)
-    return document_tree
-
-
-def get_absolute_url(base_url, path):
-    url = urlparse(path)
-    if url.netloc:
-        return path
-    return urljoin(base_url, path)
-
 
 def prepare_popcorn_string_from_project_data(project_data):
     """ Prepares a script tag representing a Popcorn instance
@@ -132,6 +101,18 @@ def prepare_popcorn_string_from_project_data(project_data):
     return popcorn_string
 
 
+def _add_popcorn_metadata(document_tree, metadata):
+    """Transform the metadata into Popcorn instructions"""
+    if not metadata:
+        return document_tree
+    data = json.loads(metadata)
+    popcorn = prepare_popcorn_string_from_project_data(data)
+    body = document_tree.xpath('//body')[0]
+    script = E.SCRIPT(popcorn, type="text/javascript")
+    body.append(script)
+    return document_tree
+
+
 def _add_popcorn_plugins(document_tree, config):
     """Adds the popcorn plugins from the template config"""
     if not config:
@@ -151,29 +132,36 @@ def _add_popcorn_plugins(document_tree, config):
     return document_tree
 
 
-def _add_popcorn_metadata(document_tree, metadata):
-    """Transform the metadata into Popcorn instructions"""
-    if not metadata:
-        return document_tree
-    data = json.loads(metadata)
-    popcorn = prepare_popcorn_string_from_project_data(data)
-    body = document_tree.xpath('//body')[0]
-    script = E.SCRIPT(popcorn, type="text/javascript")
-    body.append(script)
-    return document_tree
+def prepare_template_stream(stream, base_url):
+    """Prepares the stream to be stored in the DB"""
+    document_tree = _get_document_tree(stream)
+    _make_links_absolute(document_tree, base_url)
+    return _serialize_stream(document_tree)
 
 
-def export_template(template, metadata):
+def export_template(template, metadata, base_url):
     """Generates a Project export from the ``Template`` and ``metadata``
     - Gets the skeleton from the template HTML
     - Removes any Butter reference
     - Imports the plugin from the template config file
     - Adds popcorn functionality from the metadata.
     """
-    base_url = '%s%s/%s' % (settings.TEMPLATE_MEDIA_URL,
-                            template.author.username, template.slug)
     document_tree = _get_document_tree(template.template_content)
     _remove_scripts(document_tree)
     _add_popcorn_plugins(document_tree, template.config)
     _add_popcorn_metadata(document_tree, metadata)
     return _serialize_stream(document_tree)
+
+
+def _remove_default_values(data):
+    for attr in ['baseDir', 'name', 'savedDataUrl']:
+        if attr in data:
+            del data[attr]
+    return data
+
+
+def prepare_config_stream(stream, base_url):
+    """Prepares the config to be stored in the database"""
+    data = json.loads(stream)
+    data = _remove_default_values(data)
+    return json.dumps(data)

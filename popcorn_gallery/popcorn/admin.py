@@ -36,6 +36,15 @@ class TemplateAdmin(admin.ModelAdmin):
             )
         return custom_urls + urls
 
+    def save_formset(self, request, form, formset, change):
+        """Given an inline formset save it to the database."""
+        super(TemplateAdmin, self).save_formset(request, form, formset, change)
+        # Reload and Save the ``Template`` again to make sure it
+        # picks up the new configuration values
+        instance = self.model.objects.get(id=form.instance.id)
+        instance.save()
+
+
     def import_template(self, request):
         """Imports a Template bundled in a zip file.
          - A template can be bulk uploaded with a zip file, the files must be
@@ -47,7 +56,13 @@ class TemplateAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             form = UploadTemplateAdminForm(request.POST, request.FILES)
             if form.is_valid():
-                user_path = '%s/%s/' % (request.user.username, form.slug)
+                template_data = {
+                    'name': form.cleaned_data['template_zip'].name.split('.')[-2],
+                    'author': request.user,
+                    'status': Template.HIDDEN,
+                    }
+                template = Template.objects.create(**template_data)
+                user_path = '%s/%s/' % (request.user.username, template.slug)
                 zipped_template = request.FILES['template_zip']
                 try:
                     imported_files = import_zipped_template(zipped_template,
@@ -56,13 +71,6 @@ class TemplateAdmin(admin.ModelAdmin):
                     self.message_user(request, 'Invalid Zip file')
                 if not imported_files:
                     self.message_user(request, 'No files to import')
-                template_data = {
-                    'name': form.slug,
-                    'slug': form.slug,
-                    'author': request.user,
-                    'status': Template.HIDDEN,
-                    }
-                template = Template.objects.create(**template_data)
                 for imported_file in imported_files:
                     template.asset_set.create(asset=imported_file)
                 return redirect('admin:popcorn_template_change', template.pk)

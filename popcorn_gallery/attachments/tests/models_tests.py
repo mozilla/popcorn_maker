@@ -35,9 +35,24 @@ class AssetTest(TestCase):
         asset = Asset.objects.create(**data)
         ok_(asset.id)
         ok_(self.storage.exists(asset.asset.name))
+        eq_(len(self.template.asset_list), 1)
 
     def test_asset_removal(self):
         asset = create_asset(template=self.template)
         asset.delete()
         eq_(self.storage.exists(asset.asset.name), False)
 
+    def test_asset_template(self):
+        create_asset(template=self.template, asset_type=Asset.TEMPLATE)
+        eq_(len(self.template.asset_list), 1)
+        ok_(self.template.template_asset)
+
+    def test_asset_config(self):
+        create_asset(template=self.template, asset_type=Asset.CONFIG)
+        eq_(len(self.template.asset_list), 1)
+        ok_(self.template.config_asset)
+
+    def test_asset_metadata(self):
+        create_asset(template=self.template, asset_type=Asset.DATA)
+        eq_(len(self.template.asset_list), 1)
+        ok_(self.template.metadata_asset)

@@ -12,7 +12,7 @@ from tower import ugettext_lazy as _
 from .baseconv import base62
 from .managers import ProjectManager, ProjectLiveManager, TemplateManager
 from .storage import TemplateStorage
-from .templates import (prepare_template_stream, remove_default_values,
+from .templates import (prepare_template_stream, prepare_config_stream,
                         export_template)
 from ..attachments.models import Asset
 from ..base.decorators import cached_property
@@ -37,7 +37,7 @@ class Template(models.Model):
         (REMOVED, _('Removed')),
         )
     name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
+    slug = AutoSlugField(populate_from='name')
     description = models.TextField(blank=True)
     author = models.ForeignKey('auth.User')
     config = JSONField(blank=True,
@@ -69,17 +69,17 @@ class Template(models.Model):
 
     def save(self, *args, **kwargs):
         base_url = '%s%s' % (settings.TEMPLATE_MEDIA_URL,
-                                 template_path(self, ''))
+                             template_path(self, ''))
         if self.template_asset and not self.template_content:
             template_stream = smart_unicode(self.template_asset.read())
             self.template_content = prepare_template_stream(template_stream,
                                                             base_url)
         if self.config_asset and not self.config:
             config_stream = smart_unicode(self.config_asset.read())
-            self.config = remove_default_values(config_stream, base_url)
+            self.config = prepare_config_stream(config_stream, base_url)
         if self.metadata_asset and not self.metadata:
             metadata_stream = smart_unicode(self.metadata_asset.read())
-            self.metadata = remove_default_values(metadata_stream, base_url)
+            self.metadata = prepare_config_stream(metadata_stream, base_url)
         return super(Template, self).save(*args, **kwargs)
 
     @models.permalink
@@ -90,30 +90,28 @@ class Template(models.Model):
     def get_template_url(self):
         return ('template_detail', [self.slug])
 
-    @cached_property
+    def get_asset_type(self, asset_type):
+        try:
+            asset = self.asset_set.get(asset_type=asset_type)
+            return asset.asset
+        except self.asset_set.model.DoesNotExist:
+            return None
+
+    @property
+    def template_asset(self):
+        return self.get_asset_type(Asset.TEMPLATE)
+
+    @property
+    def config_asset(self):
+        return self.get_asset_type(Asset.CONFIG)
+
+    @property
+    def metadata_asset(self):
+        return self.get_asset_type(Asset.DATA)
+
+    @property
     def asset_list(self):
         return self.asset_set.all()
-
-    @cached_property
-    def template_asset(self):
-        for asset in self.asset_list:
-            if asset.asset_type == Asset.TEMPLATE:
-                return asset.asset
-        return None
-
-    @cached_property
-    def config_asset(self):
-        for asset in self.asset_list:
-            if asset.asset_type == Asset.CONFIG:
-                return asset.asset
-        return None
-
-    @cached_property
-    def metadata_asset(self):
-        for asset in self.asset_list:
-            if asset.asset_type == Asset.DATA:
-                return asset.asset
-        return None
 
     @property
     def is_published(self):
@@ -181,8 +179,13 @@ class Project(models.Model):
 
     def save(self, *args, **kwargs):
         if self.template and self.metadata:
-            self.html = export_template(self.template, self.metadata)
+            base_url = '%s%s' % (settings.TEMPLATE_MEDIA_URL,
+                                 template_path(self.template, ''))
+            self.html = export_template(self.template, self.metadata, base_url)
         else:
+            # HTML must only be populated through the export_template
+            # since this stream is renderd and only the output from
+            # the template can be trusted.
             self.html = ''
         return super(Project, self).save(*args, **kwargs)
 
