@@ -19,8 +19,11 @@
 
       <a class="btn btn-success btn-larger" href="{{ project.get_project_url() }}">View this!</a>
       <ul>
+        {% if request.user == project.author or project.is_forkable %}
+        <li><a class="btn-mini" href="{{ project.get_butter_url() }}"><i class="icon-edit"></i>edit this!</a></li>
+        {% endif %}
         {% if request.user == project.author %}
-        <li><a class="btn-mini" href="{{ project.get_edit_url() }}"><i class="icon-edit"></i>edit</a></li>
+        <li><a class="btn-mini" href="{{ project.get_edit_url() }}"><i class="icon-edit"></i>project options</a></li>
         {% endif %}
         {% if request.user == project.author or project.is_forkable %}
         <li><a class="btn-mini" href="{{ project.get_fork_url() }}"><i class="icon-road"></i>fork</a></li>
