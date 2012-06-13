@@ -26,7 +26,7 @@ def update_npm():
         local('npm install')
         local('npm update')
 
-def prepare_butter():
+def compile_butter():
     print yellow('Compiling Butter files.')
     with lcd(os.path.join(settings.PROJECT_ROOT, 'butter')):
         local('VERSION=0.5 node make release')
@@ -57,13 +57,12 @@ def update_index():
 def update():
     print yellow('Updating the site:')
     syncdb()
-    prepare_butter()
-    copy_butter()
+    compile_butter()
     update_index()
 
 
 def collectstatic():
-    prepare_butter()
+    compile_butter()
     print yellow('Collecting static files.')
     with lcd(settings.PROJECT_ROOT):
         local('python manage.py collectstatic --noinput')

@@ -5709,9 +5709,9 @@ define('cornfield/module',['util/xhr'], function(XHR) {
   var Cornfield = function( butter, config ) {
 
     var authenticated = false,
-        email,
-        name,
-        username,
+        email = "",
+        name = "",
+        username = "",
         server = audience();
 
     if ( !navigator.id ) {
@@ -5821,17 +5821,22 @@ define('cornfield/module',['util/xhr'], function(XHR) {
 
     this.logout = function(callback) {
       XHR.get(server + "/browserid/logout", function() {
-        email = null;
+        email = "";
         if (this.readyState === 4) {
+          var response;
+
           try {
-            var response = JSON.parse(this.response);
+            response = JSON.parse( this.response );
             authenticated = false;
-            email = undefined;
-            username = undefined;
-            name = undefined;
-            callback(response);
+            email = "";
+            username = "";
+            name = "";
           } catch (err) {
-            callback({ error: "an unknown error occured" });
+            response = { error: "an unknown error occured" };
+          }
+
+          if ( callback ) {
+            callback( response );
           }
         }
       });
@@ -8705,55 +8710,67 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
   });
 }());
 
-define('text!layouts/header.html',[],function () { return '<div class="logo-drop"></div>\n<h1 class="name"></h1>\n<div class="editor-actions">\n  <button id="butter-header-projects" class="butter-header-brown">Projects</button>\n  <button id="butter-header-save" class="butter-header-brown">Save</button>\n  <button id="butter-header-share">Publish</button>\n  <button id="butter-header-auth"></button>\n  <button id="butter-header-auth-out">Logout</button>\n</div>\n';});
+define('text!layouts/header.html',[],function () { return '<div id="butter-header" data-butter-exclude>\n  <div class="logo-drop"></div>\n  <h1 class="name"></h1>\n  <div class="editor-actions">\n    <a class="btn" href="#" id="butter-header-save"\n      title="Save your project"><i class="icon-ok-sign"></i> Save</a>\n    <a class="btn" href="#" id="butter-header-source"\n      title="View the source of this template"><i class="icon-hdd"></i> View Source</a>\n    <a class="btn" href="#" id="butter-header-share"\n      title="Generate a link to share this project with the world"><i class="icon-share-alt"></i> Publish</a>\n    <a class="btn" href="#" id="butter-header-auth"\n      title="Sign in or sign up with Persona"><i class=\'icon-user\'></i>Sign In / Sign Up</a>\n  </div>\n</div>\n';});
 
 define('ui/header',[
   "dialog/iframe-dialog",
+  "util/lang",
   "text!layouts/header.html"
 ], function(
   IFrameDialog,
+  Lang,
   HEADER_TEMPLATE
 ) {
 
-  var DEFAULT_AUTH_BUTTON_TEXT = "Login / Sign Up",
-      DEFAULT_AUTH_BUTTON_TITLE = "Login using BrowserID authentication";
+  var DEFAULT_AUTH_BUTTON_TEXT = "<i class='icon-user'></i> Sign In / Sign Up",
+      DEFAULT_AUTH_BUTTON_TITLE = "Sign in or sign up with Persona";
 
   return function( butter, options ){
 
     options = options || {};
 
-    var _rootElement = document.createElement( "div" ),
+    var _rootElement = Lang.domFragment( HEADER_TEMPLATE ),
         _title,
-        _projectsButton,
         _saveButton,
+        _sourceButton,
         _shareButton,
-        _loginButton,
-        _logoutButton;
+        _authButton;
 
-    _rootElement.innerHTML = HEADER_TEMPLATE;
     _title = _rootElement.querySelector(".name");
     _title.innerHTML = options.value( "title" ) || "Popcorn Maker";
 
-    _rootElement.setAttribute( "data-butter-exclude", true );
-    _rootElement.id = "butter-header";
+    _rootElement = document.body.insertBefore( _rootElement, document.body.firstChild );
 
-    document.body.insertBefore( _rootElement, document.body.firstChild );
-
-    _projectsButton = document.getElementById( "butter-header-projects" );
     _saveButton = document.getElementById( "butter-header-save" );
+    _sourceButton = document.getElementById( "butter-header-source" );
     _shareButton = document.getElementById( "butter-header-share" );
-    _loginButton = document.getElementById( "butter-header-auth" );
-    _logoutButton = document.getElementById( "butter-header-auth-out" );
-
-    _saveButton.title = "Save your project";
-    _shareButton.title = "Generate a link to share this project with the world";
-    _logoutButton.title = "Logout";
-    _loginButton.title = DEFAULT_AUTH_BUTTON_TITLE;
+    _authButton = document.getElementById( "butter-header-auth" );
 
     document.body.classList.add( "butter-header-spacing" );
 
-    var _oldDisplayProperty = _logoutButton.style.display;
-    _logoutButton.style.display = "none";
+    _sourceButton.addEventListener( "click", function( e ){
+
+      var exportPackage = {
+        html: butter.getHTML(),
+        json: butter.exportProject()
+      };
+
+      var dialog = new IFrameDialog({
+        type: "iframe",
+        modal: true,
+        url: butter.ui.dialogDir + "view-source.html",
+        events: {
+          open: function(){
+            dialog.send( "export", exportPackage );
+          },
+          cancel: function( e ){
+            dialog.close();
+          }
+        }
+      });
+
+      dialog.open();
+    }, false );
 
     function authenticationRequired( successCallback, errorCallback ){
       if ( butter.cornfield.authenticated() && successCallback && typeof successCallback === "function" ) {
@@ -8779,12 +8796,6 @@ define('ui/header',[
       });
     }
 
-    _loginButton.addEventListener( "click", authenticationRequired, false );
-
-    _logoutButton.addEventListener( "click", function( e ){
-      butter.cornfield.logout( logoutDisplay );
-    });
-
     function showErrorDialog( message, callback ){
       var dialog = new IFrameDialog({
         type: "iframe",
@@ -8804,10 +8815,6 @@ define('ui/header',[
       });
       dialog.open();
     }
-
-    _projectsButton.addEventListener( "click", function() {
-      window.location = "/dashboard";
-    });
 
     _shareButton.addEventListener( "click", function( e ){
       function publish(){
@@ -8898,18 +8905,22 @@ define('ui/header',[
       authenticationRequired( doSave );
     }, false );
 
+    function doLogout() {
+      butter.cornfield.logout( logoutDisplay );
+    }
+
     function loginDisplay() {
-      _loginButton.innerHTML = butter.cornfield.email();
-      _loginButton.title = "This is you!";
-      _loginButton.disabled = true;
-      _logoutButton.style.display = _oldDisplayProperty;
+      _authButton.removeEventListener( "click", authenticationRequired, false );
+      _authButton.innerHTML = "<i class='icon-user'></i> " + butter.cornfield.name();
+      _authButton.title = "This is you!";
+      _authButton.addEventListener( "click", doLogout, false );
     }
 
     function logoutDisplay() {
-      _logoutButton.style.display = "none";
-      _loginButton.innerHTML = DEFAULT_AUTH_BUTTON_TEXT;
-      _loginButton.disabled = false;
-      _loginButton.title = DEFAULT_AUTH_BUTTON_TITLE;
+      _authButton.removeEventListener( "click", doLogout, false );
+      _authButton.innerHTML = DEFAULT_AUTH_BUTTON_TEXT;
+      _authButton.title = DEFAULT_AUTH_BUTTON_TITLE;
+      _authButton.addEventListener( "click", authenticationRequired, false );
     }
 
     if ( butter.cornfield.authenticated() ) {
@@ -8921,13 +8932,6 @@ define('ui/header',[
         loginDisplay();
       });
     }
-
-    function setup(){
-      _rootElement.style.width = window.innerWidth + "px";
-    }
-
-    window.addEventListener( "resize", setup, false );
-    setup();
 
   };
 
@@ -10085,11 +10089,26 @@ define('ui/ui',[ "core/eventmanager", "./toggler", "./logo-spinner", "./context-
       };
 
       function attemptDataLoad( finishedCallback ){
-        if ( _config.value( "savedDataUrl" ) ) {
+        var savedDataUrl;
+
+        // see if savedDataUrl is in the page's query string
+        window.location.search.substring( 1 ).split( "&" ).forEach(function( item ){
+          item = item.split( "=" );
+          if ( item && item[ 0 ] === "savedDataUrl" ) {
+            savedDataUrl = item[ 1 ];
+          }
+        });
+
+        // otherwise, try to grab it from the config
+        savedDataUrl = savedDataUrl || _config.value( "savedDataUrl" );
+
+        // if either succeeded, proceed with XHR to load saved data
+        if ( savedDataUrl ) {
 
           var xhr = new XMLHttpRequest(),
-              savedDataUrl = _config.value( "savedDataUrl" ) + "?noCache=" + Date.now(),
               savedData;
+
+          savedDataUrl += "?noCache=" + Date.now(),
 
           xhr.open( "GET", savedDataUrl, false );
 
