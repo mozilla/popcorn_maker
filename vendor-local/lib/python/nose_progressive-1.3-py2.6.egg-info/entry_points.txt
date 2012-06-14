@@ -1,4 +1,0 @@
-
-        [nose.plugins.0.10]
-        noseprogressive = noseprogressive:ProgressivePlugin
-        
