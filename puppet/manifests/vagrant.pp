@@ -16,35 +16,42 @@ Exec {
 
 class dev {
   class {
-    init: before => Class[mysql];
+    init: ;
     memcached: ;
     versioning: ;
-    nodejs: before => Class[playdoh];
-  }
-  class { "python":
-    before => Class[apache],
-    project_path => $project_path;
   }
   class { "mysql":
-    before => Class[python],
+    require => Class[init],
     password => $password;
   }
+  class { "python":
+    require => Class[mysql],
+    project_path => $project_path;
+  }
+  class { "certificates":
+    require => Class[python],
+    server_name => $server_name;
+  }
+  class { "nodejs":
+    require => Class[python];
+  }
   class { "apache":
-    before => Class[playdoh],
+    require => Class[certificates],
     server_name => $server_name,
     project_path => $project_path;
   }
   class { "nginx":
-    before => Class[apache],
+    require => Class[apache],
     server_name => $server_name,
     project_path => $project_path;
   }
   class { "playdoh":
     project_path => $project_path,
     project_name => $project_name,
-    password => $password;
+    password => $password,
+    require => Class[nginx];
   }
-  class { "custom" :
+  class { "custom":
     project_path => $project_path,
     project_name => $project_name;
   }

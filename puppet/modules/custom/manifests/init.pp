@@ -1,6 +1,6 @@
 # custom helpers for the app
 class custom ($project_path, $project_name) {
-  $packages = ['vim', 'curl', 'ack-grep']
+  $packages = ['vim', 'curl', 'ack-grep', 'tree']
   package { $packages:
     ensure => installed
   }

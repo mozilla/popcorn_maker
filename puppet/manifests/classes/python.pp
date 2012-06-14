@@ -3,7 +3,7 @@ class python ($project_path){
   case $operatingsystem {
     ubuntu: {
       package {
-        ["python2.6-dev", "python2.6", "python-imaging", "python-wsgi-intercept", "python-pip"]:
+        ["python2.6-dev", "python2.6", "python-imaging", "python-wsgi-intercept", "python-pip", "python-lxml"]:
           ensure => installed,
       }
       exec { "virtualenvwrapper":
