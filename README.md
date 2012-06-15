@@ -3,7 +3,7 @@ Popcorn Gallery
 
 Django app to power the Popcorn Maker! http://mozillapopcorn.org/
 
-Documentation available in http://readthedocs.org/builds/popcorn-maker/
+Documentation available at http://popcorn-maker.readthedocs.org/en/latest/
 
 The Project structure is based on Mozilla Playdoh http://playdoh.readthedocs.org/en/latest/index.html
 
