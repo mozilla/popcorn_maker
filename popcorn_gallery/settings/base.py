@@ -177,3 +177,5 @@ HAYSTACK_CONNECTIONS = {
         'PATH': path('whoosh_index'),
         },
 }
+
+MAX_STREAM_CHARS = 1024 * 100

@@ -7,7 +7,6 @@ try:
 except ImportError:
     class IOUnsupportedOperation(Exception):
         """A dummy exception to take the place of Python 3's ``io.UnsupportedOperation`` in Python 2"""
-        pass
 import os
 from os import isatty, environ
 from platform import python_version_tuple
@@ -16,13 +15,13 @@ import sys
 from termios import TIOCGWINSZ
 
 
+__all__ = ['Terminal']
+
+
 if ('3', '0', '0') <= python_version_tuple() < ('3', '2', '2+'):  # Good till 3.2.10
     # Python 3.x < 3.2.3 has a bug in which tparm() erroneously takes a string.
     raise ImportError('Blessings needs Python 3.2.3 or greater for Python 3 '
                       'support due to http://bugs.python.org/issue10570.')
-
-
-__all__ = ['Terminal']
 
 
 class Terminal(object):
@@ -111,10 +110,18 @@ class Terminal(object):
         clear_eol='el',
         clear_bol='el1',
         clear_eos='ed',
+        # 'clear' clears the whole screen.
         position='cup',  # deprecated
         move='cup',
         move_x='hpa',
         move_y='vpa',
+        move_left='cub1',
+        move_right='cuf1',
+        move_up='cuu1',
+        move_down='cud1',
+
+        hide_cursor='civis',
+        normal_cursor='cnorm',
 
         reset_colors='op',  # oc doesn't work on my OS X terminal.
 
@@ -206,7 +213,10 @@ class Terminal(object):
                     print 'I can do it %i times!' % x
 
         Specify ``x`` to move to a certain column, ``y`` to move to a certain
-        row, or both.
+        row, both, or neither. If you specify neither, only the saving and
+        restoration of cursor position will happen. This can be useful if you
+        simply want to restore your place after doing some manual cursor
+        movement.
 
         """
         return Location(self, x, y)
@@ -438,11 +448,11 @@ class Location(object):
     def __enter__(self):
         """Save position and move to the requested column, row, or both."""
         self.term.stream.write(self.term.save)  # save position
-        if self.x and self.y:
+        if self.x is not None and self.y is not None:
             self.term.stream.write(self.term.move(self.y, self.x))
-        elif self.x:
+        elif self.x is not None:
             self.term.stream.write(self.term.move_x(self.x))
-        elif self.y:
+        elif self.y is not None:
             self.term.stream.write(self.term.move_y(self.y))
 
     def __exit__(self, type, value, tb):

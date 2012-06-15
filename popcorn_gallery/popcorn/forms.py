@@ -10,8 +10,8 @@ from .fields import PopcornJSONField
 
 class ProjectForm(forms.Form):
     """Form used to validate the data sent through the API."""
-    name = forms.CharField()
-    data = PopcornJSONField()
+    name = forms.CharField(max_length=255)
+    data = PopcornJSONField(max_length=settings.MAX_STREAM_CHARS)
     template = forms.ModelChoiceField(queryset=Template.live.all(),
                                       empty_label=None,
                                       to_field_name='slug')
@@ -50,7 +50,7 @@ class ExternalProjectEditForm(ProjectEditForm):
 
 
 class ProjectSubmissionForm(forms.ModelForm):
-    name = forms.CharField()
+    name = forms.CharField(max_length=255)
     url = forms.URLField()
     thumbnail = forms.ImageField(required=False)
 

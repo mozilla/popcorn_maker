@@ -17,10 +17,12 @@
     {{ form.name.label_tag() }} {{ form.name }}
   </div>
 
+  {% if form.username %}
   <div class="">
     {% if form.username.errors %}{{ form.username.errors }}{% endif %}
     {{ form.username.label_tag() }} {{ form.username }}
   </div>
+  {% endif %}
 
   <div class="">
     {% if form.website.errors %}{{ form.website.errors }}{% endif %}
