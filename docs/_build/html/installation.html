@@ -1,0 +1,225 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Popcorn Maker 0.5.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.5.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Popcorn Maker 0.5.2 documentation" href="index.html" />
+    <link rel="next" title="Templates" href="templates.html" />
+    <link rel="prev" title="Welcome to the Popcorn Maker site’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="templates.html" title="Templates"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to the Popcorn Maker site’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Popcorn Maker 0.5.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-the-source-code">
+<h2>Getting the source code<a class="headerlink" href="#getting-the-source-code" title="Permalink to this headline">¶</a></h2>
+<p>Clone the repository and its dependencies:</p>
+<div class="highlight-python"><pre>git clone --recursive git@github.com:alfredo/popcorn_gallery.git</pre>
+</div>
+<p>This will take a few minutes.</p>
+</div>
+<div class="section" id="setup-the-application">
+<h2>Setup the application<a class="headerlink" href="#setup-the-application" title="Permalink to this headline">¶</a></h2>
+<p>The recommended setup is using vagrant and virtual box, you can get them from:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://www.virtualbox.org/wiki/Downloads">Virtualbox</a></li>
+<li><a class="reference external" href="http://vagrantup.com/">Vagrant</a></li>
+</ul>
+<p>This will keep the code living in your filesystem but the application running inside a VM.</p>
+<p>Once you&#8217;ve installed vagrant, from the root of the repository copy the local vagrant settings:</p>
+<div class="highlight-python"><pre>cp vagrantconfig_local.yaml-dist vagrantconfig_local.yaml</pre>
+</div>
+<p>Edit <tt class="docutils literal"><span class="pre">vagrantconfig_local.yaml</span></tt> if you want to change any of the defaults.</p>
+<p>If you are on an NFS capable OS I recommend that you change <tt class="docutils literal"><span class="pre">nfs</span></tt> to <tt class="docutils literal"><span class="pre">true</span></tt>.</p>
+<p>VirtualBox has know issues sharing files natively, more about this issue: <a class="reference external" href="http://vagrantup.com/docs/nfs.html">http://vagrantup.com/docs/nfs.html</a></p>
+<p>Now we are ready to provision the machine run:</p>
+<div class="highlight-python"><pre>vagrant up</pre>
+</div>
+<p>This will take a few minutes, so go on and reward yourself with a nice cup of tea!</p>
+</div>
+<div class="section" id="update-the-local-settings-file">
+<h2>Update the local settings file<a class="headerlink" href="#update-the-local-settings-file" title="Permalink to this headline">¶</a></h2>
+<p>From the root of the repository copy the local python settings:</p>
+<div class="highlight-python"><pre>cp popcorn_gallery/settings/local.py-dist popcorn_gallery/settings/local.py</pre>
+</div>
+<p>Amend <tt class="docutils literal"><span class="pre">popcorn_gallery/settings/local.py</span></tt>  adding your details:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">ADMINS</span></tt>: Add an email address and a name.</li>
+<li><tt class="docutils literal"><span class="pre">SECRET_KEY</span></tt>: This can be anything.</li>
+<li><tt class="docutils literal"><span class="pre">HMAC_KEYS</span></tt>: Uncomment or add your own key inside it.</li>
+</ul>
+</div>
+<div class="section" id="add-a-host-alias">
+<h2>Add a host alias<a class="headerlink" href="#add-a-host-alias" title="Permalink to this headline">¶</a></h2>
+<p>This is done so you can access the application via: <a class="reference external" href="http://local.mozillapopcorn.org">http://local.mozillapopcorn.org</a> and perform the browserid assertion.</p>
+<p>If you are on OSX or <a href="#id1"><span class="problematic" id="id2">*</span></a>NIX add an alias for the site by running the following command in your local machine:</p>
+<div class="highlight-python"><pre>echo "33.33.33.11 local.mozillapopcorn.org" | sudo tee -a /etc/hosts</pre>
+</div>
+<p>Or if you prefer a GUI try <a class="reference external" href="http://code.google.com/p/gmask/">http://code.google.com/p/gmask/</a></p>
+<p>Now the application should be available at:</p>
+<div class="highlight-python"><pre>https://local.mozillapopcorn.org</pre>
+</div>
+</div>
+<div class="section" id="runing-the-test-suite">
+<h2>Runing the test suite<a class="headerlink" href="#runing-the-test-suite" title="Permalink to this headline">¶</a></h2>
+<p>SSH into the virtualbox:</p>
+<div class="highlight-python"><pre>vagrant ssh</pre>
+</div>
+<p>And run the test suite:</p>
+<div class="highlight-python"><pre>fab test</pre>
+</div>
+</div>
+<div class="section" id="updating-the-development-server">
+<h2>Updating the development server<a class="headerlink" href="#updating-the-development-server" title="Permalink to this headline">¶</a></h2>
+<p>The development server can be updated from time to time, and it is done via Puppet <a class="reference external" href="http://puppetlabs.com/">http://puppetlabs.com/</a></p>
+<p>Update the server by running in your local machine from the root of the project:</p>
+<div class="highlight-python"><pre>vagrant provision</pre>
+</div>
+</div>
+<div class="section" id="puppet-summary">
+<h2>Puppet Summary<a class="headerlink" href="#puppet-summary" title="Permalink to this headline">¶</a></h2>
+<p>Puppet will provision everything necessary for the development VM to run.</p>
+<p>The application stack is composed by:</p>
+<ul class="simple">
+<li>MySQL</li>
+<li>Python</li>
+<li>Apache</li>
+</ul>
+<p>The web server is <tt class="docutils literal"><span class="pre">NGINX</span></tt> and proxy-passing whatever is served in the VM from the port <tt class="docutils literal"><span class="pre">8000</span></tt> to <tt class="docutils literal"><span class="pre">80</span></tt> and <tt class="docutils literal"><span class="pre">443</span></tt> and serving most of the static files.</p>
+<p><tt class="docutils literal"><span class="pre">Nodejs</span></tt> is used for compiling the <tt class="docutils literal"><span class="pre">Popcorn</span></tt> and <tt class="docutils literal"><span class="pre">Butter</span></tt> assets.</p>
+</div>
+<div class="section" id="speed-up-the-server">
+<h2>Speed up the server<a class="headerlink" href="#speed-up-the-server" title="Permalink to this headline">¶</a></h2>
+<p>At the moment the wsgi application is served via apache, which it&#8217;s a bit hacky in order to pick up the file changes and reload automaticaly.</p>
+<p>If you want to speed up the application you could try stop apache and run the application via the development server.</p>
+<p>SSH into the virtual box:</p>
+<div class="highlight-python"><pre>vagrant ssh</pre>
+</div>
+<p>Stop apache:</p>
+<div class="highlight-python"><pre>sudo /etc/init.d/apache2 stop</pre>
+</div>
+<p>Run the development server:</p>
+<div class="highlight-python"><pre>python manage.py runserver</pre>
+</div>
+</div>
+<div class="section" id="creating-a-superuser">
+<h2>Creating a superuser<a class="headerlink" href="#creating-a-superuser" title="Permalink to this headline">¶</a></h2>
+<p>From inside the VM run:</p>
+<div class="highlight-python"><pre>python manage.py createsuperuser</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#getting-the-source-code">Getting the source code</a></li>
+<li><a class="reference internal" href="#setup-the-application">Setup the application</a></li>
+<li><a class="reference internal" href="#update-the-local-settings-file">Update the local settings file</a></li>
+<li><a class="reference internal" href="#add-a-host-alias">Add a host alias</a></li>
+<li><a class="reference internal" href="#runing-the-test-suite">Runing the test suite</a></li>
+<li><a class="reference internal" href="#updating-the-development-server">Updating the development server</a></li>
+<li><a class="reference internal" href="#puppet-summary">Puppet Summary</a></li>
+<li><a class="reference internal" href="#speed-up-the-server">Speed up the server</a></li>
+<li><a class="reference internal" href="#creating-a-superuser">Creating a superuser</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to the Popcorn Maker site&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="templates.html"
+                        title="next chapter">Templates</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="templates.html" title="Templates"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to the Popcorn Maker site’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Popcorn Maker 0.5.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Popcorn Development Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

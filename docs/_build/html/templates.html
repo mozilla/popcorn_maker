@@ -1,0 +1,149 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Templates &mdash; Popcorn Maker 0.5.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.5.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Popcorn Maker 0.5.2 documentation" href="index.html" />
+    <link rel="next" title="Applications" href="apps.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="apps.html" title="Applications"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Popcorn Maker 0.5.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="templates">
+<h1>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="adding-templates">
+<h2>Adding templates<a class="headerlink" href="#adding-templates" title="Permalink to this headline">¶</a></h2>
+<p>Only admins/superusers are allowed to add templates to the gallery.
+You must create a superuser as specified in the above step.</p>
+<p>Once that has been done, visit:</p>
+<p><a class="reference external" href="http://local.mozillapopcorn.org/admin">http://local.mozillapopcorn.org/admin</a></p>
+<p>In your browser and login to the Django Admin interface.</p>
+<p>There you can choose to add a template file by file, or import a zip file.
+A sample zipped template can be found at <a class="reference external" href="https://github.com/alfredo/popcorn_gallery_template">https://github.com/alfredo/popcorn_gallery_template</a></p>
+<p>Now you must set each file to the proper type:</p>
+<ul class="simple">
+<li>config</li>
+<li>default track events</li>
+<li>static assets</li>
+<li>template html</li>
+</ul>
+<p>Once that has all ben set, click the publish checkbox at the bottom of the page, then save your changes.</p>
+</div>
+<div class="section" id="template-sanitation">
+<h2>Template Sanitation<a class="headerlink" href="#template-sanitation" title="Permalink to this headline">¶</a></h2>
+<p>There are two points where the user generated content is added to the PM site, the templates and the projects</p>
+<p>At the moment the templates are only added by trusted users, so the rules to do this are fairly relaxed, they are procesed to make sure the media paths are correct and that things fall into place once they are saved in the server.</p>
+<p>The HTML and JSON stream served to the templates are preprocessed on save and the sanitation mechanics work pipe-like so there is room sanitize further this content in the future when this is open to more users.</p>
+<p>The templates are imported in bulk and filters the bundled files imported by extension, they are saved using a Template specific storage in order to isolate the user generated content.</p>
+<p>The butter projects are generated using the templates as a base, and they are populated using user specific metadata.</p>
+<p>The metadata saved is sanitized using bleach for any string content. This as well as a pipe like we can add extra validation If we want to.</p>
+<p>The final html export of the project is generated using the template and the saved metadata in the server side.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Templates</a><ul>
+<li><a class="reference internal" href="#adding-templates">Adding templates</a></li>
+<li><a class="reference internal" href="#template-sanitation">Template Sanitation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="apps.html"
+                        title="next chapter">Applications</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/templates.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="apps.html" title="Applications"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">Popcorn Maker 0.5.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Popcorn Development Team.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
