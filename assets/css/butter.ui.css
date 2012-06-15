@@ -11,15 +11,15 @@
   width: 90px;
   overflow: hidden;
 }
-.butter-media-properties .container {
+.butter-media-properties .butter-container {
   top: 0;
 }
-.butter-media-properties .inner-container {
+.butter-media-properties .butter-inner-container {
   padding: 10px;
   margin-bottom: 20px;
   visibility: hidden;
 }
-.butter-media-properties.open .inner-container {
+.butter-media-properties.open .butter-inner-container {
   visibility: visible;
 }
 .butter-media-properties.open .edit-message {

@@ -1709,26 +1709,53 @@ define('util/dragndrop',[], function(){
 
 define('ui/position-tracker',[], function(){
 
-  var POLL_INTERVAL = 20;
-  
+  var requestAnimFrame = (function(){
+      return  window.requestAnimationFrame       ||
+              window.webkitRequestAnimationFrame ||
+              window.mozRequestAnimationFrame    ||
+              window.oRequestAnimationFrame      ||
+              window.msRequestAnimationFrame     ||
+              function( callback ){
+                window.setTimeout(callback, 1000 / 60);
+              };
+      }());
+
   return function( object, movedCallback ){
     var _rect = {},
-        interval;
+        _stopFlag = false;
 
-    interval = setInterval( function(){
+    function check () {
       var newPos = object.getBoundingClientRect();
-      if( newPos.left !== _rect.left ||
-          newPos.right !== _rect.right ||
-          newPos.top !== _rect.top ||
-          newPos.bottom !== _rect.bottom ){
-        _rect = newPos;
+      if (  newPos.left !== _rect.left ||
+            newPos.top !== _rect.top ){
+        _rect = {
+          left: newPos.left,
+          top: newPos.top,
+          width: newPos.width,
+          height: newPos.height
+        };
+        if ( document.body.scrollTop < 0 ) {
+          _rect.top += document.body.scrollTop;
+        }
         movedCallback( _rect );
       }
-    }, POLL_INTERVAL );
+    }
+
+    function loop () {
+      check();
+      if ( !_stopFlag ) {
+        requestAnimFrame( loop );
+      }
+    }
+
+    loop();
+
+    window.addEventListener( "scroll", check, false );
 
     return {
       destroy: function(){
-        clearInterval(interval);
+        _stopFlag = true;
+        window.removeEventListener( "scroll", check, false );
       }
     };
   };
@@ -1879,6 +1906,8 @@ define('ui/page-element',[ "core/logger", "core/eventmanager", "util/dragndrop",
       });
 
     } //if
+
+    this.highlightElement = _highlightElement;
 
     Object.defineProperties( this, {
       element: {
@@ -2053,7 +2082,7 @@ define('util/time',[], function(){
  * obtain one at http://www.mozillapopcorn.org/butter-license.txt */
 
 define('core/views/trackevent-view',[ "core/logger", "core/eventmanager", "util/dragndrop" ], function( Logger, EventManagerWrapper, DragNDrop ){
-  
+
   var __guid = 0;
 
   return function( trackEvent, type, inputOptions ){
@@ -2061,7 +2090,6 @@ define('core/views/trackevent-view',[ "core/logger", "core/eventmanager", "util/
     var _id = "TrackEventView" + __guid++,
         _element = document.createElement( "div" ),
         _zoom = 1,
-        _duration = 1,
         _type = type,
         _start = inputOptions.start || 0,
         _end = inputOptions.end || _start + 1,
@@ -2070,6 +2098,7 @@ define('core/views/trackevent-view',[ "core/logger", "core/eventmanager", "util/
         _typeElement = document.createElement( "div" ),
         _draggable,
         _resizable,
+        _trackEvent = trackEvent,
         _this = this;
 
     EventManagerWrapper( _this );
@@ -2082,8 +2111,8 @@ define('core/views/trackevent-view',[ "core/logger", "core/eventmanager", "util/
     } //toggleHandles
 
     function resetContainer(){
-      _element.style.left = ( _start / _duration * _zoom ) + "px";
-      _element.style.width = ( ( _end - _start ) / _duration * _zoom ) + "px";
+      _element.style.left = _start * _zoom + "px";
+      _element.style.width = ( _end - _start ) * _zoom + "px";
     } //resetContainer
 
     this.setToolTip = function( title ){
@@ -2106,7 +2135,7 @@ define('core/views/trackevent-view',[ "core/logger", "core/eventmanager", "util/
       trackEvent: {
         enumerable: true,
         get: function(){
-          return trackEvent;
+          return _trackEvent;
         }
       },
       element: {
@@ -2157,15 +2186,6 @@ define('core/views/trackevent-view',[ "core/logger", "core/eventmanager", "util/
         },
         set: function( val ){
           _zoom = val;
-          resetContainer();
-        }
-      },
-      duration: {
-        enumerable: true,
-        get: function(){
-          return _element.getBoundingClientRect().width / _zoom;
-        },
-        set: function( val ){
           resetContainer();
         }
       },
@@ -2248,8 +2268,11 @@ define('core/views/trackevent-view',[ "core/logger", "core/eventmanager", "util/
       var rect = _element.getClientRects()[ 0 ];
       _start = _element.offsetLeft / _zoom;
       _end = _start + rect.width / _zoom;
-      _this.dispatch( "trackeventviewupdated" );
-    } //movedCallback
+      _trackEvent.update({
+        start: _start,
+        end: _end
+      });
+    }
 
     _element.className = "butter-track-event";
     _this.type = _type;
@@ -2328,7 +2351,7 @@ define('core/views/track-view',[ "core/logger",
         drop: function( dropped, mousePosition ) {
 
           var draggableType = dropped.getAttribute( "data-butter-draggable-type" );
-          
+
           var start,
               left,
               trackRect = _element.getBoundingClientRect();
@@ -2391,7 +2414,7 @@ define('core/views/track-view',[ "core/logger",
           _duration = val;
           resetContainer();
           for( var i=0, l=_trackEvents.length; i<l; ++i ){
-            _trackEvents[ i ].duration = _duration;
+            _trackEvents[ i ].update();
           } //for
         }
       },
@@ -2422,7 +2445,6 @@ define('core/views/track-view',[ "core/logger",
       _trackEvents.push( trackEvent.view );
       _trackEventElements.push( trackEvent.view.element );
       trackEvent.view.zoom = _zoom;
-      trackEvent.view.duration = _duration;
       trackEvent.view.parent = _this;
       _this.chain( trackEvent, [
         "trackeventmousedown",
@@ -3731,7 +3753,7 @@ define('editor/editor',[ "core/eventmanager", "dialog/iframe-dialog", "dialog/wi
     _dims[ 1 ] = options.height || _dims[ 1 ];
 
     function blinkTarget(){
-      if( _currentTarget === "Media Element" ){
+      if( _currentTarget === butter.currentMedia.target ){
         butter.currentMedia.view.blink();
       }
       else{
@@ -3920,6 +3942,7 @@ function(
     this.setScrollbars = function( hScrollbar, vScrollbar ){
       _hScrollbar = hScrollbar;
       _vScrollbar = vScrollbar;
+      _vScrollbar.update();
     };
 
     this.orderTracks = function( orderedTracks ){
@@ -3968,7 +3991,9 @@ function(
       trackView.duration = _media.duration;
       trackView.zoom = _zoom;
       trackView.parent = _this;
-      _vScrollbar.update();
+      if ( _vScrollbar ) {
+        _vScrollbar.update();
+      }
     }
 
     var existingTracks = _media.tracks;
@@ -3994,8 +4019,13 @@ function(
 
     _this.snapTo = function( time ){
       var p = time / _media.duration,
-          newScroll = _element.scrollWidth * p;
+          newScroll = _container.clientWidth * p,
+          maxLeft = _container.clientWidth - _element.clientWidth;
       if ( newScroll < _element.scrollLeft || newScroll > _element.scrollLeft + _element.clientWidth ) {
+        if ( newScroll > maxLeft ) {
+          _element.scrollLeft = maxLeft;
+          return;
+        }
         _element.scrollLeft = newScroll;
       }
     };
@@ -4844,7 +4874,7 @@ define('timeline/trackhandles',[
         ],
         function( IFrameDialog, DragNDrop ){
 
-  var ADD_TRACK_BUTTON_Y_ADJUSTMENT = 35;
+  var ADD_TRACK_BUTTON_Y_ADJUSTMENT = 37;
 
   return function( butter, media, tracksContainer, orderChangedCallback ){
 
@@ -4862,7 +4892,8 @@ define('timeline/trackhandles',[
     _container.appendChild( _listElement );
 
     _addTrackButton.id = "add-track";
-    _addTrackButton.innerHTML = "+Track";
+    _addTrackButton.innerHTML = "<span class=\"icon icon-plus-sign\"></span> Track";
+    _addTrackButton.classList.add( "butter-btn" );
     _addTrackButton.title = "Add a new Track for your events";
 
     _container.appendChild( _addTrackButton );
@@ -5586,11 +5617,12 @@ define('ui/toggler',[], function(){
 define('ui/context-button',[], function(){
 
   return function( butter ){
-    var _button = document.createElement( "button" );
+    var _button = document.createElement( "butter-button" );
 
     _button.id = "add-popcorn";
     _button.title = "Add Popcorn Events to the timeline";
-    _button.innerHTML = "+Popcorn";
+    _button.classList.add( "butter-btn" );
+    _button.innerHTML = "<span class=\"icon icon-plus-sign\"></span> Popcorn";
 
     _button.addEventListener( "click", function(){
       if( butter.ui.contentState === "timeline" ){
@@ -5616,7 +5648,7 @@ define('ui/context-button',[], function(){
       },
       transitionOut: function(){
         _button.setAttribute( "disabled", true );
-        _button.innerHTML = "+Popcorn";
+        _button.innerHTML = "<span class=\"icon icon-plus-sign\"></span> Popcorn";
         _button.title = "Add Popcorn Events to the timeline";
         _button.classList.remove( "add-popcorn-done" );
       },
@@ -5626,6 +5658,7 @@ define('ui/context-button',[], function(){
     });
   };
 });
+
 /* This Source Code Form is subject to the terms of the MIT license
  * If a copy of the MIT license was not distributed with this file, you can
  * obtain one at http://www.mozillapopcorn.org/butter-license.txt */
@@ -6263,6 +6296,7 @@ define('core/trackevent',[
           end: 1
         },
         _view = new TrackEventView( this, _type, _popcornOptions ),
+        _popcornWrapper = null,
         _selected = false;
 
     EventManagerWrapper( _this );
@@ -6287,6 +6321,17 @@ define('core/trackevent',[
     _popcornOptions.end = TimeUtil.roundTime( _popcornOptions.end );
 
     /**
+     * Member: setPopcornWrapper
+     *
+     * Sets the PopcornWrapper object. Subsequently, PopcornWrapper can be used to directly manipulate Popcorn track events.
+     *
+     * @param {Object} newPopcornWrapper: PopcornWrapper object or null
+     */
+    this.setPopcornWrapper = function ( newPopcornWrapper ) {
+      _popcornWrapper = newPopcornWrapper;
+    };
+
+    /**
      * Member: update
      *
      * Updates the event properties and runs sanity checks on input.
@@ -6296,6 +6341,8 @@ define('core/trackevent',[
      * @event trackeventupdated: Occurs whenan update operation succeeded.
      */
     this.update = function( updateOptions, applyDefaults ) {
+      updateOptions = updateOptions || {};
+
       var failed = false,
           newStart = _popcornOptions.start,
           newEnd = _popcornOptions.end;
@@ -6349,8 +6396,16 @@ define('core/trackevent',[
         if( newEnd ){
           _popcornOptions.end = newEnd;
         }
+
         _view.update( _popcornOptions );
         _this.popcornOptions = _popcornOptions;
+
+        // if PopcornWrapper exists, it means we're connected properly to a Popcorn instance,
+        // and can update the corresponding Popcorn trackevent for this object
+        if ( _popcornWrapper ) {
+          _popcornWrapper.updateEvent( _this );
+        }
+        
         _this.dispatch( "trackeventupdated", _this );
       }
 
@@ -6408,12 +6463,6 @@ define('core/trackevent',[
       _view.update( _popcornOptions );
     }; //moveFrameRight
 
-    _view.listen( "trackeventviewupdated", function( e ){
-      _popcornOptions.start = _view.start;
-      _popcornOptions.end = _view.end;
-      _this.dispatch( "trackeventupdated" );
-    });
-
     Object.defineProperties( this, {
 
       /**
@@ -6429,7 +6478,9 @@ define('core/trackevent',[
         },
         set: function( val ){
           _track = val;
-          _this.update( _popcornOptions );
+          if ( _track ) {
+            _this.update( _popcornOptions );
+          }
         }
       },
 
@@ -6582,11 +6633,26 @@ define('core/track',[
         _name = options.name || _id,
         _order = options.order || 0,
         _view = new TrackView( this ),
+        _popcornWrapper = null,
         _this = this;
 
     _this._media = null;
 
     EventManagerWrapper( _this );
+
+    /**
+     * Member: setPopcornWrapper
+     *
+     * Sets the PopcornWrapper object. Subsequently, PopcornWrapper can be used to directly manipulate Popcorn track events.
+     *
+     * @param {Object} newPopcornWrapper: PopcornWrapper object or null
+     */
+    this.setPopcornWrapper = function ( newPopcornWrapper ) {
+      _popcornWrapper = newPopcornWrapper;
+      for ( var i = 0, l = _trackEvents.length; i < l; ++i ){
+        _trackEvents[ i ].setPopcornWrapper( newPopcornWrapper );
+      }
+    };
 
     Object.defineProperties( this, {
       view: {
@@ -6709,6 +6775,7 @@ define('core/track',[
       ]);
       _view.addTrackEvent( trackEvent );
       trackEvent.track = _this;
+      trackEvent.setPopcornWrapper( _popcornWrapper );
       _this.dispatch( "trackeventadded", trackEvent );
       return trackEvent;
     }; //addTrackEvent
@@ -6725,6 +6792,7 @@ define('core/track',[
         ]);
         _view.removeTrackEvent( trackEvent );
         trackEvent._track = null;
+        trackEvent.setPopcornWrapper( null );
         _this.dispatch( "trackeventremoved", trackEvent );
         return trackEvent;
       } //if
@@ -6943,7 +7011,7 @@ define('timeline/timebar',[ "util/lang", "./scrubber" ], function( util, Scrubbe
         _canvas.width = containerWidth;
       }
 
-      var inc = _tracksContainer.container.scrollWidth / _media.duration,
+      var inc = _tracksContainer.element.firstChild.clientWidth / _media.duration,
           textWidth = context.measureText( util.secondsToSMPTE( 5 ) ).width,
           padding = 20,
           lastPosition = 0,
@@ -7127,7 +7195,7 @@ define('timeline/media',[
     });
 
     function blinkTarget( target ){
-      if( target !== "Media Element" ){
+      if( target !== _media.target ){
         target = butter.getTargetByType( "elementID", target );
         if( target ){
           target.view.blink();
@@ -7957,11 +8025,11 @@ o,p,q)?e.get(h,function(c){e.finishLoad(a,d.strip,c,b,f)}):c([g],function(a){e.f
 b,d)},d)}};if(e.createXhr())e.get=function(a,c){var b=e.createXhr();b.open("GET",a,!0);b.onreadystatechange=function(){b.readyState===4&&c(b.responseText)};b.send(null)};else if(typeof process!=="undefined"&&process.versions&&process.versions.node)l=require.nodeRequire("fs"),e.get=function(a,c){var b=l.readFileSync(a,"utf8");b.indexOf("\ufeff")===0&&(b=b.substring(1));c(b)};else if(typeof Packages!=="undefined")e.get=function(a,c){var b=new java.io.File(a),f=java.lang.System.getProperty("line.separator"),
 b=new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(b),"utf-8")),d,e,h="";try{d=new java.lang.StringBuffer;(e=b.readLine())&&e.length()&&e.charAt(0)===65279&&(e=e.substring(1));for(d.append(e);(e=b.readLine())!==null;)d.append(f),d.append(e);h=String(d.toString())}finally{b.close()}c(h)};return e})})();
 
-define('text!default-config.json',[],function () { return '{\n  "name": "default-config",\n  "baseDir": "../",\n  "snapshotHTMLOnReady": true,\n  "scrapePage": true,\n  "title": "Popcorn Maker",\n  "editor": {\n    "default": "{{baseDir}}editors/default-editor.html",\n    "googlemap": "{{baseDir}}editors/googlemap-editor.html"\n  },\n  "ui": {\n    "enabled": true,\n    "trackEventHighlight": "click"\n  },\n  "mediaDefaults": {\n    "frameAnimation": true\n  },\n  "plugin": {\n    "plugins": [\n      {\n        "type": "attribution",\n        "path": "{{baseDir}}external/popcorn-js/plugins/attribution/popcorn.attribution.js"\n      },\n      {\n        "type": "flickr",\n        "path": "{{baseDir}}external/popcorn-js/plugins/flickr/popcorn.flickr.js"\n      },\n      {\n        "type": "webpage",\n        "path": "{{baseDir}}external/popcorn-js/plugins/webpage/popcorn.webpage.js"\n      },\n      {\n        "type": "text",\n        "path": "{{baseDir}}external/popcorn-js/plugins/text/popcorn.text.js"\n      },\n      {\n        "type": "googlemap",\n        "path": "{{baseDir}}external/popcorn-js/plugins/googlemap/popcorn.googlemap.js"\n      },\n      {\n        "type": "image",\n        "path": "{{baseDir}}external/popcorn-js/plugins/image/popcorn.image.js"\n      },\n      {\n        "type": "twitter",\n        "path": "{{baseDir}}external/popcorn-js/plugins/twitter/popcorn.twitter.js"\n      },\n      {\n        "type": "wikipedia",\n        "path": "{{baseDir}}external/popcorn-js/plugins/wikipedia/popcorn.wikipedia.js"\n      },\n      {\n        "type": "mediaspawner",\n        "path": "{{baseDir}}external/popcorn-js/plugins/mediaspawner/popcorn.mediaspawner.js"\n      }\n    ],\n    "defaults": [\n      "text",\n      "image",\n      "googlemap"\n    ]\n  },\n  "player": {\n    "players": [\n      {\n        "type": "youtube",\n        "path": "{{baseDir}}external/popcorn-js/players/youtube/popcorn.youtube.js"\n      },\n      {\n        "type": "soundcloud",\n        "path": "{{baseDir}}external/popcorn-js/players/soundcloud/popcorn.soundcloud.js"\n      },\n      {\n        "type": "vimeo",\n        "path": "{{baseDir}}external/popcorn-js/players/vimeo/popcorn.vimeo.js"\n      }\n    ],\n    "defaults": [\n      "youtube",\n      "soundcloud",\n      "vimeo"\n    ]\n  },\n  "dirs": {\n    "popcorn-js": "{{baseDir}}external/popcorn-js/",\n    "css": "{{baseDir}}css/",\n    "dialogs": "{{baseDir}}dialogs/",\n    "resources": "{{baseDir}}resources/"\n  },\n  "icons": {\n    "default": "popcorn-icon.png",\n    "image": "image-icon.png"\n  }\n}\n';});
+define('text!default-config.json',[],function () { return '{\n  "name": "default-config",\n  "baseDir": "../",\n  "snapshotHTMLOnReady": true,\n  "scrapePage": true,\n  "title": "Popcorn Maker",\n  "editor": {\n    "default": "{{baseDir}}editors/default-editor.html",\n    "googlemap": "{{baseDir}}editors/googlemap-editor.html"\n  },\n  "ui": {\n    "enabled": true,\n    "trackEventHighlight": "click"\n  },\n  "mediaDefaults": {\n    "frameAnimation": true\n  },\n  "plugin": {\n    "plugins": [\n      {\n        "type": "attribution",\n        "path": "{{baseDir}}external/popcorn-js/plugins/attribution/popcorn.attribution.js"\n      },\n      {\n        "type": "webpage",\n        "path": "{{baseDir}}external/popcorn-js/plugins/webpage/popcorn.webpage.js"\n      },\n      {\n        "type": "text",\n        "path": "{{baseDir}}external/popcorn-js/plugins/text/popcorn.text.js"\n      },\n      {\n        "type": "googlemap",\n        "path": "{{baseDir}}external/popcorn-js/plugins/googlemap/popcorn.googlemap.js"\n      },\n      {\n        "type": "image",\n        "path": "{{baseDir}}external/popcorn-js/plugins/image/popcorn.image.js"\n      },\n      {\n        "type": "twitter",\n        "path": "{{baseDir}}external/popcorn-js/plugins/twitter/popcorn.twitter.js"\n      },\n      {\n        "type": "wikipedia",\n        "path": "{{baseDir}}external/popcorn-js/plugins/wikipedia/popcorn.wikipedia.js"\n      },\n      {\n        "type": "mediaspawner",\n        "path": "{{baseDir}}external/popcorn-js/plugins/mediaspawner/popcorn.mediaspawner.js"\n      }\n    ],\n    "defaults": [\n      "text",\n      "image",\n      "googlemap"\n    ]\n  },\n  "player": {\n    "players": [\n      {\n        "type": "youtube",\n        "path": "{{baseDir}}external/popcorn-js/players/youtube/popcorn.youtube.js"\n      },\n      {\n        "type": "soundcloud",\n        "path": "{{baseDir}}external/popcorn-js/players/soundcloud/popcorn.soundcloud.js"\n      },\n      {\n        "type": "vimeo",\n        "path": "{{baseDir}}external/popcorn-js/players/vimeo/popcorn.vimeo.js"\n      }\n    ],\n    "defaults": [\n      "youtube",\n      "soundcloud",\n      "vimeo"\n    ]\n  },\n  "dirs": {\n    "popcorn-js": "{{baseDir}}external/popcorn-js/",\n    "css": "{{baseDir}}css/",\n    "dialogs": "{{baseDir}}dialogs/",\n    "resources": "{{baseDir}}resources/"\n  },\n  "icons": {\n    "default": "popcorn-icon.png",\n    "image": "image-icon.png"\n  }\n}\n';});
 
 define('text!layouts/ua-warning.html',[],function () { return '<div class="butter-ua-warning" data-butter-exclude>Your web browser may lack some functionality expected by Butter to function properly. Please upgrade your browser or <a href="https://webmademovies.lighthouseapp.com/projects/65733-popcorn-maker">file a bug</a> to find out why your browser isn\'t fully supported. Click <a href="#" class="close-button">here</a> to remove this warning.</div>';});
 
-define('text!layouts/media-view.html',[],function () { return '<div class="butter-media-properties" data-butter-exclude="true">\n  <p class="edit-message">Edit source...</p>\n  <div class="container">\n    <div class="inner-container">\n      <h3>Video/Audio URL</h3>\n      <div class="url-group">\n        <div class="url fade-in"><input type="text" /><button class="remove">-</button></div>\n      </div>\n      <p class="form-field-notes"></p>\n      <button class="save">Save</button><button class="add-url">Add Alternate URL</button>\n      <div class="loading-container"></div>\n    </div>\n  </div>\n</div>';});
+define('text!layouts/media-view.html',[],function () { return '<div class="butter-media-properties" data-butter-exclude="true">\n  <p class="edit-message">Edit source...</p>\n  <div class="butter-container">\n    <div class="butter-inner-container">\n      <div class="butter-inner-container-title">Video/Audio URL</div>\n      <div class="url-group">\n        <div class="url fade-in"><input type="text" /><button class="remove">-</button></div>\n      </div>\n      <p class="form-field-notes"></p>\n      <button class="save">Save</button><button class="add-url">Add Alternate URL</button>\n      <div class="loading-container"></div>\n    </div>\n  </div>\n</div>';});
 
 define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lang", "ui/widget/textbox", "text!layouts/media-view.html" ],
   function( PageElement, LogoSpinner, LangUtils, TextboxWrapper, HTML_TEMPLATE ){
@@ -7975,10 +8043,11 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
         _pageElement,
         _onDropped = options.onDropped || function(){},
         _closeSignal = false,
+        _keepOpen = false,
         _logoSpinner;
 
     var _propertiesElement = LangUtils.domFragment( HTML_TEMPLATE ),
-        _container = _propertiesElement.querySelector( "div.container" ),
+        _container = _propertiesElement.querySelector( "div.butter-container" ),
         _urlContainer = _propertiesElement.querySelector( "div.url" ),
         _urlTextbox = _propertiesElement.querySelector( "input[type='text']" ),
         _subtitle = _propertiesElement.querySelector( ".form-field-notes" ),
@@ -7988,6 +8057,13 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
         _loadingContainer = _propertiesElement.querySelector( ".loading-container" );
 
     var _containerDims;
+
+    function closeIfPossible(){
+      if ( _closeSignal && !_keepOpen ) {
+        setDimensions( false );
+        _propertiesElement.classList.remove( "open" );
+      }
+    }
 
     function setDimensions( state ){
       if( state ){
@@ -8003,6 +8079,13 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
 
     function prepareTextbox( textbox ){
       TextboxWrapper( textbox );
+      textbox.addEventListener( "blur", function( e ) {
+        _keepOpen = false;
+        closeIfPossible();
+      }, false );
+      textbox.addEventListener( "focus", function( e ) {
+        _keepOpen = true;
+      }, false );
     }
 
     function addUrl() {
@@ -8062,10 +8145,7 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
 
     _propertiesElement.addEventListener( "mouseout", function( e ) {
       setTimeout(function(){
-        if ( _closeSignal ) {
-          setDimensions( false );
-          _propertiesElement.classList.remove( "open" );
-        }
+        closeIfPossible();
       }, MOUSE_OUT_DURATION );
       _closeSignal = true;
     }, false );
@@ -8200,19 +8280,20 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
         _pageElement.destroy();
       } //if
       _pageElement = new PageElement( _media.target, {
-        drop: function( element ){
-          _onDropped( element );
-        }
-      },
-      {
-        highlightClass: "butter-media-highlight"
-      });
+          drop: function( element ){
+            _onDropped( element );
+          }
+        },
+        {
+          highlightClass: "butter-media-highlight"
+        });
 
       if( targetElement ){
         if( !_propertiesElement.parentNode ){
           document.body.appendChild( _propertiesElement );
         }
         _pageElement.listen( "moved", pageElementMoved );
+        pageElementMoved();
       }
     };
 
@@ -8293,7 +8374,8 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
               for( var i = 0, l = _tracks.length; i < l; i++ ) {
                 var te = _tracks[ i ].trackEvents;
                 for( var j = 0, k = te.length; j < k; j++ ) {
-                  _popcornWrapper.updateEvent( te[ j ] );
+                  // should call _popcornWrapper.updateEvent( te[ j ] ) circuitously
+                  te[ j ].update();
                 }
               }
               if( _view ){
@@ -8351,15 +8433,15 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
       }
 
       function onTrackEventAdded( e ){
-        _popcornWrapper.updateEvent( e.data );
+        var trackEvent = e.data;
+        _popcornWrapper.updateEvent( trackEvent );
+        trackEvent._popcornWrapper = _popcornWrapper;
       } //onTrackEventAdded
 
-      function onTrackEventUpdated( e ){
-        _popcornWrapper.updateEvent( e.target );
-      } //onTrackEventUpdated
-
       function onTrackEventRemoved( e ){
-        _popcornWrapper.destroyEvent( e.data );
+        var trackEvent = e.data;
+        _popcornWrapper.destroyEvent( trackEvent );
+        trackEvent._popcornWrapper = null;
       } //onTrackEventRemoved
 
       this.addTrack = function ( track ) {
@@ -8378,11 +8460,10 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
           "trackeventdeselected",
           "trackeventeditrequested"
         ]);
-        track.popcorn = _popcornWrapper;
         track.listen( "trackeventadded", onTrackEventAdded );
-        track.listen( "trackeventupdated", onTrackEventUpdated );
         track.listen( "trackeventremoved", onTrackEventRemoved );
         _this.dispatch( "trackadded", track );
+        track.setPopcornWrapper( _popcornWrapper );
         var trackEvents = track.trackEvents;
         if ( trackEvents.length > 0 ) {
           for ( var i=0, l=trackEvents.length; i<l; ++i ) {
@@ -8418,8 +8499,8 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
             "trackeventdeselected",
             "trackeventeditrequested"
           ]);
+          track.setPopcornWrapper( null );
           track.unlisten( "trackeventadded", onTrackEventAdded );
-          track.unlisten( "trackeventupdated", onTrackEventUpdated );
           track.unlisten( "trackeventremoved", onTrackEventRemoved );
           _this.dispatch( "trackremoved", track );
           track._media = null;
@@ -8710,7 +8791,7 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
   });
 }());
 
-define('text!layouts/header.html',[],function () { return '<div id="butter-header" data-butter-exclude>\n  <div class="logo-drop"></div>\n  <h1 class="name"></h1>\n  <div class="editor-actions">\n    <a class="btn" href="#" id="butter-header-save"\n      title="Save your project"><i class="icon-ok-sign"></i> Save</a>\n    <a class="btn" href="#" id="butter-header-source"\n      title="View the source of this template"><i class="icon-hdd"></i> View Source</a>\n    <a class="btn" href="#" id="butter-header-share"\n      title="Generate a link to share this project with the world"><i class="icon-share-alt"></i> Publish</a>\n    <a class="btn" href="#" id="butter-header-auth"\n      title="Sign in or sign up with Persona"><i class=\'icon-user\'></i>Sign In / Sign Up</a>\n  </div>\n</div>\n';});
+define('text!layouts/header.html',[],function () { return '<div id="butter-header" data-butter-exclude>\n  <div class="butter-header-inner">\n    <div class="butter-logo"></div>\n    <span class="butter-name"></span>\n    <div class="butter-editor-actions">\n      <a class="butter-btn" href="#" id="butter-header-save" title="Save your project"><span class="icon-ok-sign"></span> Save</a>\n      <a class="butter-btn" href="#" id="butter-header-source" title="View the source of this template"><span class="icon-hdd"></span> View Source</a>\n      <a class="butter-btn" href="#" id="butter-header-share" title="Generate a link to share this project with the world"><span class="icon-share-alt"></span> Publish</a>\n      <a class="butter-btn" href="#" id="butter-header-auth" title="Sign in or sign up with Persona"><span class=\'icon-user\'></span>Sign In / Sign Up</a>\n    </div>\n  </div>\n</div>\n';});
 
 define('ui/header',[
   "dialog/iframe-dialog",
@@ -8722,7 +8803,7 @@ define('ui/header',[
   HEADER_TEMPLATE
 ) {
 
-  var DEFAULT_AUTH_BUTTON_TEXT = "<i class='icon-user'></i> Sign In / Sign Up",
+  var DEFAULT_AUTH_BUTTON_TEXT = "<span class='icon-user'></span> Sign In / Sign Up",
       DEFAULT_AUTH_BUTTON_TITLE = "Sign in or sign up with Persona";
 
   return function( butter, options ){
@@ -8736,7 +8817,7 @@ define('ui/header',[
         _shareButton,
         _authButton;
 
-    _title = _rootElement.querySelector(".name");
+    _title = _rootElement.querySelector(".butter-name");
     _title.innerHTML = options.value( "title" ) || "Popcorn Maker";
 
     _rootElement = document.body.insertBefore( _rootElement, document.body.firstChild );
@@ -8911,7 +8992,7 @@ define('ui/header',[
 
     function loginDisplay() {
       _authButton.removeEventListener( "click", authenticationRequired, false );
-      _authButton.innerHTML = "<i class='icon-user'></i> " + butter.cornfield.name();
+      _authButton.innerHTML = "<span class='icon-user'></span> " + butter.cornfield.name();
       _authButton.title = "This is you!";
       _authButton.addEventListener( "click", doLogout, false );
     }
@@ -9533,11 +9614,12 @@ define('ui/ui',[ "core/eventmanager", "./toggler", "./logo-spinner", "./context-
         return _currentMedia.getManifest( name );
       }; //getManifest
 
-      this.getHTML = function(){
+      this.getHTML = function() {
         var media = [];
         for( var i=0; i<_media.length; ++i ){
           media.push( _media[ i ].generatePopcornString() );
         } //for
+        
         return _page.getHTML( media );
       }; //getHTML
 
@@ -9604,7 +9686,7 @@ define('ui/ui',[ "core/eventmanager", "./toggler", "./logo-spinner", "./context-
       }
 
       function mediaTrackEventRequested( e ){
-        var trackEvent = trackEventRequested( e.data, e.target, "Media Element" );
+        var trackEvent = trackEventRequested( e.data, e.target, _currentMedia.target );
         _this.dispatch( "trackeventcreated", {
           trackEvent: trackEvent,
           by: "media"
@@ -10108,7 +10190,7 @@ define('ui/ui',[ "core/eventmanager", "./toggler", "./logo-spinner", "./context-
           var xhr = new XMLHttpRequest(),
               savedData;
 
-          savedDataUrl += "?noCache=" + Date.now(),
+          savedDataUrl += "?noCache=" + Date.now();
 
           xhr.open( "GET", savedDataUrl, false );
 
