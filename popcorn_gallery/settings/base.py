@@ -160,6 +160,7 @@ POPCORN_VALID_DOMAINS = (
     'vimeo.com',
     'local.mozillapopcorn.org',
     'popcornmaker-dev.allizom.org',
+    'popcornmaker.allizom.org',
     'popcornjs.org',
     )
 

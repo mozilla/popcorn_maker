@@ -4,7 +4,7 @@ Welcome to the Popcorn Maker site's documentation!
 
 This is the Django app to power the `Popcorn Maker <http://mozillapopcorn.org/>`_
 
-**Popcorn Maker** is the web app that helps users to save their projects generated with  `Butter <https://github.com/mozilla/butter>`_  and `Popcorn JS <https://github.com/mozilla/popcorn-js>`_
+**Popcorn Maker** is the web app that acts as a backend and allows users to save their projects generated with  `Butter <https://github.com/mozilla/butter>`_  and `Popcorn JS <https://github.com/mozilla/popcorn-js>`_
 
 Please note that you can run `Butter <https://github.com/mozilla/butter>`_ as a standalone app and use `Popcorn JS <https://github.com/mozilla/popcorn-js>`_ as a powerful HTML5 Media Framework
 
@@ -29,6 +29,7 @@ Contents
    update
    apps
    butter
+   assets
 
 
 Indices and tables

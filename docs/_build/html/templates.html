@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="Popcorn Maker 0.5.2 documentation" href="index.html" />
-    <link rel="next" title="Applications" href="apps.html" />
+    <link rel="next" title="Update Popcorn Maker" href="update.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="apps.html" title="Applications"
+          <a href="update.html" title="Update Popcorn Maker"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation"
@@ -53,6 +53,46 @@
             
   <div class="section" id="templates">
 <h1>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h1>
+<p>Templates are the starting point for generating Popcorn projects, they load Butter and allow the user to save their data.</p>
+<div class="section" id="templates-components">
+<h2>Templates Components<a class="headerlink" href="#templates-components" title="Permalink to this headline">¶</a></h2>
+<p>Templates are composed by at least three components:</p>
+<ul class="simple">
+<li>An HTML page</li>
+<li>A JSON Butter configuration file</li>
+<li>A JSON with default metadata</li>
+</ul>
+<p>Any other media part of the template is optional.</p>
+<p>If you want to have a look at an example is available at <a class="reference external" href="https://github.com/alfredo/popcorn_gallery_template">https://github.com/alfredo/popcorn_gallery_template</a></p>
+<p>Templates can be added via the admin interface or bulk upload. It is recomended to import your template like this if your template has several assets.</p>
+<p>These are the instructions to prepare a template for upload:</p>
+<ul>
+<li><p class="first">A template can be bulk uploaded with a zip file, the files must be contained in a folder with the template name.</p>
+</li>
+<li><p class="first">The slugified name of the zip file will be used as the name of the template.</p>
+</li>
+<li><p class="first">All the valid assets will be listed and added to the build.</p>
+</li>
+<li><p class="first">Any supplied asset with the template must use relative paths.</p>
+</li>
+<li><p class="first">Non relative paths is recommended to use absolute URLS.</p>
+</li>
+<li><p class="first">There is no need for the <tt class="docutils literal"><span class="pre">base</span></tt> tag.</p>
+</li>
+<li><p class="first">All templates butter initialization must call <tt class="docutils literal"><span class="pre">config</span></tt> as the default data value.</p>
+</li>
+<li><p class="first">The <tt class="docutils literal"><span class="pre">config</span></tt> URL is automatically populated with the PM site required values
+e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+ <span class="s">&quot;savedDataUrl&quot;</span><span class="p">:</span> <span class="s">&quot;data&quot;</span><span class="p">,</span>
+ <span class="s">&quot;baseDir&quot;</span><span class="p">:</span> <span class="s">&quot;/static/&quot;</span><span class="p">,</span>
+ <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;default-butter&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
 <div class="section" id="adding-templates">
 <h2>Adding templates<a class="headerlink" href="#adding-templates" title="Permalink to this headline">¶</a></h2>
 <p>Only admins/superusers are allowed to add templates to the gallery.
@@ -64,10 +104,10 @@ You must create a superuser as specified in the above step.</p>
 A sample zipped template can be found at <a class="reference external" href="https://github.com/alfredo/popcorn_gallery_template">https://github.com/alfredo/popcorn_gallery_template</a></p>
 <p>Now you must set each file to the proper type:</p>
 <ul class="simple">
-<li>config</li>
-<li>default track events</li>
-<li>static assets</li>
-<li>template html</li>
+<li>Config</li>
+<li>Default track events</li>
+<li>Static assets</li>
+<li>Template html</li>
 </ul>
 <p>Once that has all ben set, click the publish checkbox at the bottom of the page, then save your changes.</p>
 </div>
@@ -92,6 +132,7 @@ A sample zipped template can be found at <a class="reference external" href="htt
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Templates</a><ul>
+<li><a class="reference internal" href="#templates-components">Templates Components</a></li>
 <li><a class="reference internal" href="#adding-templates">Adding templates</a></li>
 <li><a class="reference internal" href="#template-sanitation">Template Sanitation</a></li>
 </ul>
@@ -102,8 +143,8 @@ A sample zipped template can be found at <a class="reference external" href="htt
   <p class="topless"><a href="installation.html"
                         title="previous chapter">Installation</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="apps.html"
-                        title="next chapter">Applications</a></p>
+  <p class="topless"><a href="update.html"
+                        title="next chapter">Update Popcorn Maker</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/templates.txt"
@@ -133,7 +174,7 @@ A sample zipped template can be found at <a class="reference external" href="htt
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="apps.html" title="Applications"
+          <a href="update.html" title="Update Popcorn Maker"
              >next</a> |</li>
         <li class="right" >
           <a href="installation.html" title="Installation"

@@ -2,6 +2,43 @@
 Templates
 =========
 
+Templates are the starting point for generating Popcorn projects, they load Butter and allow the user to save their data.
+
+
+Templates Components
+====================
+
+Templates are composed by at least three components:
+
+- An HTML page
+- A JSON Butter configuration file
+- A JSON with default metadata
+
+Any other media part of the template is optional.
+
+If you want to have a look at an example is available at https://github.com/alfredo/popcorn_gallery_template
+
+Templates can be added via the admin interface or bulk upload. It is recomended to import your template like this if your template has several assets.
+
+These are the instructions to prepare a template for upload:
+
+- A template can be bulk uploaded with a zip file, the files must be contained in a folder with the template name.
+- The slugified name of the zip file will be used as the name of the template.
+- All the valid assets will be listed and added to the build.
+- Any supplied asset with the template must use relative paths.
+- Non relative paths is recommended to use absolute URLS.
+- There is no need for the ``base`` tag.
+- All templates butter initialization must call ``config`` as the default data value.
+- The ``config`` URL is automatically populated with the PM site required values
+  e.g.::
+
+    {
+     "savedDataUrl": "data",
+     "baseDir": "/static/",
+     "name": "default-butter"
+    }
+
+
 Adding templates
 ================
 
@@ -19,12 +56,20 @@ A sample zipped template can be found at https://github.com/alfredo/popcorn_gall
 
 Now you must set each file to the proper type:
 
-- config
-- default track events
-- static assets
-- template html
+- Config
+- Default track events
+- Static assets
+- Template html
 
 Once that has all ben set, click the publish checkbox at the bottom of the page, then save your changes.
+
+
+Template Assets
+===============
+
+Template assets could be hosted in the server, provided as part of the template or hosted somewhere else on the internet.
+
+
 
 
 Template Sanitation

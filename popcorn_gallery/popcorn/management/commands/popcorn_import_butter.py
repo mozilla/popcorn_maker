@@ -10,7 +10,8 @@ class Command(BaseCommand):
     """Import the Popcorn plugins"""
 
     def handle(self, *args, **kwargs):
-        popcorn_path = '%s/' % os.path.join(settings.PROJECT_ROOT, 'butter')
-        #print list_popcorn_assets(popcorn_path)
-        print list_butter_assets(popcorn_path)
+        popcorn_path = '%s/' % os.path.join(settings.PROJECT_ROOT, 'assets')
+        for asset in list_butter_assets(popcorn_path):
+            print 'https://popcornmaker-dev.allizom.org%s%s' % (settings.STATIC_URL,
+                                                               asset)
         print "Import completed"
