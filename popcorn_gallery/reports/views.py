@@ -8,7 +8,7 @@ from ..base.utils import notify_admins
 from ..base.decorators import throttle_view
 
 
-#@throttle_view(methods=['POST'], duration=30)
+@throttle_view(methods=['POST'], duration=30)
 def report_form(request):
     if request.method == 'POST':
         form = ReportForm(request.POST)

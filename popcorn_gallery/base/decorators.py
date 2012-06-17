@@ -106,17 +106,33 @@ class cached_property(object):
         return value
 
 
-def throttle_view(func, methods=None, duration=15):
-    def inner(request, *args, **kwargs):
-        throttled_methods = methods if methods else ['POST', 'GET']
-        if request.method in throttled_methods:
-            remote_addr = request.META.get('HTTP_X_FORWARDED_FOR') or \
-                          request.META.get('REMOTE_ADDR')
-            key = (hashlib.md5('%s.%s' % (remote_addr, request.path_info))
-                   .hexdigest())
-            if cache.get(key):
-                return HttpResponseForbidden('Please try again later.')
-            else:
-                cache.set(key, True, duration)
-        return func(request, *args, **kwargs)
-    return inner
+def throttle_view(methods=None, duration=15):
+    """Decorator that throttles the specified methods ``POST`` and ``GET``
+    by default, uses ``HTTP_X_FORWARDED_FOR`` or ``REMOTE_ADDR`` as a value
+
+    Usage:
+
+    - Throotle with the ``POST`` method by 30 seconds
+
+    @throttle_view(methods=['POST'], duration=30)
+
+    - Throotle with the default values
+
+    @throotle_view()
+    """
+    def decorator(function):
+        @functools.wraps(function)
+        def inner(request, *args, **kwargs):
+            throttled_methods = methods if methods else ['POST', 'GET']
+            if request.method in throttled_methods:
+                remote_addr = request.META.get('HTTP_X_FORWARDED_FOR') or \
+                    request.META.get('REMOTE_ADDR')
+                key = (hashlib.md5('%s.%s' % (remote_addr, request.path_info))
+                       .hexdigest())
+                if cache.get(key):
+                    return HttpResponseForbidden('Please try again later.')
+                else:
+                    cache.set(key, True, duration)
+            return function(request, *args, **kwargs)
+        return inner
+    return decorator

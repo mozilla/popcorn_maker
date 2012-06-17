@@ -140,7 +140,8 @@ class ThottleDecoratorTest(TestCase):
     @mock.patch('django.core.cache.cache.set', return_value=True)
     @mock.patch('django.core.cache.cache.get', return_value=False)
     def test_view_not_in_cache(self, cache_get, cache_set):
-        mocked = throttle_view(view_mock, methods=['GET'], duration=30)
+        decorator = throttle_view(methods=['GET'], duration=30)
+        mocked = decorator(view_mock)
         response = mocked(self.request)
         cache_get.assert_called_with(self.key)
         cache_set.assert_called_with(self.key, True, 30)
@@ -149,7 +150,8 @@ class ThottleDecoratorTest(TestCase):
     @mock.patch('django.core.cache.cache.set', return_value=True)
     @mock.patch('django.core.cache.cache.get', return_value=True)
     def test_view_in_cache(self, cache_get, cache_set):
-        mocked = throttle_view(view_mock, methods=['GET'], duration=30)
+        decorator = throttle_view(methods=['GET'], duration=30)
+        mocked = decorator(view_mock)
         response = mocked(self.request)
         cache_get.assert_called_with(self.key)
         eq_(cache_set.called, False)
@@ -159,7 +161,8 @@ class ThottleDecoratorTest(TestCase):
     @mock.patch('django.core.cache.cache.set', return_value=True)
     @mock.patch('django.core.cache.cache.get', return_value=False)
     def test_other_method_not_in_cache(self, cache_get, cache_set):
-        mocked = throttle_view(view_mock, methods=['POST', 'PUT'], duration=30)
+        decorator = throttle_view(methods=['POST', 'PUT'], duration=30)
+        mocked = decorator(view_mock)
         response = mocked(self.request)
         eq_(cache_get.called, False)
         eq_(cache_set.called, False)
@@ -168,7 +171,8 @@ class ThottleDecoratorTest(TestCase):
     @mock.patch('django.core.cache.cache.set', return_value=True)
     @mock.patch('django.core.cache.cache.get', return_value=True)
     def test_other_method_in_cache(self, cache_get, cache_set):
-        mocked = throttle_view(view_mock, methods=['POST', 'PUT'], duration=30)
+        decorator = throttle_view(methods=['POST', 'PUT'], duration=30)
+        mocked = decorator(view_mock)
         response = mocked(self.request)
         eq_(cache_get.called, False)
         eq_(cache_set.called, False)
