@@ -16,8 +16,8 @@ from .storage import TemplateStorage
 
 def get_valid_file_regex(file_extensions):
     valid_extensions = "|".join(file_extensions)
-    regex = '([-\.\w]+\.(?:%s))' % valid_extensions
-    return re.compile(regex)
+    regex = r'^((?!\.)[-\.\w]+\.(?:%s))$' % valid_extensions
+    return re.compile(regex, re.IGNORECASE)
 
 
 def get_valid_file_list(path_base, path_list, file_extensions):
@@ -33,7 +33,7 @@ def get_valid_file_list(path_base, path_list, file_extensions):
             base_url = root.replace(path_base, '')
             url = lambda x: '%s/%s' % (base_url, x)
             # add the files that match our extensions
-            valid_file_list += [url(f) for f in files if pattern.match(f)]
+            valid_file_list += [url(f) for f in files if pattern.search(f)]
     return valid_file_list
 
 
@@ -104,13 +104,14 @@ def import_zipped_template(zipped_template, base_path, storage_class=TemplateSto
                                     'gif'])
     template_files = ZipFile(zipped_template)
     saved_files = []
+    storage = storage_class()
     for file_path in template_files.namelist():
         file_bits = file_path.split('/')
         file_name = file_bits[-1]
-        if pattern.match(file_name):
+        if pattern.search(file_name):
             short_filename = '/'.join(file_bits[1:])
             storage_filename = '%s%s' % (base_path, short_filename)
-            storage = storage_class()
             content_file = ContentFile(template_files.read(file_path))
-            saved_files.append(storage.save(storage_filename, content_file))
+            saved_file = storage.save(storage_filename, content_file)
+            saved_files.append(saved_file)
     return saved_files

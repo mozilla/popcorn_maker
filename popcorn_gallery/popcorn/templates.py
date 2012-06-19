@@ -67,6 +67,7 @@ def _make_links_absolute(document_tree, base_url):
             element.set(attr, _absolutify_url(base_url, element.get(attr)))
     return document_tree
 
+
 def prepare_popcorn_string_from_project_data(project_data):
     """ Prepares a script tag representing a Popcorn instance
         corresponding to given project data

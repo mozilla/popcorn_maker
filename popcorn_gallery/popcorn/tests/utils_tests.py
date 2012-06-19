@@ -6,7 +6,9 @@ from django.test import TestCase
 
 from dateutil.relativedelta import relativedelta
 from nose.tools import eq_, ok_
-from ..utils import update_views_count, get_order_fields, update_vote_score
+from ..utils import (update_views_count, get_order_fields, update_vote_score,
+                     get_valid_file_regex, import_zipped_template)
+
 
 
 class _ModelMock(mock.MagicMock):
@@ -111,3 +113,96 @@ class UpdateVoteScore(TestCase):
         eq_(votes['num_votes'], 1)
         eq_(votes['score'], 1)
         eq_(self.item.save.called, False)
+
+
+class TestValidFileRegex(TestCase):
+
+    def setUp(self):
+        extensions = ['html', 'js', 'css']
+        self.pattern = get_valid_file_regex(extensions)
+
+    def test_valid_regex(self):
+        valid_filenames = [
+            'index.html',
+            'plugin.with.dots.js',
+            'css-with-dashes.css',
+            'file_with_underscores.html',
+            'UPERCASE-file.HTML',
+            'files_with_numbers_2.html',
+            ]
+        for filename in valid_filenames:
+            ok_(self.pattern.search(filename),
+                "%s file not-matched in the regex" % filename)
+
+    def test_invalid_regex(self):
+        invalid_filenames = [
+            '.hidden_file.html',
+            '._backup-file.css',
+            'other-extension.jpg',
+            'weird<3$chars.js',
+            '.DS_Store',
+            'extensionless',
+            ]
+        for filename in invalid_filenames:
+            eq_(self.pattern.search(filename), None,
+                "%s file matched in the regex" % filename)
+
+
+zip_config = {
+    'namelist.return_value': [
+        'index.html',
+        '.DS_Store',
+        'images/thumbnail.jpg',
+        'styles/base.css',
+        'scripts/config.json',
+        'random_file.doc',
+        ],
+    'read.return_value': u'',
+    }
+
+class MockZipFile(object):
+
+    FILE_LIST = [
+        'index.html',
+        '.DS_Store',
+        'images/thumbnail.jpg',
+        'styles/base.css',
+        'scripts/config.json',
+        'random_file.doc',
+    ]
+
+    def __call__(self, template_list):
+        return super(MockZipFile, self).__call__()
+
+    def namelist(self):
+        return ['username/slug/%s' % f for f in self.FILE_LIST]
+
+    def read(self, file_path):
+        return file_path
+
+
+class MockStorage(object):
+
+    def save(self, filename, content):
+        return filename
+
+class TestImportZippedTemplate(TestCase):
+
+    VALID_FILENAMES = [
+        'index.html',
+        'images/thumbnail.jpg',
+        'styles/base.css',
+        'scripts/config.json',
+        ]
+
+    @mock.patch('popcorn_gallery.popcorn.storage.TemplateStorage.save')
+    @mock.patch('popcorn_gallery.popcorn.utils.ZipFile')
+    def test_import_template(self, zipfile, storage):
+        zipfile.return_value = MockZipFile()
+        import_zipped_template({}, 'user/template/')
+        eq_(zipfile.call_count, 1)
+        eq_(storage.call_count, 4)
+        prefix = 'user/template/slug/%s'
+        valid_files = [prefix % f for f in self.VALID_FILENAMES]
+        for call in storage.call_args_list:
+            ok_(call[0][0] in valid_files)

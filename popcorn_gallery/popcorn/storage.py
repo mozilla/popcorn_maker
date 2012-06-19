@@ -4,10 +4,9 @@ from django.conf import settings
 
 class TemplateStorage(storage.FileSystemStorage):
 
-    def __init__(self, *args, **kwargs):
-        (super(TemplateStorage, self)
-         .__init__(location=settings.TEMPLATE_MEDIA_ROOT,
-                   base_url=settings.TEMPLATE_MEDIA_URL, *args, **kwargs))
+    def __init__(self, location=settings.TEMPLATE_MEDIA_ROOT, base_url=settings.TEMPLATE_MEDIA_URL, *args, **kwargs):
+        super(TemplateStorage, self).__init__(location=location,
+                                              base_url=base_url, *args, **kwargs)
 
     def get_available_name(self, name):
         """Returns a filename that's free on the target storage system, and
