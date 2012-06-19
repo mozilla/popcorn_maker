@@ -8,7 +8,7 @@ Getting the source code
 
 Clone the repository and its dependencies::
 
-    git clone --recursive git@github.com:alfredo/popcorn_gallery.git
+    git clone --recursive git://github.com/mozilla/popcorn_maker.git
 
 This will take a few minutes.
 
