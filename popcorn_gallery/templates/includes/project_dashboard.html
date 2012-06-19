@@ -1,0 +1,21 @@
+<div>
+  <h2>{{ _('Your Projects') }}</h2>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>URL</th>
+      <th>Status</th>
+      <th>Is shared?</th>
+      <th>Can be forked?</th>
+    </tr>
+    {% for project in project_list %}
+    <tr>
+      <td><a href="{{ project.get_absolute_url() }}">{{ project.name }}</a></td>
+      <td><a href="{{ SITE_URL }}{{ project.get_project_url() }}">{{ SITE_URL }}{{ project.get_project_url() }}</a></td>
+      <td>{{ project.get_status_display() }}</td>
+      <td>{% if project.is_shared %}Yes{% else %}No{% endif %}</td>
+      <td>{% if project.is_forkable %}Yes{% else %}No{% endif %}</td>
+    </tr>
+    {% endfor%}
+  </table>
+</div>

@@ -1,102 +1,122 @@
-import json
-
 from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.views.decorators.http import require_POST, require_GET
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseForbidden
 
+from django_extensions.db.fields import json
+from ..decorators import valid_user_project
 from ..forms import ProjectForm
 from ..models import Project
+from ..templates import export_template
 from ...base.decorators import json_handler, login_required_ajax
 
 
 @require_GET
 @login_required_ajax
-@login_required
 def project_list(request):
     """List of the projects that belong to a User"""
-    object_list = []
-    for p in Project.objects.filter(author=request.user):
-        object_list.append({'name': p.name, 'id': p.uuid})
+    queryset = Project.objects.filter(~Q(status=Project.REMOVED),
+                                      author=request.user)
     response = {
         'error': 'okay',
-        'projects': object_list,
+        'projects': [{'name': p.name, 'id': p.uuid} for p in queryset],
         }
-    return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                        mimetype='application/json')
+    return HttpResponse(json.dumps(response), mimetype='application/json')
 
 
-def save_project(json_data, user):
-    """Helper to save the project"""
-    form = ProjectForm(json_data)
-    if form.is_valid():
-        data = {
-            'name': form.cleaned_data['name'],
-            'metadata': form.cleaned_data['data'],
-            'html': '',
-            'author': user,
-            'template': form.cleaned_data['template'],
-            }
-        project = Project.objects.create(**data)
-        response = {
-            'error': 'okay',
-            'project': project.butter_data,
-            }
-    else:
-        response = {'error': 'error'}
-    return response
+def get_project_data(cleaned_data):
+    template = cleaned_data['template']
+    metadata = cleaned_data['data']
+    return {
+        'name': cleaned_data['name'],
+        'metadata': metadata,
+        'template': template,
+        }
 
 
 @require_POST
 @json_handler
 @login_required_ajax
-@login_required
 def project_add(request):
     """End point for adding a ``Project``"""
-    response = save_project(request.JSON, request.user)
-    return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                        mimetype='application/json')
+    form = ProjectForm(request.JSON)
+    if form.is_valid():
+        data = get_project_data(form.cleaned_data)
+        data['author'] = request.user
+        project = Project.objects.create(**data)
+        response = {
+            'error': 'okay',
+            'project': project.butter_data,
+            'url': project.get_absolute_url(),
+            }
+    else:
+        response = {
+            'error': 'error',
+            'form_errors': form.errors
+            }
+    return HttpResponse(json.dumps(response), mimetype='application/json')
 
 
 @json_handler
 @login_required_ajax
-@login_required
-def project_detail(request, uuid):
+@valid_user_project(['uuid'])
+def project_detail(request, project):
     """Handles the data for the Project"""
     if request.method == 'POST' and request.JSON:
-        response = save_project(request.JSON, request.user)
-        return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                            mimetype='application/json')
-    try:
-        project = Project.objects.get(uuid=uuid, author=request.user)
-    except Project.DoesNotExist:
-        return Http404()
+        if project.author != request.user:
+            if project.is_forkable:
+                project = Project.objects.fork(project, request.user)
+            else:
+                return HttpResponseForbidden()
+        form = ProjectForm(request.JSON)
+        if form.is_valid():
+            project.name = form.cleaned_data['name']
+            project.metadata = form.cleaned_data['data']
+            project.save()
+            response = {
+                'error': 'okay',
+                'project': project.butter_data,
+                'url': project.get_project_url(),
+                }
+        else:
+            response = {
+                'error': 'error',
+                'form_errors': form.errors
+                }
+        return HttpResponse(json.dumps(response), mimetype='application/json')
     response = {
         'error': 'okay',
         # Butter needs the project metadata as a string that can be
         # parsed to JSON
-        'url': project.get_absolute_url(),
+        'url': project.get_project_url(),
         'project': project.metadata,
         }
-    return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                        mimetype='application/json')
+    return HttpResponse(json.dumps(response), mimetype='application/json')
 
 
 @json_handler
 @login_required_ajax
-@login_required
 def project_publish(request, uuid):
     if request.method == 'POST':
         try:
-            project = Project.objects.get(uuid=uuid, author=request.user)
+            project = Project.objects.get(~Q(status=Project.REMOVED),
+                                          uuid=uuid, author=request.user)
         except Project.DoesNotExist:
-            return Http404()
+            return HttpResponseForbidden()
         project.is_shared = True
         response = {
             'error': 'okay',
-            'url': '%s%s' % (settings.SITE_URL, project.get_absolute_url()),
+            'url': '%s%s' % (settings.SITE_URL, project.get_project_url()),
             }
-        return HttpResponse(json.dumps(response, cls=DjangoJSONEncoder),
-                            mimetype='application/json')
+        return HttpResponse(json.dumps(response), mimetype='application/json')
     raise Http404
+
+
+@login_required_ajax
+def user_details(request):
+    response = {
+        'name': request.user.profile.display_name,
+        'username': request.user.username,
+        'email': request.user.email,
+        }
+    return HttpResponse(json.dumps(response), mimetype='application/json')

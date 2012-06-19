@@ -1,11 +1,11 @@
-{% macro user_status(user, project=None) -%}
+{% macro user_status(user, template, project=None) -%}
 <div data-butter-exclude="true" id="butter-header">
   <div class="logo-drop"></div>
   <h1>Butter <sup style="text-decoration: underline;">0.3</sup></h1>
+
+  {% if project %}{{ project.name  }}{% else %}{{ template.name }}{% endif %}
   <div class="editor-actions">
-    <button id="butter-header-new" title="Create a new project">New</button>
-    <button id="butter-header-save" title="Save your project">Save</button>
-    <button id="butter-header-load" title="Load a saved project">Load</button>
+    <button id="butter-header-save" class="btn" title="Save your project"><i class="icon-ok-sign">Save</button>
     <button id="butter-header-export" title="View and copy the raw data for your project">Export</button>
     <button id="butter-header-share" title="Generate a link to share this project with the world">Share</button>
     {% if user.is_authenticated() %}

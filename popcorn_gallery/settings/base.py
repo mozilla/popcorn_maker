@@ -3,6 +3,8 @@
 
 from funfactory.settings_base import *
 
+TIME_ZONE = "UTC"
+
 # Bundles is a dictionary of two dictionaries, css and js, which list css files
 # and js files that can be bundled together by the minify app.
 MINIFY_BUNDLES = {
@@ -33,10 +35,21 @@ INSTALLED_APPS = list(INSTALLED_APPS) + [
     'django_browserid',
     'django_extensions',
     'south',
+    'taggit',
+    'django_mailer',
+    'voting',
+    'haystack',
+    'easy_thumbnails',
     # Application base, containing global templates.
     'popcorn_gallery.base',
     'popcorn_gallery.popcorn',
     'popcorn_gallery.users',
+    'popcorn_gallery.notifications',
+    'popcorn_gallery.activity',
+    'popcorn_gallery.reports',
+    'popcorn_gallery.search',
+    'popcorn_gallery.attachments',
+    'popcorn_gallery.tutorials',
 ]
 
 
@@ -74,7 +87,9 @@ AUTHENTICATION_BACKENDS = (
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.static',
     'django_browserid.context_processors.browserid_form',
+    'popcorn_gallery.users.context_processors.browserid_target_processor',
     'popcorn_gallery.base.context_processors.common',
+    'popcorn_gallery.notifications.context_processors.notifications',
     )
 
 TEMPLATE_DIRS = (
@@ -88,7 +103,8 @@ ABSOLUTE_URL_OVERRIDES = {
 }
 
 # funfactory locale middleware shouldn't change these urls.
-SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid']
+SUPPORTED_NONLOCALES = ['media', 'admin', 'api', 'static', 'browserid',
+                        'vote']
 
 STATIC_URL = '/static/'
 
@@ -103,6 +119,10 @@ STATICFILES_DIRS = (
     )
 
 
+# user assets
+TEMPLATE_MEDIA_ROOT = path('media', 'templates')
+TEMPLATE_MEDIA_URL = '/media/templates/'
+
 # contrib.messages
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
@@ -110,7 +130,8 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # Browser ID
 BROWSERID_CREATE_USER = True
 LOGIN_REDIRECT_URL = '/dashboard/'
-LOGIN_REDIRECT_URL_FAILURE = '/'
+LOGIN_REDIRECT_URL_FAILURE = '/login/failed/'
+LOGIN_URL = '/login/'
 
 ANON_ALWAYS = True
 
@@ -119,8 +140,43 @@ AUTH_PROFILE_MODULE = 'users.Profile'
 
 MIDDLEWARE_CLASSES += ('popcorn_gallery.users.middleware.ProfileMiddleware',)
 
-POPCORN_TEMPLATES_ROOT = path('popcorn_gallery', 'templates')
 
-INVALID_USERNAMES = ()
+INVALID_USERNAMES = (
+    'mozilla',
+    'popcorn',
+    'popcornjs',
+    'admin',
+    'administrator',
+    )
 
 PROJECT_ROOT = path('')
+
+# Valid domains for popcorn, must be lowercase
+
+POPCORN_VALID_DOMAINS = (
+    'mozillapopcorn.org',
+    'www.youtube.com',
+    'twitter.com',
+    'vimeo.com',
+    'local.mozillapopcorn.org',
+    'popcornmaker-dev.allizom.org',
+    'popcornmaker.allizom.org',
+    'popcornjs.org',
+    )
+
+EMAIL_BACKEND = 'django_mailer.smtp_queue.EmailBackend'
+EMAIL_SUBJECT_PREFIX = '[Popcorn] '
+
+CACHE_MIDDLEWARE_KEY_PREFIX = 'popcorn'
+# in minutes
+CACHE_OBJECT_METADATA = 10
+
+# haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': path('whoosh_index'),
+        },
+}
+
+MAX_STREAM_CHARS = 1024 * 100

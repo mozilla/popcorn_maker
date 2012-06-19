@@ -1,13 +1,42 @@
-{% macro navigation(user) -%}
-<nav>
-  <ul>
-    <li><a href="{{ url('homepage') }}">Home</a></li>
-    <li><a href="{{ url('about') }}">About</a></li>
-    <li><a href="{{ url('template_list') }}">Get started</a></li>
-    <li><a href="{{ url('project_list') }}">Made with Popcorn</a></li>
-    <li><a href="#TODO">Blog</a></li>
-    <li><a href="{{ url('help') }}">Help</a></li>
-    <li><a href="{{ url('legal') }}">Legal</a></li>
-  </ul>
-</nav>
-{%- endmacro %}
+<div class="navbar navbar-static-top">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+      <a class="brand" href="{{ SITE_URL }}">
+        <img src="{{ STATIC_URL }}img/logo.png" width="150px"> <span class="beta">alpha</span>
+      </a><a href="{{ url('homepage') }}">
+        {% if user.is_authenticated() %}
+        <div class="btn-group pull-right">
+          <a class="btn dropdown-toggle" data-toggle="dropdown">
+            <i class="icon-user"></i> {{ request.user.get_profile().display_name }}
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="{{ url('users_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url('users_profile', username=request.user.username) }}">Profile</a></li>
+            <li><a href="{{ url('users_edit') }}">Edit Profile</a></li>
+            <li class="divider"></li>
+            <li><a href="{{ url('logout') }}">Sign Out</a></li>
+          </ul>
+        </div>
+        {% else %}
+        <div class="pull-right btn-group">
+          <a class="browserid btn" id="browserid" href="{{ url('login') }}">Sign In / Sign Up</a>
+          <form method="POST" action="{{ browserid_target }}">
+            {{ csrf() }}
+            {{ browserid_form.as_p() }}
+          </form>
+        </div>
+        {% endif %}
+        <div>
+          <ul class="nav adjust">
+            <li><a href="{{ url('about') }}">About</a></li>
+            <li><a href="{{ url('template_list') }}">New Project</a></li>
+            <li><a href="{{ url('project_list') }}">Made With Popcorn</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="http://mozillapopcorn.uservoice.com/knowledgebase"><i class="icon-book"></i>Help</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>

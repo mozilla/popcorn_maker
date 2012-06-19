@@ -1,26 +1,43 @@
 {% extends "base.html" %}
+
+{% block title -%}{{ _('Start a Project') }} - {{ super() }}{% endblock title -%}
+
 {% block content %}
+<h1 class="leftpad">Start a project</h1>
+<div class="row-fluid">
+  <div class="hero-unit span 12">
+    <div class="span3">
 
-{% block content_title %}
-<h1>Get started</h1>
-<p>Get started with one of these ready-to-go templates!</p>
-{% endblock content_title %}
+      <div>
+        <ul class="nav2 nav-tabs nav-stacked">
+          <li class="nav-header">Templates</li>
+          <li class="{% if not category %}active{% endif %}"><a href="{{ url('template_list') }}">All</a></li>
+          {% for cat in category_list %}
+          <li class="{% if category == cat %}active{% endif %}"><a href="{{ cat.get_absolute_url() }}">{{ cat.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
 
-{% if category %}
-<h2>{{ category.name }}</h2>
-{% endif %}
+      <div class="pull-down">
+        <h4>About Popcorn templates</h4>
+        <p class="enforced-font toppad">Popcorn projects are made entirely with HTML, CSS and Javascript.</p>
+        <p class="enforced-font">We have provided some starter templates for you. If you know some code, you should write your own templates and share!<p>
+          <a class="btn" href="#TODO">contribute a template</a>
+      </div>
+    </div>
 
-{% for object in template_list %}
-<div>
-  {% if object.is_featured %}Featured:{% endif %} <a href="{{ url('template_summary', object.slug) }}">{{ object.name }}</a>
+
+    <div class="span8 well">
+      {% if category %}
+      <h2 class="{{category.slug }}">{{ category.name }}</h2>
+      {% else %}
+      <h2>All templates</h2>
+      {% endif %}
+      {# include "includes/order_form.html" #}
+      {% include "includes/template_list.html" %}
+    </div>
+
+  </div>
 </div>
-{% endfor %}
-
-<h2>Categories</h2>
-{% for category in category_list %}
-<div>
-  <a href="{{ category.get_templates_url() }}">{{ category }}</a>
-</div>
-{% endfor%}
 
 {% endblock content %}

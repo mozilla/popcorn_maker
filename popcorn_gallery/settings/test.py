@@ -13,7 +13,7 @@ DATABASES = {
     }
 }
 
-DEBUG = TEMPLATE_DEBUG = True
+DEBUG = TEMPLATE_DEBUG = False
 
 # Is this a development instance? Set this to True on development/master
 # instances and False on stage/prod.
@@ -27,6 +27,9 @@ HMAC_KEYS = { # for bcrypt only
     '2011-01-01': 'cheesecake',
 }
 
+# we need to test the mail that is sent.
+EXCLUDED_APPS = ('django_mailer',)
+INSTALLED_APPS = filter(lambda a: a not in EXCLUDED_APPS, INSTALLED_APPS)
 
 NOSE_ARGS = [
     '-s',
@@ -35,6 +38,7 @@ NOSE_ARGS = [
     '--nocapture',
     '--failure-detail',
     '--with-progressive',
+    '--logging-filter=-south',
     ]
 
 # NOSE_PLUGINS = []
@@ -61,3 +65,5 @@ LOGGING = {
         'south': error,
     },
 }
+
+SITE_URL = 'http://test.mozillapopcorn.org'

@@ -1,0 +1,43 @@
+{% extends "admin/template/base.html" %}
+{% load i18n admin_modify adminmedia %}
+
+{% block bodyclass %}import-template{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+  <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+  <a href="../">{{ opts.verbose_name_plural|capfirst }}</a> &rsaquo;
+  {% trans "Import Template" %}
+</div>
+{% endblock %}
+
+
+{% block content %}
+<div id="content-main">
+  {% block object-tools %}{% endblock %}
+
+  <form enctype="multipart/form-data" action="." method="post" id="{{ opts.module_name }}_form">{% csrf_token %}
+    {% block form_top %}{% endblock %}
+    <div>
+
+      {% if errors %}
+      <p class="errornote">
+        {% blocktrans count errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+      </p>
+      {{ form.non_field_errors }}
+      {% endif %}
+      {{ form }}
+      <button type="submit">Import</button>
+    </div>
+  </form>
+
+  <h2>Templates</h2>
+  <ul>
+    <li>A template can be bulk uploaded with a zip file, the files must be contained in a folder with the template name.</li>
+    <li>The slugified name of the zip file will be used as the name of the template.</li>
+    <li>Any other asset will be listed and added to the build.</li>
+  </ul>
+
+</div>
+{% endblock %}

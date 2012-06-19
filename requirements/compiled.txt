@@ -1,2 +1,4 @@
 -r ../vendor/src/funfactory/funfactory/requirements/compiled.txt
 fabric
+lxml
+PIL

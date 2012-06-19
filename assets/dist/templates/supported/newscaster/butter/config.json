@@ -1,0 +1,47 @@
+{
+  "name": "newscaster",
+  "title": "Newscaster",
+  "template": "../index.html",
+  "baseDir": "../../../",
+  "editor": {
+    "default": "{{baseDir}}editors/default-editor.html",
+    "photo": "{{baseDir}}templates/supported/shared/editors/photo-editor.html"
+  },
+  "plugin": {
+    "plugins": [
+      {
+        "type": "text",
+        "path": "{{baseDir}}external/popcorn-js/plugins/text/popcorn.text.js"
+      },
+      {
+        "type": "shrink",
+        "path": "{{baseDir}}templates/supported/shared/plugins/shrink/popcorn.shrink.js"
+      },
+      {
+        "type": "titlecard",
+        "path": "{{baseDir}}templates/supported/shared/plugins/titlecard/popcorn.titlecard.js"
+      },
+      {
+        "type": "photo",
+        "path": "{{baseDir}}templates/supported/shared/plugins/photo/popcorn.photo.js"
+      },
+      {
+        "type": "mediaspawner",
+        "path": "{{baseDir}}external/popcorn-js/plugins/mediaspawner/popcorn.mediaspawner.js"
+      },
+      {
+        "type": "zoink",
+        "path": "{{baseDir}}templates/supported/shared/plugins/zoink/popcorn.zoink.js"
+      }
+    ],
+    "defaults": [
+      "text",
+      "titlecard",
+      "photo",
+      "shrink",
+      "mediaspawner",
+      "zoink",
+      "shrink"
+    ]
+  }
+}

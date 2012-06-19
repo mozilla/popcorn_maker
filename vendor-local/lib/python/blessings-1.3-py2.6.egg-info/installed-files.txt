@@ -1,9 +1,0 @@
-../blessings/tests.py
-../blessings/__init__.py
-../blessings/tests.pyc
-../blessings/__init__.pyc
-./
-top_level.txt
-SOURCES.txt
-PKG-INFO
-dependency_links.txt

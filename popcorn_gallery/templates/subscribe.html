@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Subscribe to receive updates - {{ super() }}{% endblock title %}
+
+{% block content %}
+<h1>Subscribe</h1>
+<div class="update-me">
+  <form action="https://donate.mozilla.org/page/s/mozilla-popcorn" method="post">
+    <div id="email-field">
+      <label for="email">Email</label>
+      <input id="email" name="email" class="update-me-input field" required="" type="email" value="" placeholder="Your Email Address">
+    </div>
+    <div class="row" id="privacy-field">
+      <input type="checkbox" required="" name="custom-528" id="custom-528" value="1">
+      <label for="custom-528">I agree to the <a href="http://www.mozilla.org/en-US/privacy-policy">Privacy Policy</a></label>
+    </div>
+    <input type="submit" class="update-me-btn btn" value="Sign me up!">
+  </form>
+</div>
+{% endblock content %}

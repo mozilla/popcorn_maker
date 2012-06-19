@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} - {{ super() }}{% endblock title %}
+
+{% block body_attributes %}id="show_submission" class="entries"{% endblock body_attributes %}
+
+{% block content %}
+<div class="row-fluid">
+
+  <div class="hero-unit span 12">
+    <div class="span3">
+      <h1>{{ project.name }}</h1>
+      <br>
+      <p>               <i class="icon-arrow-left"></i>   by <a href="{{ project.author.get_absolute_url() }}">{{ project.author.get_profile().display_name }}</a></p>
+      <p>               <i class="icon-thumbs-up"></i>    {{ votes.score }} likes</p>
+
+      <p class="toppad">{{ project.description }}<p>
+      <p>Created on {{ project.created.strftime('%B %d, %Y') }}</p>
+
+      <a class="btn btn-success btn-larger" href="{{ project.get_project_url() }}">View this!</a>
+      <ul>
+        {% if request.user == project.author or project.is_forkable %}
+        <li><a class="btn-mini" href="{{ project.get_butter_url() }}"><i class="icon-edit"></i>edit this!</a></li>
+        {% endif %}
+        {% if request.user == project.author %}
+        <li><a class="btn-mini" href="{{ project.get_edit_url() }}"><i class="icon-edit"></i>project options</a></li>
+        {% endif %}
+        {% if request.user == project.author or project.is_forkable %}
+        <li><a class="btn-mini" href="{{ project.get_fork_url() }}"><i class="icon-road"></i>fork</a></li>
+        {% endif %}
+        {% if request.user == project.author %}
+        <li><a class="btn-mini" href="{{ project.get_delete_url() }}"><i class="icon-warning-sign"></i>delete</a></li>
+        {% endif %}
+      </ul>
+      {% if not project.is_published and request.user == project.author %}
+      <strong>Project is not published</strong>
+      {% endif %}
+
+      <div class="vote">
+        {% if user.is_authenticated() %}
+        {% if user_vote and user_vote.is_upvote %}
+        <form action="{{ url('vote', model='project', object_id=project.pk, direction='clear') }}" method="POST" id="user_vote">
+          {{ csrf() }}
+          <input type="submit" class="cancel cta do" value="{{ _('Clear my vote') }}" />
+        </form>
+        {% else %}
+        <form action="{{ url('vote', model='project', object_id=project.pk, direction='up') }}" method="POST" id="user_vote">
+          {{ csrf()|safe }}
+          <input type="submit" class="thumb cta do" value="{{ _('Give this a thumbs up') }}" />
+        </form>
+        {% endif %}
+        {% else %}
+        <p>To upvote this submission, please login or register</p>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <div class="span8 well">
+      <ul class="breadcrumb">
+        <li>
+          <a href="{{ url('template_list') }}">Projects</a> <span class="divider">/</span>
+        </li>
+        {% for category in project.categories.all() %}
+        <li>
+          <a href="{{ category.get_absolute_url() }}">{{ category.name }}</a> <span class="divider">/</span>
+        </li>
+        {% endfor %}
+        <li class="active">{{ project.name }}</li>
+      </ul>
+      <div class="row-fluid">
+        <div class="span12">
+          <a href="{{ project.get_project_url() }}" class="thumbnail">
+            {% if project.thumbnail  %}
+            <img src="{{ thumbnail(project.thumbnail, (480, 270)) }}" alt=""  />
+            {% else %}
+            <img src="http://placehold.it/480x270" alt="">
+            {% endif %}
+          </a>
+
+          <div class="template-detail">
+            <h2>{{ project.name }}</h2>
+            <p class="project-desc">{{ project.description }}
+              {% if project.is_forkable or request.user == project.author %}
+              <a class="btn btn-success pull-right" href="{{ project.get_butter_url() }}">make this</a>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="span9 pull-right">
+      {% include "includes/comments.html" %}
+  </div>
+</div>
+{% endblock content %}

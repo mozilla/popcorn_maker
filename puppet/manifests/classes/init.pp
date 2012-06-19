@@ -12,16 +12,11 @@ class init {
                 command => "sudo apt-get update",
             }
 
-            # Provides "add-apt-repository" command, useful if you need
-            # to install software from other apt repositories.
-            package { "python-software-properties":
+            package { ["python-software-properties", "build-essential"]:
                 ensure => present,
                 require => [
                     Exec['update_apt'],
                 ];
-            }
-            package { ["build-essential"]:
-              ensure => installed;
             }
         }
     }

@@ -1,0 +1,11 @@
+Hi there,
+
+The user {{ membership.user.display_name }} {{ SITE_URL }}{{ membership.user.get_absolute_url() }} has requested to be added to the {{ membership.project_category.name }} category {{ membership.project_category.get_absolute_url() }}.
+
+
+You can approve the membership via the {{ SITE_URL }}{{ url('admin:popcorn_projectcategory_change', membership.project_category.id) }}
+
+
+Regards,
+
+The Popcorn Maker Team.

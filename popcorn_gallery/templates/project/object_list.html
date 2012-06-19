@@ -1,29 +1,51 @@
 {% extends "base.html" %}
-{% block title %}
-Made with Popcorn - {{ super() }}
-{% endblock title %}
+
+{% block title %}Made with Popcorn - {{ super() }}{% endblock title %}
+
+{% block header %}
+<header class="busta">
+  <h1 class="shout">Made with Popcorn</h1>
+  <div class="meta">
+    <a class="cta" href="{{ url('template_list') }}">{{ _('Create project') }}</a>
+  </div>
+</header>
+{% endblock %}
+
 
 {% block content %}
-<h1>Made with Popcorn</h1>
+<h1 class="leftpad">Made with Popcorn</h1>
+<div class="row-fluid">
+  <div class="hero-unit span 12">
+    <div class="span3">
 
-{% if category %}
-<h2>Category: {{ category.name }}</h2>
-{% endif %}
+      <div>
+        <ul class="nav2 nav-tabs nav-stacked">
+          <li class="nav-header">Projects</li>
+          <li class="{% if not category %}active{% endif %}"><a href="{{ url('project_list') }}">All</a></li>
+          {% for cat in category_list %}
+          <li class="{% if category == cat %}active{% endif %}"><a href="{{ cat.get_absolute_url() }}">{{ cat.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <p><a class="btn btn-success btn-larger" href="{{ url('template_list') }}">New project &gt;</a></p>
+      {% if category %}
+      <p><a class="btn btn-success btn-larger" href="{{ url('project_category_join', slug=category.slug) }}">Join this Category</a></p>
+      {% endif %}
+    </div>
 
-{% for project in project_list %}
-<section>
-  <h1><a href="{{ project.get_absolute_url() }}">{{ project.name }}</a></h1>
-  by <a href="{{ project.author.get_absolute_url() }}">{{ project.author.profile.display_name }}</a> on {{ project.created }}
-  <p>{{ project.description }}</p>
-</section>
-{% endfor%}
+    <div class="span8 well">
+      {% if category %}
+      <h2 class="{{category.slug }}">{{ category.name }}</h2>
+      {% else %}
+      <h2>All projects</h2>
+      {% endif %}
 
-<h2>Categories</h2>
-{% for category in category_list %}
-<div>
-  <a href="{{ category.get_projects_url() }}">{{ category }}</a>
+      {% include "includes/project_list.html" %}
+
+    </div>
+  </div>
 </div>
-{% endfor%}
+{% endblock %}
 
-
-{% endblock content %}
+{# missing elements #}
+{# include "includes/order_form.html" #}

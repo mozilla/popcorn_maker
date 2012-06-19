@@ -3,4 +3,10 @@
 	url = git://github.com/mozilla/playdoh-lib.git
 [submodule "butter"]
 	path = butter
-	url = git://github.com/alfredo/butter.git
+	url = git://github.com/mozilla/butter.git
+[submodule "vendor-local/src/django_mailer_2"]
+	path = vendor-local/src/django_mailer_2
+	url = https://github.com/SmileyChris/django-mailer-2.git
+[submodule "vendor-local/src/django-haystack"]
+	path = vendor-local/src/django-haystack
+	url = https://github.com/toastdriven/django-haystack.git

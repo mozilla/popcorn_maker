@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Editing project {{ project.name }}</h1>
-<form method="post" id="form-edit-project-id" action=".">
+<form method="post" id="form-edit-project-id" action="." enctype="multipart/form-data">
   {{ form.as_p() }}
   {{ csrf() }}
   <button type="submit">Update</button>

@@ -55,22 +55,27 @@ class apache($server_name, $project_path) {
 
       exec {"/usr/sbin/a2enmod proxy_http":
         notify => Exec["restart-apache2"],
+        require => Package["apache2-dev"]
       }
 
       exec {"/usr/sbin/a2enmod headers":
         notify => Exec["restart-apache2"],
+        require => Package["apache2-dev"]
       }
 
       exec {"/usr/sbin/a2enmod expires":
         notify => Exec["restart-apache2"],
+        require => Package["apache2-dev"]
       }
 
       exec {"/usr/sbin/a2enmod rewrite":
         notify => Exec["restart-apache2"],
+        require => Package["apache2-dev"]
       }
 
       exec {"/usr/sbin/a2enmod proxy":
         notify => Exec["restart-apache2"],
+        require => Package["apache2-dev"]
       }
 
     }

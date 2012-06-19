@@ -1,0 +1,30 @@
+{% if project_list %}
+<div class="row-fluid toppad">
+  <div class="leftpad">
+    {% for project in project_list %}
+    {% if loop.first %}<div class="span2">{% endif %}
+      {% if loop.index is divisibleby 3 %}</div><div class="span2">{% endif %}
+      <div>
+        <a href="{{ project.get_absolute_url() }}" class="thumbnail">
+          {% if project.thumbnail %}
+          <img src="{{ project.thumbnail.url }}" alt="">
+          {% else %}
+          <img src="http://placehold.it/288x175" alt="">
+          {% endif %}
+        </a>
+        <h5 class="toppad">{{ project.name }}</h5>
+        {% if request.user == project.author %}
+        <a class="btn-mini" href="{{ project.get_edit_url() }}"><i class="icon-edit"></i>edit</a>
+        {% endif %}
+        {% if request.user == project.author or project.is_forkable %}
+        <a class="btn-mini" href="{{ project.get_fork_url() }}"><i class="icon-road"></i>fork</a>
+        {% endif %}
+        {% if request.user == project.author %}
+        <a class="btn-mini" href="{{ project.get_delete_url() }}"><i class="icon-warning-sign"></i>delete</a>
+        {% endif %}
+      </div>
+      {% if loop.last %}</div><!--/span-->{% endif %}
+    {% endfor %}
+  </div>
+</div><!--/span-->
+{% endif %}

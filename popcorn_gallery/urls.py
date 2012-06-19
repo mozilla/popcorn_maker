@@ -11,29 +11,39 @@ admin.autodiscover()
 
 
 urlpatterns = patterns(
-    '',
-    (r'^admin/', include(admin.site.urls)),
-    (r'^profile/', include('popcorn_gallery.users.urls')),
-    (r'^api/', include('popcorn_gallery.popcorn.urls.api', namespace='api')),
-    (r'', include('popcorn_gallery.popcorn.urls.projects')),
-    url(r'^browserid/verify$', AjaxVerify.as_view(), name='browserid_verify'),
-    url(r'^$', 'popcorn_gallery.base.views.homepage', name='homepage'),
-    )
-
-# static pages
-urlpatterns += patterns(
-    'popcorn_gallery.base.views',
-    url('^about/$', 'about', name='about'),
-    url('^help/$', 'help', name='help'),
-    url('^legal/$', 'legal', name='legal'),
-    )
-
-urlpatterns += patterns(
     'popcorn_gallery.users.views',
     url(r'^dashboard/$', 'dashboard', name='users_dashboard'),
     url(r'^logout/$', 'signout', name='logout'),
+    url(r'^browserid/logout/$', 'signout', name='browserid_verify'),
+    url(r'^login/$', 'login', name='login'),
+    url('^login/failed/$', 'login', {'failed': True}, name='login_failed'),
 )
 
+# static pages
+urlpatterns += patterns(
+    'django.views.generic.simple',
+    url('^about/$', 'direct_to_template', {'template': 'about.html'},
+        name='about'),
+    url('^subscribe/$', 'direct_to_template', {'template': 'subscribe.html'},
+        name='subscribe'),
+    )
+
+
+urlpatterns += patterns(
+    '',
+    (r'^admin/', include(admin.site.urls)),
+    (r'^profile/', include('popcorn_gallery.users.urls')),
+    (r'^report/', include('popcorn_gallery.reports.urls')),
+    (r'^api/', include('popcorn_gallery.popcorn.urls.api', namespace='api')),
+    (r'^search/', include('popcorn_gallery.search.urls', namespace='search'),),
+    (r'^tutorial/', include('popcorn_gallery.tutorials.urls',
+                            namespace='tutorial'),),
+    (r'', include('popcorn_gallery.popcorn.urls.projects')),
+    url(r'^browserid/verify$', AjaxVerify.as_view(), name='browserid_verify'),
+    url(r'^vote/(?P<model>project|template)/(?P<object_id>\d+)/(?P<direction>up|clear)/$',
+        'popcorn_gallery.base.views.vote', name='vote'),
+    url(r'^$', 'popcorn_gallery.base.views.homepage', name='homepage'),
+    )
 
 ## In DEBUG mode, serve media files through Django.
 if settings.DEBUG:

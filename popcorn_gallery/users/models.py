@@ -17,7 +17,8 @@ class Profile(models.Model):
                               blank=True)
     bio = models.TextField(verbose_name=_(u'Bio'), blank=True)
     featured = models.BooleanField(default=False)
-
+    categories = models.ManyToManyField('popcorn.ProjectCategory',
+                                        through='popcorn.ProjectCategoryMembership')
 
     def __unicode__(self):
         """Return a string representation of the user."""
@@ -40,7 +41,7 @@ class Profile(models.Model):
 
     @property
     def gravatar_url(self):
-        return '//www.gravatar.com/avatar/%s ' % hashlib.md5(
+        return 'https://secure.gravatar.com/avatar/%s ' % hashlib.md5(
             self.user.email.lower()).hexdigest()
 
     @property

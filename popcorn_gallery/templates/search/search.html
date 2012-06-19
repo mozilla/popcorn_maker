@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+
+{% block header %}
+<header class="busta">
+  <h1 class="shout">Search</h1>
+  <form method="get" action=".">
+    {{ form.as_p() }}
+    <p><button type="submit">Search</button></p>
+  </form>
+</header>
+{% endblock %}
+
+{% block content %}
+{% if query %}
+<h3>Templates</h3>
+<ul class="columns submissions">
+  {% for result in template_results %}
+  {% include "includes/result_detail.html" %}
+  {% endfor %}
+</ul>
+
+<h3>Projects</h3>
+<ul class="columns submissions">
+  {% for result in project_results %}
+  {% include "includes/result_detail.html" %}
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% endblock %}

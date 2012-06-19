@@ -2,17 +2,53 @@
 
 {% block content -%}
 
+{% if page_mode == 'create' %}
+<h1>Please create your profile before using Popcorn</h1>
+{% endif %}
+
 {% if page_mode == 'edit' %}
 <img src="{{ profile.gravatar_url }}" />
 {% endif %}
 
 <form action="{{ url('users_edit') }}" method="post">
-  {{ form.as_p() }}
-  {{ csrf() }}
-  <p>
+
+  <div class="">
+    {% if form.name.errors %}{{ form.name.errors }}{% endif %}
+    {{ form.name.label_tag() }} {{ form.name }}
+  </div>
+
+  {% if form.username %}
+  <div class="">
+    {% if form.username.errors %}{{ form.username.errors }}{% endif %}
+    {{ form.username.label_tag() }} {{ form.username }}
+  </div>
+  {% endif %}
+
+  <div class="">
+    {% if form.website.errors %}{{ form.website.errors }}{% endif %}
+    {{ form.website.label_tag() }} {{ form.website }}
+  </div>
+
+  <div class="">
+    {% if form.bio.errors %}{{ form.bio.errors }}{% endif %}
+    {{ form.bio.label_tag() }} {{ form.bio }}
+  </div>
+
+  {% if form.agreement %}
+  <div class="">
+    {% if form.agreement.errors %}{{ form.agreement.errors }}{% endif %}
+    <label for="{{ form.agreement.auto_id }}">{{ form.agreement}} I agree to the <a href="http://www.mozilla.org/en-US/privacy-policy.html">Privacy Policy</a></label>
+  </div>
+  {% endif %}
+  <div class="">
+    {{ csrf() }}
     <button type="submit">Save</button>
-  </p>
+  </div>
 </form>
+
+
+
+
 
 {% if page_mode == 'edit' %}
 <a href="{{ url('users_delete') }}">Delete my account</a>

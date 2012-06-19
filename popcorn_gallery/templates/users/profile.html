@@ -1,31 +1,23 @@
 {% extends "base.html" %}
-{% block page_title -%}
-Profile: {{ profile.display_name }} - {{ super() }}
-{% endblock -%}
+{% import "includes/activity.html" as activity %}
+
+{% block title -%}{{ profile.display_name }} - Users - {{ super() }}{% endblock -%}
 
 {% block content -%}
 
-<h1>Profile: {{ profile.display_name }}</h1>
-<img src="{{ profile.gravatar_url }}" alt="" />
-{% if profile.website %}
-<a href="{{ profile.website }}">{{ profile.website }}</a>
-{% endif %}
-{% if profile.bio  %}
-{{ profile.bio }}
-{% endif %}
+<div class="row-fluid">
+  {% include "includes/user_bio.html" %}
+</div>
 
+<div class="row-fluid">
+  <div class="span12">
+    <h2 class="leftpad">My projects</h2>
+    <br>
+    {% include "includes/user_project_list.html" %}
+    <p><a class="btn btn-success btn-large" href="{{ url('template_list') }}">New project ></a></p>
+  </div><!--/row-->
 
+</div><!--/row-->
 
-<section>
-  <h1>{{ _('Projects') }}</h1>
-  <ul>
-    {% for project in project_list %}
-    <li>
-      <a href="{{ project.get_absolute_url() }}">{{ project.name }}</a>
-      {{ project.description }}
-    </li>
-    {% endfor%}
-  </ul>
-</section>
-
-{% endblock -%}
+{{ activity.activity(activity_list) }}
+{% endblock content -%}

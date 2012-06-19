@@ -1,0 +1,12 @@
+Hi there,
+
+An user has reported the following url as inappropriate:
+
+{{ report.url }}
+
+Reason:
+
+{{ report.description }}
+
+
+The Pocorn Maker Team.
