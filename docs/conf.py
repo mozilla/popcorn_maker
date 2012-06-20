@@ -219,9 +219,3 @@ man_pages = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
-
-
-project_dir = os.path.dirname(__file__)
-site.addsitedir(os.path.abspath(os.path.join(project_dir, '../')))
-
-import manage
