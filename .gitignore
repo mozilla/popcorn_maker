@@ -22,3 +22,4 @@ vagrantconfig_local.yaml
 /static/
 /media/
 whoosh_index
+popcorn_gallery.egg-info/
