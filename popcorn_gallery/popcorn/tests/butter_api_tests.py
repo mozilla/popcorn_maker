@@ -130,7 +130,7 @@ class ButterIntegrationTestCase(TestCase):
                                  template=self.template)
         url = '/api/publish/%s' % project.uuid
         response = self.client.get(url)
-        eq_(response.status_code, 404)
+        eq_(response.status_code, 405)
 
     def test_publish_project(self):
         project = create_project(author=self.user, template=self.template)

@@ -17,7 +17,23 @@ from ..activity.models import Activity
 
 
 class AjaxVerify(Verify):
-    """Handles AJAX requests for browserid"""
+    """Handles AJAX requests for ``browserid``.
+    If requested via ajax will return json.
+    On success returns with the status code ``200`` with the
+    following details::
+
+    {
+        'status: 'okay',
+        'email': 'USER_EMAIL_ADDRESS',
+    }
+
+    On failure it will return with the status code ``200`` with the
+    following details::
+
+    {
+        'status': 'failed'
+    }
+    """
 
     def login_success(self):
         """Handle a successful login. Use this to perform complex redirects

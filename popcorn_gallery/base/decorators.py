@@ -108,7 +108,8 @@ class cached_property(object):
 
 def throttle_view(methods=None, duration=15):
     """Decorator that throttles the specified methods ``POST`` and ``GET``
-    by default, uses ``HTTP_X_FORWARDED_FOR`` or ``REMOTE_ADDR`` as a value
+    by default, uses ``X_FORWARDED_FOR`` or  ``HTTP_X_FORWARDED_FOR``
+    or ``REMOTE_ADDR`` as a value
 
     Usage:
 
@@ -126,6 +127,7 @@ def throttle_view(methods=None, duration=15):
             throttled_methods = methods if methods else ['POST', 'GET']
             if request.method in throttled_methods:
                 remote_addr = request.META.get('HTTP_X_FORWARDED_FOR') or \
+                    request.META.get('HTTP_X_FORWARDED_FOR') or \
                     request.META.get('REMOTE_ADDR')
                 key = (hashlib.md5('%s.%s' % (remote_addr, request.path_info))
                        .hexdigest())

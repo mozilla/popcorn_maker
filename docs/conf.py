@@ -12,6 +12,7 @@
 # serve to show the default.
 
 import sys, os
+import site
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -218,3 +219,9 @@ man_pages = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+
+project_dir = os.path.dirname(__file__)
+site.addsitedir(os.path.abspath(os.path.join(project_dir, '../')))
+
+import manage

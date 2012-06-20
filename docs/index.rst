@@ -29,6 +29,7 @@ Contents
    update
    apps
    butter
+   api
    assets
 
 
