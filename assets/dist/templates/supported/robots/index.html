@@ -9,12 +9,17 @@
   <link href='http://fonts.googleapis.com/css?family=Jolly+Lodger|Bangers|Lato|Fredericka+the+Great|Lovers+Quarrel' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="../shared/css/normalise.css">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../shared/css/jquery-ui/jquery.ui.all.css">
 
   <link rel="stylesheet" href="../shared/css/popcorn.transitions.css">
   <link rel="stylesheet" href="../shared/plugins/zoink/popcorn.zoink.css">
+    <link rel="stylesheet" href="../shared/plugins/flickr/popcorn.flickr.css">
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.js"></script>
   <script src="https://browserid.org/include.js" type="text/javascript" data-butter-exclude></script>
   <script src="../../../src/butter.js" data-butter-exclude></script>
+  <script src="../shared/editors/editorhelper.js" data-butter-exclude></script>
   <script type="text/javascript" src="butter/template.js" data-butter-exclude></script>
 
 </head>
@@ -26,10 +31,9 @@
       </header>
       <div role="main">
         <section id="video-container" class="video-container">
-          <video id="video" preload data-butter="media" controls>
-            <source src="http://videos-cdn.mozilla.net/serv/webmademovies/robots.mp4">
-            <source src="http://videos-cdn.mozilla.net/serv/webmademovies/robots.webm">
-          </video>
+          <div id="video" data-butter="media"
+            data-butter-media-controls="true"
+            style="width:800px; height:500px;"></div>
           <div class="video-overlay">
             <div class="text-overlay">
               <div id="top-title" data-butter="target"></div>
@@ -49,12 +53,12 @@
         </section>
       </div>
       <footer>
-        <div>All video images courtesy Public Domain material at The Internet Archive - www.archive.org</div>
-        <div>Music courtesy the Free Music Archive - www.freemusicarchive.org</div>
-        <div>Wake - "Steppin" - CC-BY</div>
+       <p>All video and images courtesy Public Domain material at <a href="http://www.archive.org">The Internet Archive</a>
+        <br>Music courtesy the <a href="http://www.freemusicarchive.org"> Free Music Archive</a>
+        <br>Wake <em>"Steppin"</em>
+        <br><img src="http://i.creativecommons.org/l/by/3.0/88x31.png"></p>
       </footer>
     </div><!--.wrapper-->
   </div><!--.inner-container-->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 </body>
 </html>

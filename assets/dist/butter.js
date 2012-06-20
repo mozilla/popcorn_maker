@@ -1657,7 +1657,7 @@ define('util/dragndrop',[], function(){
         return;
       }
       _moved = false;
-      _draggingElement = e.target;
+      _draggingElement = this;
       _draggingOriginalPosition = _draggingElement.offsetTop;
 
       var style = getComputedStyle( _draggingElement );
@@ -2595,6 +2595,7 @@ define('core/popcorn-wrapper',[ "core/logger", "core/eventmanager" ], function( 
      * user.
      */
     this.prepare = function( url, target, popcornOptions, callbacks, scripts ){
+      var urlsFromString;
 
       // called when timeout occurs preparing popcorn or the media
       function timeoutWrapper( e ){
@@ -2618,6 +2619,11 @@ define('core/popcorn-wrapper',[ "core/logger", "core/eventmanager" ], function( 
         else {
           firstUrl = url[ 0 ];
         }
+      }
+      else if ( url.indexOf( "," ) > -1 ) {
+        urlsFromString = url.split( "," );
+        firstUrl = urlsFromString[ 0 ];
+        url = urlsFromString;
       }
 
       // discover and stash the type of media as dictated by the url
@@ -2815,6 +2821,8 @@ define('core/popcorn-wrapper',[ "core/logger", "core/eventmanager" ], function( 
         popcornString += callbacks.afterEvents + "( popcorn );\n";
       }
 
+      popcornString += "popcorn.controls( true );\n";
+
       // if the `method` var is blank, the user probably just wanted an inline function without an onLoad wrapper
       method = method || "inline";
 
@@ -2824,7 +2832,7 @@ define('core/popcorn-wrapper',[ "core/logger", "core/eventmanager" ], function( 
         popcornString += "\n},false);";
       }
       else {
-        popcornString = popcornString + "\n return popcorn;";
+        popcornString = popcornString + "\nreturn popcorn;";
       } //if
 
       return popcornString;
@@ -3437,6 +3445,7 @@ define('dialog/iframe-dialog',[
     var _this = this,
         _url = dialogOptions.url,
         _parent = dialogOptions.parent,
+        _classes = dialogOptions.classes || "fade-in",
         _open = false,
         _iframe,
         _commQueue = [],
@@ -3530,7 +3539,7 @@ define('dialog/iframe-dialog',[
       // need to wait an event-loop cycle to apply this class
       // ow, opacity transition fails to render
       setTimeout( function(){
-        _iframe.className += " fade-in";
+        _iframe.className += " " + _classes.trim();
       }, 10 );
     }; //open
 
@@ -8025,11 +8034,11 @@ o,p,q)?e.get(h,function(c){e.finishLoad(a,d.strip,c,b,f)}):c([g],function(a){e.f
 b,d)},d)}};if(e.createXhr())e.get=function(a,c){var b=e.createXhr();b.open("GET",a,!0);b.onreadystatechange=function(){b.readyState===4&&c(b.responseText)};b.send(null)};else if(typeof process!=="undefined"&&process.versions&&process.versions.node)l=require.nodeRequire("fs"),e.get=function(a,c){var b=l.readFileSync(a,"utf8");b.indexOf("\ufeff")===0&&(b=b.substring(1));c(b)};else if(typeof Packages!=="undefined")e.get=function(a,c){var b=new java.io.File(a),f=java.lang.System.getProperty("line.separator"),
 b=new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(b),"utf-8")),d,e,h="";try{d=new java.lang.StringBuffer;(e=b.readLine())&&e.length()&&e.charAt(0)===65279&&(e=e.substring(1));for(d.append(e);(e=b.readLine())!==null;)d.append(f),d.append(e);h=String(d.toString())}finally{b.close()}c(h)};return e})})();
 
-define('text!default-config.json',[],function () { return '{\n  "name": "default-config",\n  "baseDir": "../",\n  "snapshotHTMLOnReady": true,\n  "scrapePage": true,\n  "title": "Popcorn Maker",\n  "editor": {\n    "default": "{{baseDir}}editors/default-editor.html",\n    "googlemap": "{{baseDir}}editors/googlemap-editor.html"\n  },\n  "ui": {\n    "enabled": true,\n    "trackEventHighlight": "click"\n  },\n  "mediaDefaults": {\n    "frameAnimation": true\n  },\n  "plugin": {\n    "plugins": [\n      {\n        "type": "attribution",\n        "path": "{{baseDir}}external/popcorn-js/plugins/attribution/popcorn.attribution.js"\n      },\n      {\n        "type": "webpage",\n        "path": "{{baseDir}}external/popcorn-js/plugins/webpage/popcorn.webpage.js"\n      },\n      {\n        "type": "text",\n        "path": "{{baseDir}}external/popcorn-js/plugins/text/popcorn.text.js"\n      },\n      {\n        "type": "googlemap",\n        "path": "{{baseDir}}external/popcorn-js/plugins/googlemap/popcorn.googlemap.js"\n      },\n      {\n        "type": "image",\n        "path": "{{baseDir}}external/popcorn-js/plugins/image/popcorn.image.js"\n      },\n      {\n        "type": "twitter",\n        "path": "{{baseDir}}external/popcorn-js/plugins/twitter/popcorn.twitter.js"\n      },\n      {\n        "type": "wikipedia",\n        "path": "{{baseDir}}external/popcorn-js/plugins/wikipedia/popcorn.wikipedia.js"\n      },\n      {\n        "type": "mediaspawner",\n        "path": "{{baseDir}}external/popcorn-js/plugins/mediaspawner/popcorn.mediaspawner.js"\n      }\n    ],\n    "defaults": [\n      "text",\n      "image",\n      "googlemap"\n    ]\n  },\n  "player": {\n    "players": [\n      {\n        "type": "youtube",\n        "path": "{{baseDir}}external/popcorn-js/players/youtube/popcorn.youtube.js"\n      },\n      {\n        "type": "soundcloud",\n        "path": "{{baseDir}}external/popcorn-js/players/soundcloud/popcorn.soundcloud.js"\n      },\n      {\n        "type": "vimeo",\n        "path": "{{baseDir}}external/popcorn-js/players/vimeo/popcorn.vimeo.js"\n      }\n    ],\n    "defaults": [\n      "youtube",\n      "soundcloud",\n      "vimeo"\n    ]\n  },\n  "dirs": {\n    "popcorn-js": "{{baseDir}}external/popcorn-js/",\n    "css": "{{baseDir}}css/",\n    "dialogs": "{{baseDir}}dialogs/",\n    "resources": "{{baseDir}}resources/"\n  },\n  "icons": {\n    "default": "popcorn-icon.png",\n    "image": "image-icon.png"\n  }\n}\n';});
+define('text!default-config.json',[],function () { return '{\n  "name": "default-config",\n  "baseDir": "../",\n  "snapshotHTMLOnReady": true,\n  "scrapePage": true,\n  "title": "Popcorn Maker",\n  "editor": {\n    "default": "{{baseDir}}editors/default-editor.html",\n    "googlemap": "{{baseDir}}editors/googlemap-editor.html"\n  },\n  "ui": {\n    "enabled": true,\n    "trackEventHighlight": "click"\n  },\n  "mediaDefaults": {\n    "frameAnimation": true\n  },\n  "plugin": {\n    "plugins": [\n      {\n        "type": "attribution",\n        "path": "{{baseDir}}external/popcorn-js/plugins/attribution/popcorn.attribution.js"\n      },\n      {\n        "type": "webpage",\n        "path": "{{baseDir}}external/popcorn-js/plugins/webpage/popcorn.webpage.js"\n      },\n      {\n        "type": "text",\n        "path": "{{baseDir}}external/popcorn-js/plugins/text/popcorn.text.js"\n      },\n      {\n        "type": "googlemap",\n        "path": "{{baseDir}}external/popcorn-js/plugins/googlemap/popcorn.googlemap.js"\n      },\n      {\n        "type": "image",\n        "path": "{{baseDir}}external/popcorn-js/plugins/image/popcorn.image.js"\n      },\n      {\n        "type": "twitter",\n        "path": "{{baseDir}}external/popcorn-js/plugins/twitter/popcorn.twitter.js"\n      },\n      {\n        "type": "wikipedia",\n        "path": "{{baseDir}}external/popcorn-js/plugins/wikipedia/popcorn.wikipedia.js"\n      }\n    ],\n    "defaults": [\n      "text",\n      "image",\n      "googlemap"\n    ]\n  },\n  "player": {\n    "players": [\n      {\n        "type": "youtube",\n        "path": "{{baseDir}}external/popcorn-js/players/youtube/popcorn.youtube.js"\n      },\n      {\n        "type": "soundcloud",\n        "path": "{{baseDir}}external/popcorn-js/players/soundcloud/popcorn.soundcloud.js"\n      },\n      {\n        "type": "vimeo",\n        "path": "{{baseDir}}external/popcorn-js/players/vimeo/popcorn.vimeo.js"\n      }\n    ],\n    "defaults": [\n      "youtube",\n      "soundcloud",\n      "vimeo"\n    ]\n  },\n  "dirs": {\n    "popcorn-js": "{{baseDir}}external/popcorn-js/",\n    "css": "{{baseDir}}css/",\n    "dialogs": "{{baseDir}}dialogs/",\n    "resources": "{{baseDir}}resources/"\n  },\n  "icons": {\n    "default": "popcorn-icon.png",\n    "image": "image-icon.png"\n  }\n}\n';});
 
 define('text!layouts/ua-warning.html',[],function () { return '<div class="butter-ua-warning" data-butter-exclude>Your web browser may lack some functionality expected by Butter to function properly. Please upgrade your browser or <a href="https://webmademovies.lighthouseapp.com/projects/65733-popcorn-maker">file a bug</a> to find out why your browser isn\'t fully supported. Click <a href="#" class="close-button">here</a> to remove this warning.</div>';});
 
-define('text!layouts/media-view.html',[],function () { return '<div class="butter-media-properties" data-butter-exclude="true">\n  <p class="edit-message">Edit source...</p>\n  <div class="butter-container">\n    <div class="butter-inner-container">\n      <div class="butter-inner-container-title">Video/Audio URL</div>\n      <div class="url-group">\n        <div class="url fade-in"><input type="text" /><button class="remove">-</button></div>\n      </div>\n      <p class="form-field-notes"></p>\n      <button class="save">Save</button><button class="add-url">Add Alternate URL</button>\n      <div class="loading-container"></div>\n    </div>\n  </div>\n</div>';});
+define('text!layouts/media-view.html',[],function () { return '<div class="butter-media-properties" data-butter-exclude="true">\n  <p class="butter-edit-message">Edit source...</p>\n  <div class="butter-container">\n    <div class="butter-inner-container">\n      <div class="butter-inner-container-title">Video/Audio URL</div>\n      <div class="butter-url-group">\n        <div class="butter-url fade-in"><input type="text" /><button class="butter-btn butter-btn-remove"><span class="icon-minus"></span></button></div>\n      </div>\n      <p class="butter-form-field-notes"></p>\n      <button class="butter-btn butter-btn-save">Save</button><button class="butter-btn butter-btn-add-url">Add Alternate URL</button>\n      <div class="butter-loading-container"></div>\n    </div>\n  </div>\n</div>';});
 
 define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lang", "ui/widget/textbox", "text!layouts/media-view.html" ],
   function( PageElement, LogoSpinner, LangUtils, TextboxWrapper, HTML_TEMPLATE ){
@@ -8048,13 +8057,13 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
 
     var _propertiesElement = LangUtils.domFragment( HTML_TEMPLATE ),
         _container = _propertiesElement.querySelector( "div.butter-container" ),
-        _urlContainer = _propertiesElement.querySelector( "div.url" ),
+        _urlContainer = _propertiesElement.querySelector( "div.butter-url" ),
         _urlTextbox = _propertiesElement.querySelector( "input[type='text']" ),
-        _subtitle = _propertiesElement.querySelector( ".form-field-notes" ),
-        _changeButton = _propertiesElement.querySelector( "button.save" ),
-        _addUrlButton = _propertiesElement.querySelector( "button.add-url" ),
-        _urlList = _propertiesElement.querySelector( "div.url-group" ),
-        _loadingContainer = _propertiesElement.querySelector( ".loading-container" );
+        _subtitle = _propertiesElement.querySelector( ".butter-form-field-notes" ),
+        _changeButton = _propertiesElement.querySelector( "button.butter-btn-save" ),
+        _addUrlButton = _propertiesElement.querySelector( "button.butter-btn-add-url" ),
+        _urlList = _propertiesElement.querySelector( "div.butter-url-group" ),
+        _loadingContainer = _propertiesElement.querySelector( ".butter-loading-container" );
 
     var _containerDims;
 
@@ -8099,11 +8108,13 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
         newContainer.classList.add( "fade-in" );
       }, 0);
 
-      _containerDims.width = _container.clientWidth;
-      _containerDims.height = _container.clientHeight;
-      setDimensions( true );
+      if ( _containerDims ) {
+        _containerDims.width = _container.clientWidth;
+        _containerDims.height = _container.clientHeight;
+        setDimensions( true );
+      }
 
-      newContainer.querySelector( "button.remove" ).addEventListener( "click", function ( e ) {
+      newContainer.querySelector( "button.butter-btn-remove" ).addEventListener( "click", function ( e ) {
         removeUrl( newContainer );
       }, false );
 
@@ -8163,7 +8174,7 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
       }
     }
 
-    function changeUrl(){
+    function changeUrl() {
       var validTextboxes = [],
           textboxes = _container.querySelectorAll( "input[type='text']" ),
           errorTextboxes = [];
@@ -8196,7 +8207,7 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
 
     }
 
-    function testUrl(url) {
+    function testUrl( url ) {
       var test = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
       return url.match(test);
     }
@@ -8211,27 +8222,31 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
     _logoSpinner.start();
     _changeButton.setAttribute( "disabled", true );
 
-    function updateURLS(){
-      if( typeof( media.url ) === "string" ) {
-        _urlTextbox.value = media.url;
+    function parseURLArray( urlArray ) {
+      var currentUrls = _urlList.querySelectorAll( "input[type='text']" );
+      while ( currentUrls.length < urlArray.length ) {
+        addUrl();
+        currentUrls = _urlList.querySelectorAll( "input[type='text']" );
       }
-      else if ( media.url.length ) {
-        var urls = media.url,
-            currentUrls = _urlList.querySelectorAll( "input[type='text']" );
-        while ( currentUrls.length < urls.length ) {
-          addUrl();
-          currentUrls = _urlList.querySelectorAll( "input[type='text']" );
-        }
-        while ( currentUrls.length > urls.length ) {
-          removeUrl( currentUrls[ currentUrls.length - 1 ] );
-          currentUrls = _urlList.querySelectorAll( "input[type='text']" );
-        }
-        for ( var i = 0; i < urls.length; ++i ) {
-          currentUrls[ i ].value = urls[ i ];
-        }
+      while ( currentUrls.length > urlArray.length ) {
+        removeUrl( currentUrls[ currentUrls.length - 1 ] );
+        currentUrls = _urlList.querySelectorAll( "input[type='text']" );
+      }
+      for ( var i = 0; i < urlArray.length; ++i ) {
+        currentUrls[ i ].value = urlArray[ i ];
+      }
+    }
+
+    function updateURLS() {
+      var url = media.url;
+      if( typeof( url ) === "string" ) {
+        _urlTextbox.value = url;
+      }
+      else if ( url.length ) {
+        parseURLArray( url );
       }
       else {
-        throw "Media url is expected value (not string or array): " + media.url;
+        throw "Media url is expected value (not string or array): " + url;
       }
     }
 
@@ -8381,6 +8396,15 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
               if( _view ){
                 _view.update();
               }
+
+              // If the target element has a `data-butter-media-controls` property,
+              // set the `controls` attribute on the corresponding media element.
+              var targetElement = document.getElementById( _target );
+              if (  targetElement &&
+                    targetElement.getAttribute( "data-butter-media-controls" ) ) {
+                _popcornWrapper.popcorn.controls( true );
+              }
+
               _this.dispatch( "mediaready" );
             },
             constructing: function(){
@@ -8525,10 +8549,13 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
       }; //getManifest
 
       function setupContent(){
-        if( _url && _target ){
+        if ( _url && _url.indexOf( "," ) > -1 ) {
+          _url = _url.split( "," );
+        }
+        if ( _url && _target ){
           _popcornWrapper.prepare( _url, _target, _popcornOptions, _this.popcornCallbacks, _this.popcornScripts );
-        } //if
-        if( _view ){
+        }
+        if ( _view ) {
           _view.update();
         }
       }
@@ -8689,6 +8716,7 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
               url: _url,
               target: _target,
               duration: _duration,
+              controls: _popcornWrapper.popcorn ? _popcornWrapper.popcorn.controls() : false,
               tracks: exportJSONTracks
             };
           },
@@ -8765,22 +8793,45 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
         }
       });
 
+      // check to see if we have any child source elements and use them if neccessary
+      function retrieveSrc( targetElement ) {
+        var url = "";
+
+        if ( targetElement.children ) {
+          var children = targetElement.children;
+          url = [];
+          for ( var i = 0, il = children.length; i < il; i++ ) {
+            if ( children[ i ].nodeName === "SOURCE" ) {
+              url.push( children[ i ].src );
+            }
+          }
+        }
+        return !url.length ? targetElement.currentSrc : url;
+      }
+
       // There is an edge-case where currentSrc isn't set yet, but everything else about the video is valid.
       // So, here, we wait for it to be set.
-      var targetElement = document.getElementById( _target );
-      if( targetElement && [ "VIDEO", "AUDIO" ].indexOf( targetElement.nodeName ) > -1 ) {
-        if( !targetElement.currentSrc && targetElement.getAttribute( "src" ) || targetElement.childNodes.length > 0 ){
-          var attempts = 0,
-              safetyInterval = setInterval(function(){
-            if( targetElement.currentSrc ){
-              _url = targetElement.currentSrc;
+      var targetElement = document.getElementById( _target ),
+          mediaSource = _url,
+          attempts = 0,
+          safetyInterval;
+
+      if ( targetElement && [ "VIDEO", "AUDIO" ].indexOf( targetElement.nodeName ) > -1 ) {
+        mediaSource = mediaSource || retrieveSrc( targetElement );
+        if ( !mediaSource ) {
+          safetyInterval = setInterval(function() {
+            mediaSource = retrieveSrc( targetElement );
+            if ( mediaSource ) {
+              _url = mediaSource ;
               setupContent();
               clearInterval( safetyInterval );
-            }
-            else if( attempts++ === MEDIA_ELEMENT_SAFETY_POLL_ATTEMPTS ){
+            } else if ( attempts++ === MEDIA_ELEMENT_SAFETY_POLL_ATTEMPTS ) {
               clearInterval( safetyInterval );
             }
           }, MEDIA_ELEMENT_SAFETY_POLL_INTERVAL );
+        // we already have a source, lets make sure we update it
+        } else {
+          _url = mediaSource;
         }
       }
 
@@ -8791,7 +8842,7 @@ define('core/views/media-view',[ "ui/page-element", "ui/logo-spinner", "util/lan
   });
 }());
 
-define('text!layouts/header.html',[],function () { return '<div id="butter-header" data-butter-exclude>\n  <div class="butter-header-inner">\n    <div class="butter-logo"></div>\n    <span class="butter-name"></span>\n    <div class="butter-editor-actions">\n      <a class="butter-btn" href="#" id="butter-header-save" title="Save your project"><span class="icon-ok-sign"></span> Save</a>\n      <a class="butter-btn" href="#" id="butter-header-source" title="View the source of this template"><span class="icon-hdd"></span> View Source</a>\n      <a class="butter-btn" href="#" id="butter-header-share" title="Generate a link to share this project with the world"><span class="icon-share-alt"></span> Publish</a>\n      <a class="butter-btn" href="#" id="butter-header-auth" title="Sign in or sign up with Persona"><span class=\'icon-user\'></span>Sign In / Sign Up</a>\n    </div>\n  </div>\n</div>\n';});
+define('text!layouts/header.html',[],function () { return '<div id="butter-header" data-butter-exclude>\n  <div class="butter-header-inner">\n    <div class="butter-logo"></div>\n    <span class="butter-name"></span>\n    <div class="butter-editor-actions">\n      <a class="butter-btn" href="/dashboard" id="butter-header-load" title="Manage your projects"><span class="icon-grear-sign"></span> Projects</a>\n      <a class="butter-btn" href="#" id="butter-header-save" title="Save your project"><span class="icon-ok-sign"></span> Save</a>\n      <a class="butter-btn" href="#" id="butter-header-source" title="View the source of this template"><span class="icon-eye-open"></span> View Source</a>\n      <a class="butter-btn" href="#" id="butter-header-share" title="Generate a link to share this project with the world"><span class="icon-share-alt"></span> Publish</a>\n      <a class="butter-btn" href="#" id="butter-header-auth" title="Sign in or sign up with Persona"><span class=\'icon-user\'></span>Sign In / Sign Up</a>\n    </div>\n  </div>\n</div>\n';});
 
 define('ui/header',[
   "dialog/iframe-dialog",
@@ -8909,6 +8960,7 @@ define('ui/header',[
             var dialog = new IFrameDialog({
               type: "iframe",
               modal: true,
+              classes: "fade-in smallIframe",
               url: butter.ui.dialogDir + "share.html",
               events: {
                 open: function( e ){
@@ -8925,12 +8977,8 @@ define('ui/header',[
       }
 
       function prepare(){
-        if( butter.project.id ){
-          publish();
-        }
-        else{
-          doSave( publish );
-        }
+        // (Re-)Save first, and publish
+        doSave( publish );
       }
 
       authenticationRequired( prepare );
@@ -8960,6 +9008,7 @@ define('ui/header',[
         var dialog = new IFrameDialog({
           type: "iframe",
           modal: true,
+          classes: "fade-in smallIframe",
           url: butter.ui.dialogDir + "save-as.html",
           events: {
             open: function( e ){
@@ -9578,6 +9627,7 @@ define('ui/ui',[ "core/eventmanager", "./toggler", "./logo-spinner", "./context-
           _this = this,
           _selectedEvents = [],
           _defaultPopcornScripts = {},
+          _customData = {},
           _defaultPopcornCallbacks = {};
 
       // We use the default configuration in src/default-config.json as
@@ -9600,8 +9650,15 @@ define('ui/ui',[ "core/eventmanager", "./toggler", "./logo-spinner", "./context-
         name: null,
         data: null,
         html: null,
-        template: null
+        template: null,
+        customData: null
       };
+
+      Object.defineProperty( this.project, "customData", {
+        get: function() {
+          return _customData;
+        }
+      });
 
       function checkMedia() {
         if ( !_currentMedia ) {
@@ -10062,9 +10119,6 @@ define('ui/ui',[ "core/eventmanager", "./toggler", "./logo-spinner", "./context-
 
               if( mediaObj.getAttribute( "data-butter-source" ) ){
                 url = mediaObj.getAttribute( "data-butter-source" );
-              }
-              else if( [ "VIDEO", "AUDIO" ].indexOf( mediaObj.nodeName ) > -1 ) {
-                url = mediaObj.currentSrc;
               }
 
               if( _media.length > 0 ){

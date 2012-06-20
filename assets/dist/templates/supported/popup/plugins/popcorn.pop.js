@@ -16,6 +16,18 @@ todo: animate top, left and other styles (color, font size, etc.)
 
 "use strict";
 
+  /**
+   * Stub implementation of words for API compat in 0.5.x
+   */
+  Popcorn.plugin( 'words', {
+    _setup: Popcorn.nop,
+    start: Popcorn.nop,
+    end: Popcorn.nop,
+    frame: Popcorn.nop,
+    _teardown: Popcorn.nop
+  });
+
+
   var styleSheet,
     svg, clipPath, ellipse,
     sounds = {},
@@ -161,7 +173,11 @@ todo: animate top, left and other styles (color, font size, etc.)
       return nop;
     }
 
-    if (!options.target || !options.text && !options.image) {
+    if ( !options.target || options.target === this.media.id ) {
+      options.target = "pop-container";
+    }
+
+    if (!options.text && !options.image) {
       return nop;
     }
 
