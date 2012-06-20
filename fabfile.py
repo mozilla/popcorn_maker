@@ -1,4 +1,5 @@
 import os
+import sys
 import manage
 
 from fabric.api import run, local, env, get, prompt, sudo
@@ -25,6 +26,7 @@ def update_npm():
     with lcd(os.path.join(settings.PROJECT_ROOT, 'butter')):
         local('npm install')
         local('npm update')
+
 
 def compile_butter():
     print yellow('Compiling Butter files.')
@@ -66,4 +68,3 @@ def collectstatic():
     print yellow('Collecting static files.')
     with lcd(settings.PROJECT_ROOT):
         local('python manage.py collectstatic --noinput')
-

@@ -14,7 +14,7 @@ from ...base.decorators import json_handler, login_required_ajax
 @require_GET
 @login_required_ajax
 def project_list(request):
-    """List of the projects that belong to a User"""
+    """List projects saved that belong to the authed user."""
     queryset = Project.objects.filter(~Q(status=Project.REMOVED),
                                       author=request.user)
     response = {
@@ -38,7 +38,7 @@ def get_project_data(cleaned_data):
 @json_handler
 @login_required_ajax
 def project_add(request):
-    """End point for adding a ``Project``"""
+    """Saves the metadata of a user's Project"""
     form = ProjectForm(request.JSON)
     if form.is_valid():
         data = get_project_data(form.cleaned_data)
@@ -61,7 +61,7 @@ def project_add(request):
 @login_required_ajax
 @valid_user_project(['uuid'])
 def project_detail(request, project):
-    """Handles the data for the Project"""
+    """Returns and saves an specific ``Project``."""
     if request.method == 'POST' and request.JSON:
         if project.author != request.user:
             if project.is_forkable:
@@ -94,9 +94,12 @@ def project_detail(request, project):
     return HttpResponse(json.dumps(response), mimetype='application/json')
 
 
+@require_POST
 @json_handler
 @login_required_ajax
 def project_publish(request, uuid):
+    """Publish the selected project and makes available in the
+    community gallery."""
     if request.method == 'POST':
         try:
             project = Project.objects.get(~Q(status=Project.REMOVED),

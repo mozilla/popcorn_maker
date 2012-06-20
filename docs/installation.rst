@@ -58,7 +58,7 @@ Add a host alias
 
 This is done so you can access the application via: http://local.mozillapopcorn.org and perform the browserid assertion.
 
-If you are on OSX or *NIX add an alias for the site by running the following command in your local machine::
+If you are on OSX or a UNIX based system add an alias for the site by running the following command in your local machine::
 
     echo "33.33.33.11 local.mozillapopcorn.org" | sudo tee -a /etc/hosts
 
